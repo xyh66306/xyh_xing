@@ -153,5 +153,11 @@ class User extends Model
     }
 
 
+    public function agent()
+    {
+        return $this->belongsTo('app\admin\model\user\User', 'agent_group_id', 'id', [], 'LEFT')->setEagerlyType(0);
+    }
+
+
 
 }

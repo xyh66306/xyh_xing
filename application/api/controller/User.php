@@ -839,7 +839,7 @@ class User extends Api
             $list[$key]['status_txt'] = $status_txt;
             $list[$key]['teamname'] = Db::name("user_team")->where("team_user_id",$value['agent_group_id'])->value("name");
         }
-        $data['count'] = $userModel->where("sparent","like","%".$sparent."%")->where("id","<>",$user_id)->count("id");
+        $data['count'] = $userModel->where("sparent","like","%".$sparent."%")->where('group_id',1)->where("id","<>",$user_id)->count("id");
         $data['list'] = $list;
         $this->success("获取成功",$data);
 

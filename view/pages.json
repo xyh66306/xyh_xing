@@ -268,7 +268,7 @@
 			"path" : "pages/team/list",
 			"style" : 
 			{
-				"navigationBarTitleText" : "团队列表",
+				"navigationBarTitleText" : "推荐列表",
 				"enablePullDownRefresh" : false
 			}
 		}

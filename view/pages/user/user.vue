@@ -69,7 +69,7 @@
 				<u-cell title="提币记录" isLink url="/pages/withdraw/withdraw"></u-cell>
 				<u-cell title="转账记录" isLink url="/pages/moneylog/transfer"></u-cell>
 				<u-cell title="资产流水" isLink url="/pages/moneylog/moneylog"></u-cell>
-				<u-cell title="团长管理" isLink url="/pages/team/list" v-if="open_team && !open_company"></u-cell>
+				<u-cell title="推荐列表" isLink url="/pages/team/list" v-if="open_team && !open_company"></u-cell>
 				<u-cell title="佣金流水" isLink url="/pages/userrebate/yongjin" v-if="open_team"></u-cell>
 			</u-cell-group>
 		</view>
