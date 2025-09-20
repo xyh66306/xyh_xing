@@ -1,0 +1,318 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/register/register",
+			"style": {
+				"navigationBarTitleText": "注册",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/user/user",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/userrebate/setting",
+			"style": {
+				"navigationBarTitleText": "返佣设置",
+				"enablePullDownRefresh": false
+			}
+		},	
+		{
+			"path": "pages/userrebate/comsetting",
+			"style": {
+				"navigationBarTitleText": "返佣设置",
+				"enablePullDownRefresh": false
+			}
+		},			
+		{
+			"path": "pages/userrebate/yongjin",
+			"style": {
+				"navigationBarTitleText": "佣金流水",
+				"enablePullDownRefresh": false
+			}
+		},	
+		{
+			"path": "pages/userrebate/yjdetails",
+			"style": {
+				"navigationBarTitleText": "佣金流水详情",
+				"enablePullDownRefresh": false
+			}
+		},					
+		{
+			"path": "pages/buy/buy",
+			"style": {
+				"navigationBarTitleText": "抢单",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/sale/sale",
+			"style": {
+				"navigationBarTitleText": "兑入",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/changepwd/changepwd",
+			"style": {
+				"navigationBarTitleText": "修改密码",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/changepwd/forget",
+			"style": {
+				"navigationBarTitleText": "忘记密码",
+				"enablePullDownRefresh": false
+			}
+		},		
+		{
+			"path": "pages/changepaypwd/changepaypwd",
+			"style": {
+				"navigationBarTitleText": "修改支付密码",
+				"enablePullDownRefresh": false
+			}
+		},	
+		{
+			"path": "pages/card/card",
+			"style": {
+				"navigationBarTitleText": "收款设置",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/card/ewm",
+			"style": {
+				"navigationBarTitleText": "二维码设置",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/card/bank",
+			"style": {
+				"navigationBarTitleText": "添加银行卡",
+				"enablePullDownRefresh": false
+			}
+		},				
+		{
+			"path": "pages/moneylog/moneylog",
+			"style": {
+				"navigationBarTitleText": "资产流水",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/withdraw/withdraw",
+			"style": {
+				"navigationBarTitleText": "提币记录",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/withdraw/details",
+			"style": {
+				"navigationBarTitleText": "提币详情",
+				"enablePullDownRefresh": false
+			}
+		},		
+		{
+			"path": "pages/recharge/recharge",
+			"style": {
+				"navigationBarTitleText": "充值记录",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/buy_order/buy_order",
+			"style": {
+				"navigationBarTitleText": "兑出记录",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/buy_order/details",
+			"style": {
+				"navigationBarTitleText": "兑出记录详情",
+				"enablePullDownRefresh": false
+			}
+		},		
+		{
+			"path": "pages/sale_order/sale_order",
+			"style": {
+				"navigationBarTitleText": "兑入记录",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/asset/asset",
+			"style": {
+				"navigationBarTitleText": "资产",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/google/google",
+			"style": {
+				"navigationBarTitleText": "谷歌认证",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/auth/auth",
+			"style": {
+				"navigationBarTitleText": "身份认证",
+				"enablePullDownRefresh": false
+			}
+		},		
+		{
+			"path": "pages/download/download",
+			"style": {
+				"navigationBarTitleText": "下载APP",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/recharge/add",
+			"style": {
+				"navigationBarTitleText": "充币",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/withdraw/add",
+			"style": {
+				"navigationBarTitleText": "提币",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/transfer/transfer",
+			"style": {
+				"navigationBarTitleText": "转账",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/moneylog/transfer",
+			"style": {
+				"navigationBarTitleText": "转账记录",
+				"enablePullDownRefresh": false
+			}
+		},		
+		{
+			"path" : "pages/payment/payment",
+			"style" : 
+			{
+				"navigationBarTitleText" : "订单详情",
+				"enablePullDownRefresh" : false
+			}
+		},
+		{
+			"path" : "pages/payment/sale",
+			"style" : 
+			{
+				"navigationBarTitleText" : "订单信息",
+				"enablePullDownRefresh" : false
+			}
+		},		
+		{
+			"path" : "pages/shensu/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "订单申诉",
+				"enablePullDownRefresh" : false
+			}
+		},
+		{
+			"path" : "pages/company/user/list",
+			"style" : 
+			{
+				"navigationBarTitleText" : "承兑商用户",
+				"enablePullDownRefresh" : false
+			}
+		},
+		{
+			"path" : "pages/company/group/list",
+			"style" : 
+			{
+				"navigationBarTitleText" : "承兑商团队",
+				"enablePullDownRefresh" : false
+			}
+		},
+		{
+			"path" : "pages/company/group/add",
+			"style" : 
+			{
+				"navigationBarTitleText" : "添加团队",
+				"enablePullDownRefresh" : false
+			}
+		},
+		{
+			"path" : "pages/team/list",
+			"style" : 
+			{
+				"navigationBarTitleText" : "团队列表",
+				"enablePullDownRefresh" : false
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "OTC",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#F1F4F9",
+		"app-plus": {
+			"bounce": "none"
+		}
+	},
+	"tabBar": {
+		"color": "#8a8a8a",
+		"selectedColor": "#2979ff",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [{
+			"pagePath": "pages/index/index",
+			"iconPath": "static/tab0_0.png",
+			"selectedIconPath": "static/tab0_1.png",
+			"text": "首页"
+		}, {
+			"pagePath": "pages/buy/buy",
+			"iconPath": "static/tab1_0.png",
+			"selectedIconPath": "static/tab1_1.png",
+			"text": "抢单"
+		}, {
+			"pagePath": "pages/sale/sale",
+			"iconPath": "static/tab2_0.png",
+			"selectedIconPath": "static/tab2_1.png",
+			"text": "兑入"
+		}, {
+			"pagePath": "pages/asset/asset",
+			"iconPath": "static/tab3_0.png",
+			"selectedIconPath": "static/tab3_1.png",
+			"text": "资产"
+		}, {
+			"pagePath": "pages/user/user",
+			"iconPath": "static/tab4_0.png",
+			"selectedIconPath": "static/tab4_1.png",
+			"text": "我的"
+		}]
+	},
+	"uniIdRouter": {}
+}
