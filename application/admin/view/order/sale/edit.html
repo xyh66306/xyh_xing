@@ -1,0 +1,51 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Skr')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-skr" class="form-control" name="row[skr]" type="text" value="{$row.skr|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Skzh')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-skzh" class="form-control" name="row[skzh]" type="text" value="{$row.skzh|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Skyh')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-skyh" class="form-control" name="row[skyh]" type="text" value="{$row.skyh|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Zhmc')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-zhmc" class="form-control" name="row[zhmc]" type="text" value="{$row.zhmc|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Cny')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-cny" class="form-control" step="0.01" name="row[cny]" type="number" value="{$row.cny|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pt" class="form-control" name="row[pt]" type="text" value="{$row.pt|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Bh')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-bh" class="form-control" name="row[bh]" type="text" value="{$row.bh|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>

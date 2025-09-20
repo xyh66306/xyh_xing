@@ -1,0 +1,35 @@
+<div class="panel panel-default panel-intro">
+
+    <div class="panel-body">
+        <div id="myTabContent" class="tab-content">
+            <h1>尊敬的商户{$admin.nickname|htmlentities},欢迎您登录系统！</h1>
+            <div class="tongjiBox">
+                <div class="card">
+                    <div class="card-body">
+                        账户余额：{$supply_info.usdt} USDT
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        冻结余额：{$supply_info.freeze_usdt} USDT
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .tongjiBox {
+        display: flex;
+    }
+
+    .card {
+        margin: 10px;
+    }
+
+    .card-body {
+        text-align: center;
+    }
+</style>

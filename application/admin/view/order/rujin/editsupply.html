@@ -1,0 +1,80 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('MerchantOrderNo')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-merchantOrderNo" class="form-control" disabled name="row[merchantOrderNo]" type="text" value="{$row.merchantOrderNo|htmlentities}">
+        </div>
+    </div>    
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Huilv')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-huilv" class="form-control" disabled step="0.01" name="row[huilv]" type="number" value="{$row.huilv|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Bi_Type')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-bi_type" class="form-control" disabled name="row[bi_type]" type="text" value="{$row.bi_type|htmlentities}">
+        </div>
+    </div>      
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Order Usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-usdt" class="form-control" disabled name="row[usdt]" type="number" value="{$row.usdt|htmlentities}">
+        </div>
+    </div>    
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Supply Fee')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-supply_fee" class="form-control" disabled name="row[supply_fee]" type="number" value="{$row.supply_fee|htmlentities}">
+        </div>
+    </div>  
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Act Usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-supply_usdt" class="form-control" disabled name="row[supply_usdt]" type="number" value="{$row.supply_usdt|htmlentities}">
+        </div>
+    </div>  
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pay_status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            
+            <div class="radio">
+            {foreach name="payStatusList" item="vo"}
+            <label for="row[pay_status]-{$key}"><input id="row[pay_status]-{$key}" name="row[pay_status]" type="radio" value="{$key}" disabled {in name="key" value="$row.pay_status"}checked{/in} /> {$vo}</label> 
+            {/foreach}
+            </div>
+
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Ctime')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-ctime" class="form-control" disabled  name="row[ctime]" type="text" value="{$row.ctime|date='Y-m-d H:i:s',###}">
+        </div>
+    </div>  
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Payername')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-payername" class="form-control" disabled name="row[payername]" type="text" value="{$row.payername|htmlentities}">
+        </div>
+    </div>  
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">服务商银行卡号:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-bank_account" class="form-control" disabled  name="row[bank_account]" type="text" value="{$row.bank_account|htmlentities}">
+        </div>
+    </div>      
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Utime')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-utime" class="form-control" disabled  name="row[utime]" type="text" value="{$row.utime|date='Y-m-d H:i:s',###}">
+        </div>
+    </div>  
+</form>

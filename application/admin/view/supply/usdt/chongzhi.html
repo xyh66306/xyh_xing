@@ -1,0 +1,298 @@
+<div class="panel panel-default panel-intro">
+
+    <div class="panel-heading" style="background-color: #fff;">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="item_header">可用金额</div>
+                <div class="item_value">{$supply_info.usdt }</div>
+            </div>
+            <div class="col-sm-6">
+                <div class="item_header">冻结金额</div>
+                <div class="item_value">{$supply_info.freeze_usdt }</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-body">
+
+            <!-- 第一步：转账信息 -->
+            <div id="step1" class="active-step step-content">
+                <div class="item">
+                    <label class="block" for="type">类型</label>
+                    <select id="type" name="type" class="form-control">
+                        <option value="">请选择通道类型</option>
+                        <option value="USDT-TRC20">USDT-TRC20</option>
+                    </select>
+                </div>
+                <div class="item">
+                    <label class="block" for="usdt">充币数量</label>
+                    <div class="relative">
+                        <input type="number" id="usdt" class="form-control" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                </div>
+                <div class="item">
+                    <label class="block" for="hash">哈希值</label>
+                    <div class="relative">
+                        <input type="text" id="hash" class="form-control" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                </div>                    
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-2">二维码:</label>
+                    <div class="col-xs-12 col-sm-8">
+                        
+                        <div class="input-group">
+                            <input id="c-pay_ewm_image" data-rule="required" class="form-control" size="50" name="row[pay_ewm_image]" type="text" value="{$row.pay_ewm_image|htmlentities}">
+                            <div class="input-group-addon no-border no-padding">
+                            <button type="button" onclick="uploadImg()" id="faupload-pay_ewm_image" class="btn btn-danger faupload" data-input-id="c-pay_ewm_image" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/webp" data-multiple="false" data-preview-id="p-pay_ewm_image"><i class="fa fa-upload"></i> 双击上传图片</button>
+                            </div>    
+                        </div>
+                        <ul class="row list-inline faupload-preview" id="p-ewm"></ul>
+                    </div>
+                </div>
+                <button type="button" onclick="submitTransfer()" class="w-full nextbtn">确认提交</button>
+            </div>
+
+    </div>
+</div>
+
+
+<script>
+    let currentStep = 1;
+    const transferData = {};
+
+    function uploadImg(){
+        require(['upload'], function (Upload) {
+            Upload.api.plupload($(".faupload"), function (data, ret) {
+                let url = data.fullurl;
+                $("#c-pay_ewm_image").val(url);
+                transferData.pay_ewm_image = url;
+            });
+        });
+    }
+
+
+    function submitTransfer() {
+        
+        // 验证第一步数据
+        const type = document.getElementById('type').value;
+        const usdt = document.getElementById('usdt').value;
+        const hash = document.getElementById('hash').value;
+
+        if (!type) {
+            Toastr.error('请选择通道类型'); 
+            return;
+        }
+        if (!usdt || parseFloat(usdt) <= 0) {
+            Toastr.error('请输入有效的提币金额'); 
+            return;
+        }
+        if (!hash) {
+            Toastr.error('请输入哈希值'); 
+            return;
+        }            
+        if (!transferData.pay_ewm_image) {
+            Toastr.error('请上传提币二维码'); 
+            return;
+        }     
+        transferData.type = type;  
+        transferData.usdt = usdt;
+        transferData.hash = hash; 
+       
+        // 提交转账申请
+        Fast.api.ajax({
+            url: 'supply/usdt/czadd',
+            dataType: 'json',
+            data: transferData,
+            cache: false
+        },function (ret) {
+
+            if (ret.code === 1) {
+                Toastr.error(ret.msg); 
+                currentStep = step;
+                showStep(step);
+            } else {
+                Toastr.success(ret.msg);
+            }
+        }, function (ret) {
+            Toastr.error(ret.msg);
+        });
+    }
+
+
+    function prevStep(step) {
+        currentStep = step;
+        showStep(step);
+    }
+
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+        updateStepIndicator(1);
+    });
+</script>
+
+
+<style>
+    .item_header {
+        margin-bottom: 4px;
+        color: rgba(0, 0, 0, .45);
+        font-size: 14px;
+    }
+
+    .item_value {
+        color: rgba(0, 0, 0, .85);
+        font-size: 24px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    }
+
+    .step-content {
+        display: none;
+    }
+
+    .active-step {
+        display: block;
+    }
+
+    .steps {
+        display: flex;
+    }
+
+    .step {
+        display: flex;
+        flex: 1 1;
+        align-items: center;
+        position: relative;
+        z-index: 999;
+        background-color: #fff;
+    }
+
+    .step .box {
+        display: flex;
+        flex: 1 1;
+        align-items: center;
+        position: relative;
+        z-index: 999;
+        background-color: #fff;
+    }
+
+    .step-icon {
+        width: 32px;
+        height: 32px;
+        background: #fff;
+        border-radius: 50%;
+        overflow: hidden;
+        color: #666;
+        font-size: 16px;
+        text-align: center;
+        line-height: 200%;
+        border: rgba(0, 0, 0, .25) 1px solid;
+    }
+
+    .active-step .step-icon {
+        width: 32px;
+        height: 32px;
+        background: #1890ff;
+        border-radius: 50%;
+        overflow: hidden;
+        color: #fff;
+        font-size: 16px;
+        text-align: center;
+        line-height: 200%;
+    }
+
+    .step-label {
+        margin-left: 10px;
+        color: rgba(0, 0, 0, .85);
+        position: relative;
+    }
+
+    .step-label::after {
+        position: absolute;
+        z-index: 1;
+        top: 10px;
+        right: -110px;
+        display: block;
+        width: 99px;
+        height: 1px;
+        background: #f0f0f0;
+        content: "";
+    }
+
+    .step_end .step-label::after {
+        display: none;
+    }
+
+    .step-content {
+        display: none;
+        width: 500px;
+        margin: 40px auto 0;
+    }
+
+    .step-content.active-step {
+        display: block;
+    }
+
+    .item {
+        display: flex;
+        align-items: center;
+        padding:5px 0;
+    }
+
+    .item label {
+        flex: 0 0 100px;
+        height:35px;
+        line-height:35px;
+    }
+    .item label {
+        flex: 0 0 100px;
+        height:35px;
+        line-height:35px;
+    }    
+    .w-full {
+        width:300px;
+        height:35px;
+        line-height:35px;
+    }
+    #remark {
+        width:300px;
+        min-height:60px;
+    }
+
+    .nextbtn {
+        width: 100%;
+        height: 50px;
+        background: #1890ff;
+        border:none;
+        color:#fff;
+        line-height: 50px;
+        cursor: pointer;
+        margin-top: 30px;
+    }
+
+    .bg-gray-200 {
+        background-color: #f0f0f0;
+        width: 200px;
+        height: 40px;
+        line-height: 40px;
+        border-radius: 4px;
+        border:none;
+    }
+    .bg-blue-500 {
+        background-color: #1890ff;
+        width: 200px;
+        height: 40px;
+        line-height: 40px;
+        color:#fff;
+        border-radius: 4px;
+        border:none;
+
+    }
+
+    .space-x-4 {
+        margin-top: 30px;
+    }
+    .paybox {
+        display: none;
+        overflow: hidden;
+    }
+</style>

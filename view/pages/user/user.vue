@@ -103,8 +103,6 @@
 
 <script>
 	export default {
-		components(){
-		},
 		data() {
 			return {
 				user: {},
@@ -123,7 +121,7 @@
 		},
 		onShow() {
 			this.user = uni.getStorageSync('user') || {};
-			this.open_team  = true
+			// this.open_team  = true
 			// this.open_team = uni.getStorageSync('open_team') ? true : false;
 			this.open_company = uni.getStorageSync('user_group')==2 ? true : false;
 		},

@@ -22,12 +22,12 @@
 				<view class="flex-1">
 					<u-button type="primary" plain shape="circle" @click="$u.route('/pages/transfer/transfer')">转账</u-button>
 				</view>
-				<view class="flex-1">
+				<view class="flex-1" v-if="tbpay_switch==1">
 					<u-button type="primary" plain shape="circle" @click="$u.route('/pages/withdraw/add')">提币</u-button>
 				</view>
 			</view>
 		</view>
-		<view class="today">
+<!-- 		<view class="today">
 			<view class="item">
 				<view class="name u-info">今日售出</view>
 				<view class="num">0.0000</view>
@@ -36,7 +36,7 @@
 				<view class="name u-info">今日购买</view>
 				<view class="num">0.0000</view>
 			</view>
-		</view>
+		</view> -->
 	</view>
 </template>
 
@@ -44,6 +44,7 @@
 	export default {
 		data() {
 			return {
+				tbpay_switch:0,
 				user:{}
 			}
 		},

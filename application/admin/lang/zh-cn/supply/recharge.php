@@ -1,0 +1,31 @@
+<?php
+
+return [
+    'Supply_id'      => '供应链用户ID',
+    'Order_id'       => '订单号',
+    'Usdt'           => '充币数量',
+    'Fee'            => '手续费',
+    'Hash'           => '哈希值',
+    'Type'           => '收款通道',
+    'Pinzheng_image' => '凭证',
+    'Pay_ewm_image'  => '支付二维码',
+    'Pay_status'     => '支付状态',
+    'Pay_status 0'   => '创建',
+    'Pay_status 1'   => '进行中',
+    'Pay_status 2'   => '待审核',
+    'Pay_status 3'   => '已审核',
+    'Pay_status 4'   => '已取消',
+    'Pay_time'       => '支付时间',
+    'Diqu'           => '地区',
+    'Diqu 1'         => '大陆',
+    'Diqu 2'         => '江城',
+    'Diqu 3'         => '海外',
+    'Status'         => '状态',
+    'Status 1'       => '正常',
+    'Set status to 1'=> '设为正常',
+    'Status 2'       => '隐藏',
+    'Set status to 2'=> '设为隐藏',
+    'Createtime'     => '创建时间',
+    'Updatetime'     => '更新时间',
+    'Supply.title'   => '名称'
+];

@@ -1,0 +1,79 @@
+<div class="panel panel-default panel-intro">
+    <div class="panel-body">
+        <div class="form-group col-xs-12 col-sm-6 col-md-4 col-lg-3">
+            <label class="control-label col-xs-4">团队列表</label>
+            <div class="col-xs-8">
+                <select class="form-control" name="groupid" id="mySelect">
+                    {volist name="groupLst" id="item" empty="暂时没有数据"}
+                    <option value="{$item.group_id}">{$item.title}</option>
+                    {/volist}
+                </select>
+            </div>
+
+        </div>
+         <div id="myTabContent" class="tab-content">
+
+                <div class="erweima" id="qrCodeDiv">
+
+
+
+                </div>
+                <div id="output"></div>
+         </div>
+    </div>
+
+</div>
+<script src="/assets/js/jquery-1.6.1.min.js"></script>
+ <script src="/assets/js/jquery.qrcode.min.js"></script>
+
+
+<script>
+
+const selectElement = document.getElementById('mySelect');
+const outputDiv = document.getElementById('output');
+
+
+// 页面加载完成后自动选择第一个选项
+document.addEventListener('DOMContentLoaded', function() {
+    if (selectElement.options.length > 0) {
+        // 设置默认选中第一个选项
+        selectElement.selectedIndex = 0;
+        // 手动触发change事件
+        const event = new Event('change');
+        selectElement.dispatchEvent(event);
+    }
+});
+
+
+selectElement.addEventListener('change', function(event) {
+    const selectedValue = 'https://bingocn.wobeis.com/otc/#/?id=' + event.target.value;
+    outputDiv.textContent = `团队邀请链接: ${selectedValue}`;
+
+    if (selectedValue) {
+        // 清空之前的二维码
+        jQuery("#qrCodeDiv").empty();
+        
+        jQuery(function () {
+            jQuery("#qrCodeDiv").qrcode({
+                width: 300,
+                height: 300,
+                text: selectedValue,
+                correctLevel: 0
+            });
+        });
+    } else {
+        outputDiv.textContent = 'No option selected.';
+    }
+});
+</script>
+
+<style>
+    .erweima{
+        width: 400px;
+        height: 400px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+</style>

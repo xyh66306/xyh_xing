@@ -7,14 +7,6 @@
 						<u-tag :type="index == cfg ? 'primary' : 'info'" plain :text="item.name" @click="setCfg(index)"></u-tag>
 					</view>
 				</view>
-				<view class="box" v-if="cfgs[cfg] && cfgs[cfg].addr">
-					<u-image :src="cfgs[cfg].qr" width="160" height="160"></u-image>
-					<view class="copy">
-						<view class="addr">{{cfgs[cfg].addr}}</view>
-						<u-icon name="share-square" size="16" color="primary"></u-icon>
-					</view>
-					<view class="tip">每次托管钱包地址可能不同，请勿直接向以前的地址充值，以免财产损失</view>
-				</view>
 			</view>
 			<view class="item">
 				<view class="title">哈希值</view>
@@ -92,7 +84,12 @@
 					diqu:this.user.diqu
 				}).then(res => {
 					if(res.code == 1) {
-						this.cfgs = res.data;
+						// this.cfgs = res.data;
+						res.data.forEach(e=>{
+							if(e.addr){
+								this.cfgs.push(e)
+							}
+						})
 					}else{
 						uni.$u.toast(res.msg);
 					}

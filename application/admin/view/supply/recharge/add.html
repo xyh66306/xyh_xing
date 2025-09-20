@@ -1,0 +1,48 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">类型:</label>
+        <div class="col-xs-12 col-sm-8">
+            <select id="type" name="type" class="form-control">
+                <option value="">请选择通道类型</option>
+                <option value="USDT-TRC20">USDT-TRC20</option>
+            </select>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-usdt" class="form-control" step="0.0001" name="row[usdt]" type="number" value="0.0000">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Hash')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-hash" class="form-control" name="row[hash]" type="text">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pinzheng_image')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-pinzheng_image" class="form-control" size="50" name="row[pinzheng_image]" type="text">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-pinzheng_image" class="btn btn-danger faupload" data-input-id="c-pinzheng_image" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/webp" data-multiple="false" data-preview-id="p-pinzheng_image"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                    <span><button type="button" id="fachoose-pinzheng_image" class="btn btn-primary fachoose" data-input-id="c-pinzheng_image" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-pinzheng_image"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-pinzheng_image"></ul>
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>

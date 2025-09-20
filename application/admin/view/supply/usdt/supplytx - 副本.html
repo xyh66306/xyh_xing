@@ -1,0 +1,47 @@
+<div class="panel panel-default panel-intro">
+
+    <div class="container-fluid">
+        <h1>提现订单</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>通道</th>
+                    <th>提现数量</th>
+                    <th>提现手续费率</th>
+                    <th>充值地址</th>
+                    <th>状态</th>
+                    <th>提现时间</th>
+                    <th>管理确认时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                {foreach name="list" item="vo"}
+                <tr>
+                    <td>{$vo.order_id}</td>
+                    <td>{$vo.type}</td>
+                    <td>{$vo.usdt}</td>
+                    <td>{$vo.fee}</td>
+                    <td>{$vo.hash}</td>
+                    <td>
+                        {if condition="$vo.pay_status==2"}
+                            <span class="label label-error">待审核</span>
+                        {elseif condition="$vo.pay_status==3" /}
+                            <span class="label label-success">完成</span>    
+                        {else /}
+                            <span class="label label-danger">待处理</span>    
+                        {/if}
+                    </td>
+                    <td>{$vo.createtime}</td>
+                    <td>{$vo.updatetime}</td>
+                </tr>
+                {/foreach}
+                <tr>
+                    <td colspan="7">
+                       {$list->render()}
+                    </td>
+                </tr>
+            </tbody>       
+        </table>
+    </div>
+</div>
