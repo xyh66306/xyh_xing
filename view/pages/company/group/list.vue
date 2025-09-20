@@ -48,7 +48,7 @@
 				teamLst:[],
 			}
 		},
-		onLoad() {
+		onShow() {
 			this.getTeam();
 		},
 		methods:{

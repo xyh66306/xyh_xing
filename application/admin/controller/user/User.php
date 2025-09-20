@@ -95,23 +95,26 @@ class User extends Backend
                     $map['group_id'] = $group;
                 }
                 $list = $this->model
-                    ->with(['group','admingroup'])
+                    ->with(['group','invite'])
                     ->where($where)
                     ->where($map)
                     ->order($sort, $order)
                     ->paginate($limit);
             } else {
                 $list = $this->model
-                    ->with(['group','admingroup'])
+                    ->with(['group','invite'])
                     ->where($where)
                     ->order($sort, $order)
                     ->paginate($limit);
             }
 
             foreach ($list as $row) {
-                $row->visible(['id','bianhao','nickname','email','usdt','usdt_dj','sfz_fimage','sfz_bimage','sfz_pimage','createtime','status','sfz_status','diqu','pay_status','agent_group_id']);
+                $row->visible(['id','bianhao','nickname','email','usdt','usdt_dj','sfz_fimage','sfz_bimage','sfz_pimage','createtime','status','sfz_status','diqu','pay_status','agent_group_id','invite']);
                 $row->visible(['group']);
 				$row->getRelation('group')->visible(['name']);
+
+                $row->visible(['invite']);
+				$row->getRelation('invite')->visible(['nickname']);                
                 // $row->visible(['admingroup']);
 				// $row->getRelation('admingroup')->visible(['title']);                
             }

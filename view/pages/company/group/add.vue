@@ -2,6 +2,14 @@
 	<view>
 		<view class="item">
 			<view class="left">
+				团长Id：
+			</view>
+			<view class="right">
+				<input type="text" v-model="team_user_id" :disabled="disabled" placeholder="请输入团长Id" class="input" />
+			</view>
+		</view>		
+		<view class="item">
+			<view class="left">
 				团队名称：
 			</view>
 			<view class="right">
@@ -9,7 +17,7 @@
 			</view>
 		</view>
 		<view class="addbtn">
-			<u-button type="primary" @click="addTeam" shape="circle">立即创建</u-button>
+			<u-button type="primary" @click="addTeam" shape="circle">{{title}}</u-button>
 		</view>
 	</view>
 </template>
@@ -18,7 +26,11 @@
 		data() {
 			return {
 				id:'',
-				teamName: ''
+				saveTit:['立即创建','立即保存'],
+				title:'',
+				team_user_id:'',
+				teamName: '',
+				disabled:false
 			}
 		},
 		onLoad(e) {
@@ -28,6 +40,10 @@
 				})
 				this.id = e.id;
 				this.getInfo();
+				this.title = this.saveTit[1]
+				this.disabled = true
+			} else {
+				this.title = this.saveTit[0]
 			}
 		},
 		methods: {
@@ -36,6 +52,7 @@
 					id:this.id,
 				}).then(res => {
 					if(res.code==1){
+						this.team_user_id = res.data.team_user_id;
 						this.teamName = res.data.name;
 					}else{
 						uni.$u.toast(res.msg);	
@@ -48,14 +65,36 @@
 				if(!this.teamName){
 					return uni.$u.toast("团队名称不能为空");	
 				}
-				uni.$u.http.post('/api/team/add', {
-					name:this.teamName,
-				}).then(res => {
-					uni.$u.toast(res.msg);	
-					uni.navigateBack()
-				}).catch(res => {
-					console.log(res)
-				});
+				if(!this.team_user_id){
+					return uni.$u.toast("队长id不能为空");	
+				}
+				if(this.id){
+					uni.$u.http.post('/api/team/edit', {
+						id:this.id,
+						name:this.teamName,
+						team_user_id:this.team_user_id
+					}).then(res => {
+						uni.$u.toast(res.msg);
+						if(res.code==1){
+							uni.navigateBack()
+						}	
+					}).catch(res => {
+						console.log(res)
+					});
+				} else {
+					uni.$u.http.post('/api/team/add', {
+						name:this.teamName,
+						team_user_id:this.team_user_id
+					}).then(res => {
+						uni.$u.toast(res.msg);
+						if(res.code==1){
+							uni.navigateBack()
+						}						
+					}).catch(res => {
+						console.log(res)
+					});
+				}
+
 			}
 		}
 	}

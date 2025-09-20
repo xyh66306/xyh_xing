@@ -147,4 +147,11 @@ class User extends Model
         return $this->belongsTo('app\admin\model\agent\Group', 'agent_group_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 
+    public function invite()
+    {
+        return $this->belongsTo('app\admin\model\user\User', 'invite', 'id', [], 'LEFT')->setEagerlyType(0);
+    }
+
+
+
 }

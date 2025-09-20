@@ -67,4 +67,13 @@ class Index extends Api
     }
 
 
+    public function getBaseInfo()
+    {
+        $data = [
+            'tbpay_switch' => config('site.tbpay_switch')
+        ];
+        
+        $this->success('', $data);
+    }
+
 }

@@ -50,6 +50,7 @@
 		},
 		onShow() {
 			this.getUserInfo();
+			this.getBaseConfig();
 		},			
 		methods: {
 			getUserInfo(){
@@ -59,6 +60,13 @@
 					}
 				})
 			},
+			getBaseConfig(){
+				uni.$u.http.post('/api/index/getBaseInfo').then((res) => {
+					if(res.code == 1) {
+						this.tbpay_switch = res.data.tbpay_switch
+					}
+				})
+			}
 		}
 	}
 </script>

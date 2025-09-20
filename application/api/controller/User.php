@@ -16,6 +16,7 @@ use app\admin\model\user\Usdt as UsdtModel;
 use fast\Random;
 use think\Config;
 use think\Validate;
+use think\Db;
 
 /**
  * 会员接口
@@ -191,12 +192,18 @@ class User extends Api
         }
         $sparent_id = $puserInfo['sparent'];
 
+        $agent_group_id = $puserInfo['agent_group_id'];
+        if($puserInfo['group_id'] == 3){
+            $agent_group_id = $puserInfo['id'];
+        }
+
         $ret = $this->auth->register($username, $password, $email, $mobile, [
             'nickname' => $nickname,
             'invite' => $invite,
             'group_id'=>1,
             'diqu'=>$diqu,
             'access_key' => $supplyInfo['access_key'],
+            'agent_group_id'=>$agent_group_id
             // 'sfz_f' => $sfz_f,
             // 'sfz_b' => $sfz_b,
             // 'sfz_p' => $sfz_p,
@@ -815,10 +822,22 @@ class User extends Api
         $sparent = $this->auth->sparent;
 
 
-        $list = $userModel->field("id,email,nickname")->where("sparent","like","%".$sparent."%")->where("id","<>",$user_id)->page($page)->select();
+        $list = $userModel->field("id,nickname,email,pay_status,invite,status,pay_status,agent_group_id")->where('group_id',1)->where("sparent","like","%".$sparent."%")->where("id","<>",$user_id)->order('id desc')->page($page)->select();
 
         if(!$list){
             $this->error("暂无数据");
+        }
+        foreach ($list as $key => $value) {
+            $status_txt = '';
+            if($value['status'] == 'hidden'){ 
+                $status_txt = '账户待审核';
+            }elseif($value['pay_status'] == 'hidden'){
+                $status_txt = '身份证待审核';
+            }else{
+                $status_txt = '启用';
+            }
+            $list[$key]['status_txt'] = $status_txt;
+            $list[$key]['teamname'] = Db::name("user_team")->where("team_user_id",$value['agent_group_id'])->value("name");
         }
         $data['count'] = $userModel->where("sparent","like","%".$sparent."%")->where("id","<>",$user_id)->count("id");
         $data['list'] = $list;

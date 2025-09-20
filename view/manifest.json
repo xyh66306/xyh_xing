@@ -115,6 +115,9 @@
         },
         "devServer" : {
             "https" : false
-        }
+        },
+		  "usingComponents": {
+			"u-table": "/uview-ui/components/u-table/u-table"
+		  }		
     }
 }
