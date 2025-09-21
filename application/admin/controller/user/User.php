@@ -241,10 +241,14 @@ class User extends Backend
                 if($row['group_id'] == 2 && $pinfo['group_id'] == 1){
                     $this->error("邀请上级不能是交易员类型");
                 }
+                $agent_group_id = $pinfo['agent_group_id'];
+                if($pinfo['group_id']==3){
+                    $agent_group_id = $params['invite'];
+                }
 
                 $sparent_id = "A".$ids."A".",".$pinfo['sparent'];
                 $sparent_id = trim($sparent_id,',');
-                $userModel->update(['sparent'=>$sparent_id],['id'=>$ids]);
+                $userModel->update(['sparent'=>$sparent_id,'invite'=>$params['invite'],'agent_group_id'=>$agent_group_id],['id'=>$ids]);
                 $this->addRebate($ids,$params['invite']);
             }else{
                 $this->error("邀请码错误");

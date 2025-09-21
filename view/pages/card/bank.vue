@@ -1,24 +1,25 @@
 <template>		
 	<view class="wrap">
-		<view class="form">
+		<view class="form">			
+			<view class="item">
+				<view class="left">银行账户：</view>	
+				<view class="right">
+					<input type="text" v-model="bank_nums" focus @blur="checkCard()" class="input" placeholder="请输入银行账户"  placeholder-class="placeholder"/>
+				</view>
+			</view>	
 			<view class="item">
 				<view class="left">姓名：</view>	
 				<view class="right">
 					<input type="text" v-model="name" class="input" placeholder="请输入姓名" placeholder-class="placeholder"/>
 				</view>
-			</view>		
+			</view>				
 			<view class="item">
 				<view class="left">银行名称：</view>	
 				<view class="right">
 					<input type="text" v-model="bank_name" class="input" placeholder="请输入银行名称"  placeholder-class="placeholder"/>
+					
 				</view>
-			</view>			
-			<view class="item">
-				<view class="left">银行账户：</view>	
-				<view class="right">
-					<input type="text" v-model="bank_nums" class="input" placeholder="请输入银行账户"  placeholder-class="placeholder"/>
-				</view>
-			</view>	
+			</view>				
 			<view class="item">
 				<view class="left">支行名称：</view>	
 				<view class="right">
@@ -46,7 +47,7 @@
 				</view>
 			</view>	
 		</view>
-		<u-button type="primary" @click="submit" shape="circle">确认提交</u-button>
+		<u-button type="primary" @click="submit" :disabled="disabled" shape="circle">确认提交</u-button>
 	</view>
 </template>
 
@@ -60,7 +61,6 @@
 				bank_name:'',
 				bank_nums:'',
 				bank_zhmc:'',
-				bank_zhdz:'',
 				radiolist1: [
 					  {
 						name: '启用',
@@ -73,7 +73,8 @@
 					  disabled: false
 					}
 				],
-				radiovalue1: 'normal',				
+				radiovalue1: 'normal',	
+				disabled:false,
 			}
 		},
 		onLoad(e) {
@@ -83,6 +84,22 @@
 			}
 		},
 		methods:{
+			// 判断获取银行卡类型
+			checkCard () {
+				if (this.bank_nums) {
+					let data = {
+						card_code: this.bank_nums
+					}
+					uni.$u.http.post('/api/bank/index',data).then(res => {
+						if(res.code == 1) {
+							this.bank_name = res.data.name
+						}else{
+							this.disabled = true;
+							return uni.$u.toast(res.msg);
+						}
+					})	
+				}
+			},			
 			  radioChange(n) {
 				console.log('radioChange', n);
 			  },			
@@ -119,7 +136,6 @@
 					bank_name: this.bank_name,
 					bank_nums: this.bank_nums,
 					bank_zhmc:this.bank_zhmc,
-					bank_zhdz:this.bank_zhdz,
 					status:this.radiovalue1
 				}).then(res => {
 					if(res.code == 1) {

@@ -8,6 +8,7 @@ use app\common\model\User;
 use app\common\model\user\Bankcard;
 use app\common\model\user\Payewm;
 use app\common\model\order\Rujin;
+use app\common\model\Bank;
 use app\common\model\order\Chujin;
 use app\common\model\Bi as BiModel;
 use app\common\model\company\Profit as companyProfit;
@@ -25,10 +26,10 @@ class Demo extends Frontend
     public function index()
     {
 
-            // $Usdtlog = new Usdtlog();
-            // $usdt = '1987.4474';
-            // $orderid = 'f540827457';
-            // $Usdtlog->addtxLog('1250803358',$usdt,2,$orderid,2);
+        // $Usdtlog = new Usdtlog();
+        // $usdt = '1987.4474';
+        // $orderid = 'f540827457';
+        // $Usdtlog->addtxLog('1250803358',$usdt,2,$orderid,2);
 
         // $model = new Chujin();
         // $list = $model->select();
@@ -54,13 +55,13 @@ class Demo extends Frontend
         //     $companyProfit2->addLog($row['usdt'],$row['user_fee'],2,1,1,$row['orderid']); 
         // }
         $model = new Rujin();
-        $list = $model->where('pay_status',4)->select();
+        $list = $model->where('pay_status', 4)->select();
 
-        foreach ($list as $k => $row) { 
+        foreach ($list as $k => $row) {
             $companyProfit1 = new companyProfit();
-            $companyProfit1->addLog($row['usdt'],$row['supply_fee'],1,3,1,$row['orderid']);   
+            $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 1, 3, 1, $row['orderid']);
             $companyProfit2 = new companyProfit();
-            $companyProfit2->addLog($row['usdt'],$row['user_fee'],1,1,1,$row['orderid']); 
+            $companyProfit2->addLog($row['usdt'], $row['user_fee'], 1, 1, 1, $row['orderid']);
         }
 
 
@@ -68,38 +69,11 @@ class Demo extends Frontend
         // return $this->view->fetch();
     }
 
-    // public function test()
-    // {
-    //     $Rujin = new Rujin();
-    //     $list = $Rujin->where('orderid', 46790)->select();
-    //     $BiModel = new BiModel();
-    //     $info = $BiModel->where(['default' => 1, 'status' => 1])->find();
+    public function test()
+    {
 
-    //     foreach ($list as $k => $v) {
 
-    //         $usdt = $v['amount'] / $info['duiru'];
-    //         if($v['diqu']==1){
-    //             $supply_rate = config('site.fee_dalu_supply_duiru');
-    //             $supply_fee = sprintf('%.4f',$usdt * $supply_rate/100);
-    //             $supply_usdt = $usdt - $supply_fee;
-
-    //             $user_rate = config('site.fee_dalu_user_duiru');
-    //             $user_fee = sprintf('%.4f',$usdt * $user_rate/100);
-    //             $user_usdt = $usdt + $user_fee;  //加上用户手续费 审核时候扣除
-
-    //         } elseif($v['diqu']==2){
-    //             $supply_rate = config('site.fee_jc_supply_duiru');
-    //             $supply_fee = sprintf('%.4f',$usdt * $supply_rate/100);
-    //             $supply_usdt = $usdt - $supply_fee;
-
-    //             $user_rate = config('site.fee_jc_user_duiru');
-    //             $user_fee = sprintf('%.4f',$usdt * $user_rate/100);
-    //             $user_usdt = $usdt + $user_fee;  //加上用户手续费 审核时候扣除
-
-    //         }
-    //         $Rujin->update(['supply_fee'=>$supply_fee,'supply_usdt'=>$supply_usdt,'user_fee'=>$user_fee,'user_usdt'=>$user_usdt],['id'=>$v['id']]);
-    //     }
-    // }
+    }
 
 
 
