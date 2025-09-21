@@ -1,13 +1,21 @@
 <template>
 	<view class="page">
 		<view class="item">
+			<view class="title">链名称</view>
+			<view class="input">
+				<view style="margin-right: 30rpx;" v-for="(item, index) in cfgs" :key="index">
+					<u-tag :type="index == cfg ? 'primary' : 'info'" plain :text="item.name" @click="setCfg(index)"></u-tag>
+				</view>
+			</view>
+		</view>		
+<!-- 		<view class="item">
 			<view class="title">收款方式</view>
 			<view class="input">
 				<view style="margin-right: 30rpx;" v-for="(item, index) in payType" :key="index">
 					<u-tag :type="index == payIndex ? 'primary' : 'info'" plain :text="item" @click="setPayType(index)"></u-tag>
 				</view>
 			</view>
-		</view>		
+		</view>	 -->	
 <!-- 		<view class="item">
 			<view class="title">提币地址</view>
 			<view class="input">
@@ -69,11 +77,13 @@
 				remarks: '',
 				user:{},
 				money:0,
-				rate:0,
+				rate:7.21,
 				huilv:0,
 				profit:0,
 				payType:[],
 				payIndex:0,
+				cfgs: [],
+				cfg: 0,
 			}
 		},
 		watch:{
@@ -84,8 +94,9 @@
 		},
 		onLoad() {
 			this.getUserInfo();
-			this.getPayLst();
-			this.getBiLst();
+			// this.getPayLst();
+			// this.getBiLst();
+			this.getCfg();
 		},
 		methods: {
 			setType(e) {
@@ -97,70 +108,37 @@
 			setPayType(index){
 				this.payIndex = index
 			},
+			getCfg() {			
+				uni.$u.http.post('/api/index/getRecharge',{
+					diqu:this.user.diqu
+				}).then(res => {
+					if(res.code == 1) {
+						// this.cfgs = res.data;
+						res.data.forEach((e,index)=>{
+							if(e.addr){
+								this.cfgs.push(e)								
+							}
+							if(index==0){
+								this.address = e.addr
+							}
+						})
+					}else{
+						uni.$u.toast(res.msg);
+					}
+				})
+			},		
+			setCfg(e) {
+				this.cfg = e;
+			},				
 			async getUserInfo(){
 				await uni.$u.http.post('/api/user/getUserInfo').then(res => {
 					if (res.code == 1) {
 						this.user = res.data;
-						this.money = res.data.money
+						this.money = res.data.usdt
 					} else {
 						uni.$u.toast(res.msg);
 					}
 				
-				}).catch(res => {
-					console.log(res)
-				});
-			},
-			async getBiLst(){
-				await uni.$u.http.post('/api/index/getBiLst', {
-					id: this.id,
-				}).then(res => {
-					if (res.code == 1) {
-						this.biArr = res.data
-						res.data.forEach(response=>{
-							if(response.default==1){
-								this.biData = response
-								this.huilv = response.duichu
-							}
-						})
-						this.getconfig();
-					} else {
-						uni.$u.toast(res.msg);
-					}
-				
-				}).catch(res => {
-					console.log(res)
-				});
-			},	
-			//获取收款账户
-			async getPayLst(){
-				await uni.$u.http.post('/api/cash/getPayType', {
-					id: this.id,
-				}).then(res => {
-					if (res.code == 1) {
-						this.payType = res.data.payType						
-					} else {
-						uni.$u.toast(res.msg);
-					}
-				
-				}).catch(res => {
-					console.log(res)
-				});
-			},					
-			getconfig(){
-				let type_ch = this.payType[this.payIndex]
-				let type = ''
-				if(type_ch=="银行卡"){
-					type = "back"
-				} else {
-					type = "ewm"
-				}
-				uni.$u.http.post('/api/cash/getConfig', {
-					bi_type:this.biData.name,
-					type:type
-				}).then(res => {
-					if (res.code == 1) {
-						this.rate = res.data.rate
-					}				
 				}).catch(res => {
 					console.log(res)
 				});
@@ -169,18 +147,10 @@
 				if(this.money<=0){
 					uni.$u.toast("请输入金额");
 				}
-				let type_ch = this.payType[this.payIndex]
+				let type_ch = this.cfgs[this.cfg]
 				let type = ''
-				if(type_ch=="银行卡"){
-					type = "bank"
-				} else if(type_ch=="微信") {
-					type = "wxpay"
-				} else if(type_ch=="支付宝") {
-					type = "alipay"
-				}
 				
 				uni.$u.http.post('/api/cash/addOrder', {
-					bi_type : this.biName,
 					pay_type: type,
 					usdt:this.num,
 					huilv:this.huilv,

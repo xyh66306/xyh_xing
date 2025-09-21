@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'Num'           => '数量',
+    'ActNum'        => '实际到账数量(USDT)',
+    'Num'           => '申请提币数量(USDT)',
     'Hash'          => '哈希值',
     'Createtime'    => '创建时间',
     'Updatetime'    => '更新时间',

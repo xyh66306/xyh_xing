@@ -716,12 +716,13 @@ class User extends Api
         $post['user_id'] = $this->auth->id;
         $post['status'] = 'hidden';
 
-        $rate = config('site.fee_chongzhi');
+        $rate = config('site.fee_chongzhi');    
         if($rate && $rate>0){
-            $post['fee'] = $post['num'] - $rate;
+            $post['fee'] = sprintf("%.4f",$post['num']*$rate/100);
         }else{
             $post['fee'] = 0;
         }
+        $post['act_num'] = $post['num']-$post['fee'];
         $post['bianhao'] = getOrderNo('withdraw');
         $UsdtModel = new UsdtModel();
         $res = $UsdtModel->allowField(true)->save($post);

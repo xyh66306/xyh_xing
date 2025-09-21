@@ -9,6 +9,12 @@
 				</view>
 			</view>
 			<view class="item">
+				<view class="title">地址</view>
+				<view class="input">
+					<u-input type="text" v-model="address" placeholder=""></u-input>
+				</view>
+			</view>			
+			<view class="item">
 				<view class="title">哈希值</view>
 				<view class="input">
 					<u-input type="text" v-model="hash" placeholder=""></u-input>
@@ -17,11 +23,19 @@
 			<view class="item">
 				<view class="title">数量</view>
 				<view class="input">
-					<u-input type="number" v-model="num" placeholder="实际到账数量">
+					<u-input type="number" v-model="num" placeholder="充值数量">
 						<template slot="suffix">USDT</template>
 					</u-input>
 				</view>
 			</view>		
+			<view class="item">
+				<view class="title">手续费</view>
+				<view class="input">
+					<u-input type="number" v-model="fee" disabled placeholder="充值手续费">
+						<template slot="suffix">USDT</template>
+					</u-input>
+				</view>
+			</view>				
 			<view class="item">
 				<view class="title">凭证</view>
 				<view class="input" >
@@ -40,7 +54,7 @@
 					<u-input v-model="remark" placeholder="备注内容,TXID等"></u-input>
 				</view>
 			</view>
-			<u-button type="primary" @click="submit()">确定已完成充币</u-button>
+			<u-button type="primary" @click="submit()">确定充币</u-button>
 	</view>
 </template>
 
@@ -57,12 +71,23 @@
 				hash:'',
 				num: '',
 				remark: '',
+				fee:0,
 				previewImage:true,
+				rate:0,
+				address:'',
 			}
 		},
 		onLoad() {
-			
 			this.getUserinfo();
+			this.getrate();
+		},
+		watch:{
+			num: {
+			    handler (newsval,oldval) {
+			       this.fee = (this.rate * newsval/100).toFixed(4)
+			    },
+			    deep: true
+			}
 		},
 		methods: {
 			getUserinfo(){
@@ -77,7 +102,20 @@
 				})
 			},
 			setCfg(e) {
-				this.cfg = e;
+				let that = this
+				that.cfg = e;
+				that.address = that.cfgs[e].addr
+			},
+			getrate(){
+				uni.$u.http.post('/api/index/getcbrate',{
+					diqu:this.user.diqu
+				}).then(res => {
+					if(res.code == 1) {
+						this.rate = res.data;
+					}else{
+						uni.$u.toast(res.msg);
+					}
+				})
 			},
 			getCfg() {			
 				uni.$u.http.post('/api/index/getRecharge',{
@@ -85,9 +123,12 @@
 				}).then(res => {
 					if(res.code == 1) {
 						// this.cfgs = res.data;
-						res.data.forEach(e=>{
+						res.data.forEach((e,index)=>{
 							if(e.addr){
-								this.cfgs.push(e)
+								this.cfgs.push(e)								
+							}
+							if(index==0){
+								this.address = e.addr
 							}
 						})
 					}else{

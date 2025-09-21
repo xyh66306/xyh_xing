@@ -1,3 +1,9 @@
+/*
+ * @Description: 
+ * @Version: 1.0
+ * @Autor: Xyh
+ * @Date: 2025-09-21 10:11:11
+ */
 define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
 
     var Controller = {
@@ -27,6 +33,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {checkbox: true},
                         {field: 'bianhao', title: __('Bianhao')},
                         {field: 'user.nickname', title: __('User.nickname'), operate: 'LIKE'},
+                        {field: 'act_num', title: __('ActNum')},
                         {field: 'num', title: __('Num')},
                         {field: 'fee', title: __('Fee')},
                         {field: 'hash', title: __('Hash'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},

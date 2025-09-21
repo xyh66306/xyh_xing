@@ -22,6 +22,11 @@ class Index extends Api
         $this->success('请求成功');
     }
 
+    public function getcbrate(){
+        $rate = config('site.fee_chongzhi');
+        $this->success('请求成功',$rate);
+    }
+
     public function getRecharge()
     {
         $diqu = input('diqu',1);

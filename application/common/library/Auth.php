@@ -285,6 +285,29 @@ class Auth
     }
 
     /**
+     * 修改支付密码
+     */
+    public function changepaypwd($newpassword)
+    {
+        if (!$this->_logined) {
+            $this->setError('You are not logged in');
+            return false;
+        }
+        Db::startTrans();
+        try {
+
+            $newpassword = $this->getEncryptPassword($newpassword, $this->_user->salt);
+            $this->_user->save(['loginfailure' => 0, 'paypwd' => $newpassword]);
+            Db::commit();
+        } catch (Exception $e) {
+            Db::rollback();
+            $this->setError($e->getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * 直接登录账号
      * @param int $user_id
      * @return boolean

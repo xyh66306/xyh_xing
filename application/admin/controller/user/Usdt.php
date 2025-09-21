@@ -4,6 +4,7 @@ namespace app\admin\controller\user;
 
 use app\common\controller\Backend;
 use app\admin\model\user\usdt\Log as UsdtLog;
+use app\common\model\company\Profit;
 use think\Db;
 use think\db\exception\BindParamException;
 use think\db\exception\DataNotFoundException;
@@ -112,8 +113,11 @@ class Usdt extends Backend
 
             if($params['status'] == 'normal' && $row['status'] == 'hidden'){
                 $usdtLog = new UsdtLog();
-                $amount = $params['num'] - $row['fee'];
-                $usdtLog->addLog($row['user_id'],2,1,$amount);
+                $usdtLog->addLog($row['user_id'],2,1,$row['act_num']);
+
+                //公司资产盈利
+                $profitModel = new Profit();
+                $profitModel->addLog($row['num'],$row['fee'],6,1,1,$row['bianhao']);
             }
 
             //是否采用模型验证
