@@ -149,11 +149,9 @@
 				let type_ch = this.cfgs[this.cfg]
 				let type = ''
 				
-				uni.$u.http.post('/api/cash/addOrder', {
+				uni.$u.http.post('/api/user/withdraw', {
 					pay_type: type,
 					usdt:this.num,
-					huilv:this.huilv,
-					rate:this.rate,
 					remarks:this.remarks,
 				}).then(res => {
 					if (res.code == 1) {
