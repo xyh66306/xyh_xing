@@ -37,12 +37,12 @@
 			</view>
 			<view class="tip">当前余额：<text class="u-primary">{{money}}</text></view>
 		</view>
-		<view class="item">
+<!-- 		<view class="item">
 			<view class="title">汇率</view>
 			<view class="input">
 				<u-input v-model="huilv" placeholder="当前汇率" readonly></u-input>
 			</view>
-		</view>		
+		</view>		 -->
 		<view class="item">
 			<view class="title">手续费</view>
 			<view class="input">
@@ -73,7 +73,7 @@
 				biName:'TWD',
 				addr: '',
 				num: '',
-				fee: 0,
+				fee: 5,
 				remarks: '',
 				user:{},
 				money:0,
@@ -88,8 +88,7 @@
 		},
 		watch:{
 			num(newValue,oldValue){
-				this.profit = ((newValue * (100-this.rate)/100) * this.huilv).toFixed(2)
-				this.fee = (newValue * this.rate / 100 ).toFixed(2)
+				this.profit = (newValue - this.fee).toFixed(4)
 			}
 		},
 		onLoad() {
