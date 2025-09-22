@@ -268,11 +268,13 @@ class Rujin extends Api
         if($ids){
             $list = $model->where($where)->where('pay_status', 'in', $ids)->page($page)->order("id desc")->select();
             $data['count'] = $model->where($where)->where('pay_status', 'in', $ids)->count("id");
-
+            $data['user_usdt_count'] = $model->where($where)->where('pay_status', 'in', $ids)->sum('user_usdt');
+            $data['amount_count'] = $model->where($where)->where('pay_status', 'in', $ids)->sum('amount');
         } else {
             $list = $model->where($where)->page($page)->order("id desc")->select();
             $data['count'] = $model->where($where)->count("id");
-
+            $data['user_usdt_count'] = $model->where($where)->sum('user_usdt');
+            $data['amount_count'] = $model->where($where)->sum('amount');
         }
 
         
@@ -311,6 +313,8 @@ class Rujin extends Api
         }
 
         $data['list'] = $list;
+
+        
 
         $this->success('', $data);
     }

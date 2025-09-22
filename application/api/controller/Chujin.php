@@ -277,7 +277,8 @@ class Chujin extends Api
             $list[$key]['createtime'] = date("Y-m-d H:i:s",$value['updatetime']);
 
         }
-
+        $data['user_usdt_count'] = $ChujinModel->where($where)->sum('user_usdt');
+        $data['amount_count'] = $ChujinModel->where($where)->sum('withdrawAmount');
         $data['count'] = $ChujinModel->where($where)->count("id");
         $data['list'] = $list;
 

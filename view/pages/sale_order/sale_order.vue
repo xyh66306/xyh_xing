@@ -28,6 +28,16 @@
 
 				</view>
 			</view>
+			<view class="totalArea">
+				<u-row customStyle="margin-bottom: 10px">
+					<u-col span="6">
+						<text class="u-line-1" type="info">累计金额：{{amount_count}}</text>
+					</u-col>
+					<u-col span="6">
+						<text class="u-line-1" type="primary">累计USDT：{{user_usdt_count}}</text>
+					</u-col>
+				</u-row>
+			</view>			
 		</view>
 		<view class="empty" v-else>
 			<u-empty mode="order" icon="/static/order.png"></u-empty>
@@ -44,6 +54,8 @@
 				state: '',
 				page:1,
 				lst:[],
+				amount_count:0,
+				user_usdt_count:0,				
 			}
 		},		
 		onLoad() {
@@ -75,6 +87,8 @@
 				}).then(res => {
 					if (res.code == 1) {
 						const _list = res.data.list;
+						this.user_usdt_count = res.data.user_usdt_count
+						this.amount_count = res.data.amount_count
 						this.lst = [...this.lst, ..._list];
 						if (res.data.count > this.lst.length) {
 							this.loadStatus = 'more';
@@ -101,6 +115,13 @@
 </script>
 
 <style lang="scss">
+	
+.totalArea {
+	font-size: 28rpx;
+	margin-top: 30rpx;
+	padding: 0 30rpx;
+}	
+	
 	.states {
 		padding: 20rpx 30rpx;
 		background-color: #fff;
