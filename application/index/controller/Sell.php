@@ -22,110 +22,49 @@ class Sell extends Frontend
 
     public function index()
     {
-        $url = "https://bingocn.wobeis.com/openapi/sell/index";
-        $header = [
-            'accesskey' => '1250803358',
-            'randomstr' => '5a12f50988688f1d1b5951e7e2493c74',
-            'gmtrequest' => time(),
-        ];
-        $access_secret = '4dc96ddbcc1190b66b478e2b98887bad';
-        $sign = $this->makeSign($header, $access_secret);
-        $header['signature'] = $sign;
+        $url = "http://100.24.115.218/client/tracnce";
+
+        $pickupUrl = "http://bingocn.wobeis.com/index/sell/paysuccess";
+        $signType = "md5";
+        $receiveUrl = "http://bingocn.wobeis.com/index/sell/callback";
+        $orderNo = '555666';
+        $customerId = '393';
+        $orderCurrency = "CNY";
+        $orderAmount = 100;
+        $exchangeRate = 7.13;
+        $md5_key = 'sgFTS4BbMg';
+
+        $str = $pickupUrl .$receiveUrl. $signType. $orderNo. $orderAmount.$exchangeRate.$orderCurrency.$customerId.$md5_key;
+        $sign = md5( $str);
 
 
-        $data['realName'] = '如孜·芽生';
-        $data['cardNumber'] = '6216698300007335877';
-        $data['bankName'] = '中国银行';
-        $data['bankBranchName'] = '中国银行库车市支行营业部';
-        $data['withdrawCurrency'] = 'CNY';
-        $data['fiatCurrency'] = 'CNY';
-        $data['withdrawAmount'] = 1426;
-        $data['requiresReview'] = 1;    //是否需要审核 1=是,2=否
-        $data['merchantOrderNo'] = time();
-        $data['webhookUrl'] = "https://bingocn.wobeis.com/openapi/sell/payOutCallback";
-
-        $res = $this->postCurl($url, $data, $header);
-
-        var_dump($res);
-    }
-
-
-    public function list()
-    {
-
-        $url = "https://bingocn.wobeis.com/openapi/sell/list";
         $params = [
-            'access_key' => '1250730111',
-            'randomStr' => 'cc17c30cd111c7215fc8f51f8790e0e1',
-            'gmtRequest' => time(),
+            'receiveUrl' => $receiveUrl,
+            'orderNo' => $orderNo,
+            'customerId'=> $customerId,
+            'orderCurrency'=> $orderCurrency,
+            'orderAmount'  =>$orderAmount,
+            'sign' =>$sign,
+            'signType'=> $signType,
+            'pickupUrl'=> $pickupUrl,
+            'exchangeRate'=>$exchangeRate,
         ];
-        $access_secret = '5a12f50988688f1d1b5951e7e2493c74';
-        $sign = $this->makeSign($params, $access_secret);
-        $data = $params;
-        $data['access_secret'] = $access_secret;
-        $data['signature'] = $sign;
 
-        $data['page'] = 1;
-        $data['diqu'] = 1;
+        $urls = http_build_query($params);
 
-        $res = $this->postCurl($url, $data);
+        echo $url.'?'.$urls;
 
-        var_dump($res);
-    }
-
-    public function detail()
-    {
-
-        $url = "https://bingocn.wobeis.com/openapi/sell/detail";
-        $params = [
-            'access_key' => '1250730111',
-            'randomStr' => 'cc17c30cd111c7215fc8f51f8790e0e1',
-            'gmtRequest' => time(),
-        ];
-        $access_secret = '5a12f50988688f1d1b5951e7e2493c74';
-        $sign = $this->makeSign($params, $access_secret);
-        $data = $params;
-        $data['access_secret'] = $access_secret;
-        $data['signature'] = $sign;
-
-        $data['orderid'] = 'o202508091357228849';
-
-        $res = $this->postCurl($url, $data);
-
-        var_dump($res);
-    }
-
-    /**
-     * 购买方
-     * 预下单
-     */
-    public function preorder()
-    {
-
-        $url = "https://bingocn.wobeis.com/openapi/sell/preorder";
-        $params = [
-            'access_key' => '1250730111',
-            'randomStr' => 'cc17c30cd111c7215fc8f51f8790e0e1',
-            'gmtRequest' => time(),
-        ];
-        $access_secret = '5a12f50988688f1d1b5951e7e2493c74';
-        $sign = $this->makeSign($params, $access_secret);
-        $data = $params;
-        $data['access_secret'] = $access_secret;
-        $data['signature'] = $sign;
-
-        $data['orderid'] = 'o202508120903344567';
-        // $data['business_id'] = '95411145';
-        // $data['type'] = 'OTC-20';
-        // $data['address'] = '9966454sfdsdfsafsadffs';
-        // $data['backurl'] = "https://bingocn.wobeis.com/index/index/test";
-
-        $res = $this->postCurl($url, $data);
-
-        var_dump($res);
+        // $res = $this->postCurl($url.'?'.$urls,$params,[],"GET");
+        // echo $res;
     }
 
 
+    public function callback()
+    { 
+        $data = input('post.'); 
+
+        recordLogs('sell_callback', $data);
+    }
 
 
     public function makeSign($params = [], $secret = '')
