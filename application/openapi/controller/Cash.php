@@ -142,7 +142,7 @@ class Cash extends Api
             $BiModel = new BiModel();
             $info = $BiModel->where(['default'=>1,'status'=>1])->find();
 
-            $usdt = $params['amount'] / $info['duiru'];
+            $usdt = $params['amount'] / $info['duiru'];     //CNY 转 USDT(接收的cny/兑入汇率7.26)
             if($params['diqu']==1){
                 $supply_rate = config('site.fee_dalu_supply_duiru');
                 $supply_fee = $supply_rate && $supply_rate>0 ? sprintf('%.4f',$usdt * $supply_rate/100):0;

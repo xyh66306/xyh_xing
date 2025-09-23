@@ -147,10 +147,9 @@
 					uni.$u.toast("请输入金额");
 				}
 				let type_ch = this.cfgs[this.cfg]
-				let type = ''
 				
 				uni.$u.http.post('/api/user/withdraw', {
-					pay_type: type,
+					pay_type: type_ch.name,
 					usdt:this.num,
 					remarks:this.remarks,
 				}).then(res => {

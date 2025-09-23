@@ -11,6 +11,7 @@ use app\common\model\UsdtLog;
 use app\common\model\UserBankcard;
 use app\common\model\UserRebate;
 use app\common\model\Supply;
+use app\common\model\user\Withdraw;
 use app\common\model\Bi;
 use app\admin\model\user\Usdt as UsdtModel;
 use fast\Random;
@@ -807,6 +808,53 @@ class User extends Api
 
         $data['list'] = $list;
         $this->success("获取成功",$data);
+    }
+
+    /**
+     * 用户提币
+     * @return void
+     */
+    public function withdraw(){
+
+        $pay_type = input('pay_type','');
+        $usdt = $this->request->post("usdt",'');
+        $remarks = $this->request->post("remarks",'');
+
+        $fee = config('site.fee_ti');
+        $act_usdt = $usdt-$fee;
+
+        $userModel = new UserModel();
+        $info = $userModel->where("id",$this->auth->id)->find();
+        if(($info['usdt'] - $info['usdt_dj']) < $usdt){
+            $this->error("余额不足");
+        }
+
+
+        $withdrawModel = new Withdraw();
+        $params = [
+            "user_id"=>$this->auth->id,
+            "usdt"=>$usdt,
+            "fee"=>$fee,
+            "act_usdt"=>$act_usdt,
+            "pay_type"=>$pay_type,
+            "remarks"=>$remarks,
+            "status"=>'hidden',
+        ];
+        $res = $withdrawModel->allowField(true)->save($params);
+
+        if($res){
+
+            
+            //减去用户余额
+            $userModel->usdt($usdt,$this->auth->id,3,2,$remarks,'提现:'.$usdt);
+            //增加用户冻结余额
+            $userModel->usdt_dj($usdt,$this->auth->id,3,1,$remarks,'冻结:'.$usdt);
+
+            $this->success("添加成功");
+        }else{
+            $this->error("添加失败");
+        }
+
     }
 
 

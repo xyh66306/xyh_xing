@@ -95,10 +95,11 @@
     var huilv = document.getElementById('c-huilv');
     var usdt = document.getElementById('c-usdt');
     var supply_fee = document.getElementById('fee').value;
+    var fdsx = 10000;
 
     money.addEventListener('blur', function() {
-        var usdt = (money.value / huilv.value ).toFixed(4)
-        var fee = (usdt * supply_fee).toFixed(4);
+        var usdt = (Math.floor(money.value / huilv.value *fdsx)/fdsx ).toFixed(4)
+        var fee = (Math.floor(usdt * supply_fee * fdsx)/fdsx).toFixed(4);
         var supply_usdt = parseFloat(usdt) + parseFloat(fee);
 
         document.getElementById('c-usdt').value = usdt;
