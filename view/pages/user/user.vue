@@ -77,7 +77,7 @@
 		<view class="navs">
 			<u-cell-group>
 				<u-cell title="收款设置" isLink url="/pages/card/card"></u-cell>
-				<u-cell title="返佣设置" isLink url="/pages/userrebate/setting"></u-cell>
+				<u-cell title="返佣设置" isLink url="/pages/userrebate/setting" v-if="open_team"></u-cell>
 				<!-- <u-cell title="修改密码" isLink url="/pages/changepwd/changepwd"></u-cell> -->
 				<u-cell title="修改支付密码" isLink url="/pages/changepaypwd/changepaypwd"></u-cell>
 				<u-cell title="身份认证" isLink url="/pages/auth/auth" :value="user.sfz_status==1?'已认证' : user.sfz_status==2?'待审核':'未认证'"></u-cell>
