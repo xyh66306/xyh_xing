@@ -230,7 +230,6 @@ class Cash extends Api
 
     /***
      * 分佣
-     * data.pay_type = 支付方式:1=银行卡,2=支付宝,3=微信
      */
     public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
     {
@@ -265,6 +264,7 @@ class Cash extends Api
                 'rate'  => $rateInfo['rate'],
                 'money' => $money,
                 'type' => 1,
+                'source' => 1,
                 'level' => 1,
                 'status' => 2,
                 'chaoshi' => 1,

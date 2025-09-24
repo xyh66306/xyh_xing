@@ -185,6 +185,8 @@ class Chujin extends Api
             //添加用户金额
             $res3 =  $userModel->usdt($info['user_usdt'],$this->auth->id,7,1);
 
+            $this->commission($this->auth->id,$orderId,$info['merchantOrderNo'],$info['user_usdt']);
+
             if($res && $res2 && $res3){
                 Db::commit();                
             } else {
@@ -198,7 +200,7 @@ class Chujin extends Api
         }
         $this->success('上传成功');
 
-    }
+    } 
 
 
     /**
@@ -287,5 +289,61 @@ class Chujin extends Api
     }
 
 
+
+
+    /***
+     * 分佣
+     */
+    public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
+    {
+
+        $Commission = new Commission();
+        $userModel  = new UserModel();
+
+        $uinfo = $userModel->where("id", $user_id)->find();
+        $invite = $uinfo['invite'];
+
+        $userRebate = new UserRebate();
+
+        $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$invite,'churu'=>'duichu','type'=>'bank'])->find();
+        if(!$rateInfo){
+            return true;
+        }
+        $money = $number * $rateInfo['rate'] / 100;
+
+        if($money<=0){
+            return true;
+        }
+
+        Db::startTrans();
+        try {
+
+            $rebateData = [
+                'user_id' =>$user_id,
+                'p_userid' => $invite,
+                'fy_orderid' => $fy_orderid,
+                'p4b_orderid' => $p4b_orderid,
+                'number' => $number,
+                'rate'  => $rateInfo['rate'],
+                'money' => $money,
+                'type' => 1,
+                'source' => 2,
+                'level' => 1,
+                'status' => 2,
+                'chaoshi' => 1,
+                'ctime' => time(),
+                'utime' => time(),
+            ];
+            $Commission->save($rebateData);
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            $this->error('操作失败' . $e->getMessage());
+        }
+        return true;
+    }
 
 }
