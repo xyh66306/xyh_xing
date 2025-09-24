@@ -12,6 +12,7 @@ use app\common\model\UserPayewm;
 use app\common\model\UserRebate;
 use app\common\model\order\Rujin;
 use app\common\model\Task;
+use app\common\model\Commission;
 use think\Db;
 use think\Request;
 
@@ -76,10 +77,7 @@ class Cash extends Api
     public function index()
     { 
 
-        $ispay = config('site.ispay');
-        if($ispay && $ispay != '1'){
-            $this->error('系统维护中');
-        }
+
 
         $params = [
             'orderid'    => $this->request->param('orderid',''),
@@ -109,6 +107,13 @@ class Cash extends Api
             $where['id'] = '168017';
             $userInfo = $userModel->where($where)->order($order)->find();
         } else{
+
+            $ispay = config('site.ispay');
+
+            if($ispay && $ispay != '1'){
+                $this->error('系统维护中');
+            }
+
             $where['diqu'] = $params['diqu'];
             $where['status'] = "normal";
             $where['sfz_status'] = 1;
@@ -164,8 +169,10 @@ class Cash extends Api
             }
 
             $time = time();
+            $merchantOrderNo = 'o'.date("YmdHis",time()).rand(100000,999999);
+
              $data = [
-                'merchantOrderNo'=> 'o'.date("YmdHis",time()).rand(100000,999999),
+                'merchantOrderNo'=> $merchantOrderNo,
                 'user_id' => $userInfo['id'],
                 'orderid' => $params['orderid'],
                 'amount' => $params['amount'],
@@ -193,6 +200,9 @@ class Cash extends Api
 
 
             $res = $rujinModel->insert($data);
+
+
+            $this->commission($userInfo['id'],$merchantOrderNo,$params['orderid'],$usdt);
             
             $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setInc('sort',1);
             $UserBankcard->update(['sort'=>1],['id'=>$bankInfo['id']]);
@@ -216,6 +226,62 @@ class Cash extends Api
 
     }
 
+
+
+    /***
+     * 分佣
+     * data.pay_type = 支付方式:1=银行卡,2=支付宝,3=微信
+     */
+    public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
+    {
+
+        $Commission = new Commission();
+        $userModel  = new UserModel();
+
+        $uinfo = $userModel->where("id", $user_id)->find();
+        $invite = $uinfo['invite'];
+
+        $userRebate = new UserRebate();
+
+        $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$invite,'churu'=>'duiru','type'=>'bank'])->find();
+        if(!$rateInfo){
+            return true;
+        }
+        $money = $number * $rateInfo['rate'] / 100;
+
+        if($money<=0){
+            return true;
+        }
+
+        Db::startTrans();
+        try {
+
+            $rebateData = [
+                'user_id' =>$user_id,
+                'p_userid' => $invite,
+                'fy_orderid' => $fy_orderid,
+                'p4b_orderid' => $p4b_orderid,
+                'number' => $number,
+                'rate'  => $rateInfo['rate'],
+                'money' => $money,
+                'type' => 1,
+                'level' => 1,
+                'status' => 2,
+                'chaoshi' => 1,
+                'ctime' => time(),
+                'utime' => time(),
+            ];
+            $Commission->save($rebateData);
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            $this->error('操作失败' . $e->getMessage());
+        }
+        return true;
+    }
 
 
 }

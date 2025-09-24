@@ -660,6 +660,7 @@ class User extends Api
         } else {
             $ret = $userBankcard::create([
                 "user_id" => $this->auth->id,
+                'bianhao'=>getOrderNo('bank'),
                 "username"=>$name,
                 "type"=>$type,
                 "bank_name"=>$bank_name,

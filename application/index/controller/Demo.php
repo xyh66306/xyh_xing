@@ -14,6 +14,7 @@ use app\common\model\Bi as BiModel;
 use app\common\model\company\Profit as companyProfit;
 use app\admin\model\supply\Usdtlog;
 use think\Queue;
+use think\Db;
 
 class Demo extends Frontend
 {
@@ -71,6 +72,7 @@ class Demo extends Frontend
 
     public function test()
     {
+
 
 
     }

@@ -5,13 +5,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'user/usdt/index' + location.search,
-                    add_url: 'user/usdt/add',
-                    edit_url: 'user/usdt/edit',
-                    del_url: 'user/usdt/del',
-                    multi_url: 'user/usdt/multi',
-                    import_url: 'user/usdt/import',
-                    table: 'user_usdt',
+                    index_url: 'user/withdraw/index' + location.search,
+                    add_url: 'user/withdraw/add',
+                    edit_url: 'user/withdraw/edit',
+                    del_url: 'user/withdraw/del',
+                    multi_url: 'user/withdraw/multi',
+                    import_url: 'user/withdraw/import',
+                    table: 'user_withdraw',
                 }
             });
 
@@ -22,18 +22,18 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 pk: 'id',
                 sortName: 'id',
+                fixedColumns: true,
+                fixedRightNumber: 1,
                 columns: [
                     [
                         {checkbox: true},
-                        {field: 'bianhao', title: __('Bianhao')},
-                        {field: 'user.nickname', title: __('User.nickname'), operate: 'LIKE'},
-                        {field: 'act_num', title: __('ActNum')},
-                        {field: 'num', title: __('Num')},
-                        {field: 'fee', title: __('Fee')},
-                        {field: 'hash', title: __('Hash'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
-                        {field: 'pz_image', title: __('Pz_image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
-                        {field: 'type', title: __('Type')},
-                        {field: 'address', title: __('Address'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
+                        {field: 'id', title: __('Id')},
+                        {field: 'user_id', title: __('User_id')},
+                        {field: 'pay_type', title: __('Pay_type'), operate: 'LIKE'},
+                        {field: 'usdt', title: __('Usdt'), operate:'BETWEEN'},
+                        {field: 'fee', title: __('Fee'), operate:'BETWEEN'},
+                        {field: 'act_usdt', title: __('Act_usdt'), operate:'BETWEEN'},
+                        {field: 'remarks', title: __('Remarks'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.status},
