@@ -346,10 +346,9 @@ class Rujin extends Backend
                 $userModel = new UserModel();
                 $userModel->usdt_dj($row['user_usdt'],$row['user_id'], 6, 2);
 
-                //添加公司金额
-                // $companyProfit = new companyProfit();
-                // $companyProfit->addLog($row['supply_fee'],2,3,1,$row['orderid']);
+                // 增加代理商分润
 
+                //添加公司金额
                 $companyProfit1 = new companyProfit();
                 $companyProfit1->addLog($row['usdt'],$row['supply_fee'],1,1,1,$row['orderid']);   
 

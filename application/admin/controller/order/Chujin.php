@@ -181,19 +181,19 @@ class Chujin extends Backend
                 }
 
                 //添加公司金额
-            //     $companyProfit1 = new companyProfit();
-            //    $res3 =  $companyProfit1->addLog($row['usdt'],$row['supply_fee'],2,3,1,$row['orderid']);  
-            //     if(!$res3){
-            //         Db::rollback();
-            //         $this->error('添加公司金额商户手续费失败');                    
-            //     } 
+                $companyProfit1 = new companyProfit();
+                $res3 =  $companyProfit1->addLog($row['usdt'],$row['supply_fee'],2,3,1,$row['orderid']);  
+                if(!$res3){
+                    Db::rollback();
+                    $this->error('添加公司金额商户手续费失败');                    
+                } 
 
-            //     $companyProfit2 = new companyProfit();
-            //     $res4 = $companyProfit2->addLog($row['usdt'],$row['user_fee'],2,1,1,$row['orderid']); 
-            //     if(!$res4){
-            //         Db::rollback();
-            //         $this->error('添加公司金额承兑商手续费失败');                    
-            //     } 
+                $companyProfit2 = new companyProfit();
+                $res4 = $companyProfit2->addLog($row['usdt'],$row['user_fee'],2,1,1,$row['orderid']); 
+                if(!$res4){
+                    Db::rollback();
+                    $this->error('添加公司金额承兑商手续费失败');                    
+                } 
 
             }
             //是否采用模型验证
@@ -311,10 +311,12 @@ class Chujin extends Backend
             $Usdtlog->addtxLog($info['access_key'],$params['supply_usdt'],2,$orderid,2);
 
             $params['orderid'] = $orderid;
+            $params['merchantOrderNo'] = empty($info['merchantOrderNo'])?date("Ymdhis",time()):$info['merchantOrderNo'];
             $params['pay_type'] = 'bank';
             $params['diqu'] = 1;
             $params['fiatCurrency'] = "USDT";
             $params['withdrawCurrency'] = "USDT";
+            $params['pay_status'] = 1;
             // $params['user_fee'] = '7.26';
             //7.2兑出汇率用户
 

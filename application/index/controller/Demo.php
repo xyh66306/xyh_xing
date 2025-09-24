@@ -46,24 +46,24 @@ class Demo extends Frontend
         // $orderid = 44544;
         // $row = $rujin->where('orderid', $orderid)->find();
 
-        // $model = new Chujin();
-        // $list = $model->where('pay_status',5)->select();
+        $model = new Chujin();
+        $list = $model->where('id',6)->select();
 
-        // foreach ($list as $k => $row) { 
-        //     $companyProfit1 = new companyProfit();
-        //     $companyProfit1->addLog($row['usdt'],$row['supply_fee'],2,3,1,$row['orderid']);   
-        //     $companyProfit2 = new companyProfit();
-        //     $companyProfit2->addLog($row['usdt'],$row['user_fee'],2,1,1,$row['orderid']); 
-        // }
-        $model = new Rujin();
-        $list = $model->where('pay_status', 4)->select();
-
-        foreach ($list as $k => $row) {
+        foreach ($list as $k => $row) { 
             $companyProfit1 = new companyProfit();
-            $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 1, 3, 1, $row['orderid']);
+            $companyProfit1->addLog($row['usdt'],$row['supply_fee'],2,3,1,$row['orderid']);   
             $companyProfit2 = new companyProfit();
-            $companyProfit2->addLog($row['usdt'], $row['user_fee'], 1, 1, 1, $row['orderid']);
+            $companyProfit2->addLog($row['usdt'],$row['user_fee'],2,1,1,$row['orderid']); 
         }
+        // $model = new Rujin();
+        // $list = $model->where('pay_status', 4)->select();
+
+        // foreach ($list as $k => $row) {
+        //     $companyProfit1 = new companyProfit();
+        //     $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 1, 3, 1, $row['orderid']);
+        //     $companyProfit2 = new companyProfit();
+        //     $companyProfit2->addLog($row['usdt'], $row['user_fee'], 1, 1, 1, $row['orderid']);
+        // }
 
 
 

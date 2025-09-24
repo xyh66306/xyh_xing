@@ -87,7 +87,8 @@
 				loadStatus: 'more',	
 				show: false,
 				rate:'',
-				setInfo:{}
+				setInfo:{},
+				group_id:{},
 			}
 		},
 		onLoad() {
@@ -95,6 +96,7 @@
 			this.getRecomLst();
 		},
 		methods: {
+
 			setState(e) {
 				this.state = e;
 				this.recomjylist = [];
@@ -136,10 +138,12 @@
 				})	
 			},
 			getRecomLst(){
+				let user = uni.getStorageSync('user');
 				uni.$u.http.post('/api/rebate/getTeamRebate',{
 					page:this.page,
 					email:this.value,
-					churu:this.state==0?'duichu':'duiru'
+					churu:this.state==0?'duichu':'duiru',
+					group:user.group_id
 				}).then(res => {
 					if(res.code == 1) {
 						const _list = res.data.data;

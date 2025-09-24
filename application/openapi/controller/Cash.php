@@ -78,14 +78,13 @@ class Cash extends Api
     { 
 
 
-
         $params = [
             'orderid'    => $this->request->param('orderid',''),
             'amount'    => $this->request->param('amount',''),
             'payername'=> $this->request->param('payername',''),
             'diqu'    => $this->request->param('diqu',1),
             'backurl' => $this->request->param('backurl',''),
-            'yx_time' => $this->request->param('yx_time',900), // 900秒
+            'yx_time' => $this->request->param('yx_time',60*20), // 900秒
         ];
         if(empty($params['orderid'])) {
             $this->error('订单号错误');
@@ -202,7 +201,7 @@ class Cash extends Api
             $res = $rujinModel->insert($data);
 
 
-            $this->commission($userInfo['id'],$merchantOrderNo,$params['orderid'],$usdt);
+            // $this->commission($userInfo['id'],$merchantOrderNo,$params['orderid'],$usdt);
             
             $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setInc('sort',1);
             $UserBankcard->update(['sort'=>1],['id'=>$bankInfo['id']]);

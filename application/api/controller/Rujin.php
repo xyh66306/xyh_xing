@@ -137,7 +137,22 @@ class Rujin extends Api
             //扣除usdt 金额
             $userModel->usdt($data['user_usdt'], $this->auth->id, 8, 2);
 
-            $model->update(['pay_status' => 3, 'pay_time' => time(), 'utime' => time()], ['id' => $data['id']]);
+            $uinfo = $userModel->where("id", $this->auth->id)->find();
+
+            $commission = 0; //分佣金额
+            $recomer = 0;
+            
+            $time = time();
+            $order_status = 1;
+            if($data['yx_time']<$time){
+                $order_status = 2;
+            }
+
+
+
+
+            $model->update(['pay_status' => 3, 'pay_time' => time(), 'utime' => time(),'order_status'=>$order_status], ['id' => $data['id']]);
+
             // $this->commission($data);
 
             //通知订单完成

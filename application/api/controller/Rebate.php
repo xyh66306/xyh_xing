@@ -87,6 +87,7 @@ class Rebate extends Api
        $churu = input("churu",'duichu');
        $email = input("email",'');
        $page = input("page",1);
+       $group = input("group",1);
 
 
         $userRebate = new UserRebateModel();
@@ -96,6 +97,7 @@ class Rebate extends Api
 
         $sparent = $this->auth->sparent;
 
+
         $map = [];
         $map['churu'] = $churu;
         if($email){
@@ -103,9 +105,12 @@ class Rebate extends Api
             $map['user_id'] = $recom_id;
         }
 
-        if($sparent){
-           $tj_ids = $userModel->whereLike("sparent","%".$sparent."%")->where("id","<>",$this->auth->id)->column("id");
+        if($sparent && $group==2){
+           $tj_ids = $userModel->whereLike("sparent","%".$sparent."%")->where('group_id',3)->where("id","<>",$this->auth->id)->column("id");
            $map['user_id'] = ['in',$tj_ids];
+        } else {
+            $tj_ids = $userModel->whereLike("sparent","%".$sparent."%")->where("id","<>",$this->auth->id)->column("id");
+            $map['user_id'] = ['in',$tj_ids];
         }
 
         $data = $userRebate->where($map)->page($page)->select();
@@ -129,8 +134,8 @@ class Rebate extends Api
     /**
     * 设置下级佣金
     */    
-     public function setting()
-     {
+    public function setting()
+    {
         
         $id = input("id",'');    
         $rate = input("rate",'');
@@ -143,14 +148,21 @@ class Rebate extends Api
         if(!$info){
             $this->error('数据不存在');
         }
+
+        $group_id = $this->auth->group_id;
+        if($group_id>=2){
+            
+        }
+
         $res = $userRebate->where("id",$id)->update(['rate'=>$rate]);
+
         if($res){
             $this->success('设置成功');
         }else{
             $this->error('设置失败');
         }
 
-     }
+    }
 
 }
 ?>

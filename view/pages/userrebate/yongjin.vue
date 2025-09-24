@@ -3,8 +3,8 @@
 		<view class="list" v-if="lst.length>0">
 			<view class="item">
 				<u-row customStyle="margin-bottom: 10px" class="item-row" justify="space-between" align="center">
-					 <u-col span="3">
-						<view class="item-title">订单号</view>
+					 <u-col span="1">
+						<view class="item-title">序号</view>
 					</u-col>
 					 <u-col span="2">
 						<view class="item-title">订单数量</view>
@@ -12,25 +12,37 @@
 					 <u-col span="2">
 						<view class="item-title">返佣数量</view>
 					</u-col>
+					 <u-col span="2">
+						<view class="item-title">超时</view>
+					</u-col>						
+					 <u-col span="2">
+						<view class="item-title">状态</view>
+					</u-col>	
 					 <u-col span="3">
 						<view class="item-title">时间</view>
-					</u-col>				
+					</u-col>												
 				</u-row>						
 			</view>
 			<view class="item" v-for="(item,index) in lst" :key="index">
 				<u-row customStyle="margin-bottom: 10px" class="item-row" justify="space-between" align="center" @click="$u.route('/pages/userrebate/yjdetails?id='+item.id)">
-					 <u-col span="3">
-						<view class="item-title">{{item.p4b_orderid}}</view>
+					 <u-col span="1">
+						<view class="item-title">{{index+1}}</view>
 					</u-col>
-					 <u-col span="3">
+					 <u-col span="2">
 						<view class="item-title">{{item.number}}</view>
 					</u-col>	
-					 <u-col span="3">
+					 <u-col span="2">
 						<view class="item-title">{{item.money}}</view>
-					</u-col>
+					</u-col>	
+					 <u-col span="2">
+						<view class="item-title">{{item.chaoshi==2?'是':'否'}}</view>
+					</u-col>					
+					 <u-col span="2">
+						<view class="item-title">{{item.status==2?'待审核':'已通过'}}</view>
+					</u-col>	
 					 <u-col span="3">
 						<view class="item-title">{{item.ctime}}</view>
-					</u-col>				
+					</u-col>												
 				</u-row>
 			</view>
 		</view>			
@@ -99,5 +111,6 @@
 	}
 	.item-title {
 		text-align: center;
+		overflow: hidden;
 	}
 </style>

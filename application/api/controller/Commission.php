@@ -6,6 +6,7 @@ use app\common\controller\Api;
 
 use app\common\model\Commission as CommissionModel;
 use app\common\model\User as UserModel;
+use app\common\model\UserTeam;
 use fast\Random;
 use think\Config;
 use think\Validate;
@@ -26,8 +27,12 @@ class Commission extends Api
 
         $commissionModel = new CommissionModel();
         $userModel       = new UserModel();
+        $userTeam        = new UserTeam();
+        
+        $teamids = $userTeam->where("user_id",$user_id)->column("team_user_id");
 
-        $list = $commissionModel->where("p_userid",$user_id)->page($page)->select();
+        $list = $commissionModel->where("p_userid",'in',$teamids)->page($page)->select();
+
         foreach ($list as $key => $value) {
             $list[$key]['nickname'] = $userModel->where("id",$value['user_id'])->value("nickname");
             $list[$key]['ctime'] = date("m-d H:i",$value['ctime']);
