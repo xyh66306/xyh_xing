@@ -53,6 +53,7 @@ class Rujin extends Api
         }
 
         $where['status'] = 1;
+        $where['user_id'] = $this->auth->id;
 
         $list = $model->where($where)->where('pay_status', 'in', [0, 1])->page($page)->order("id desc")->select();
 

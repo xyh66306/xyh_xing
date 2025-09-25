@@ -44,11 +44,12 @@
 					
 					</view>
 				</view>
-				<view class="u-info">凭证</view>
-				<view class="flex u-border-bottom">
-					<image :src="details.pinzheng_image" class="pay_ewm_img"></image>
-				</view>				
-			</template>	
+			
+			</template>
+			<view class="u-info">凭证</view>
+			<view class="flex u-border-bottom">
+				<image :src="details.pinzheng_image" class="pay_ewm_img"></image>
+			</view>					
 			<template v-if="details.ctime"> 
 				<view class="u-info">发起时间</view>
 				<view class="flex u-border-bottom">

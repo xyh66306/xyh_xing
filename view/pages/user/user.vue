@@ -120,12 +120,20 @@
 			this.getInvite();
 		},
 		onShow() {
-			this.user = uni.getStorageSync('user') || {};
+			// this.user = uni.getStorageSync('user') || {};
 			// this.open_team  = true
 			// this.open_team = uni.getStorageSync('open_team') ? true : false;
 			this.open_company = uni.getStorageSync('user_group')==2 ? true : false;
+			this.getUserInfo();
 		},
 		methods: {
+			getUserInfo(){
+				uni.$u.http.post('/api/user/getUserinfo').then(res => {
+					if(res.code == 1) {
+						this.user =res.data;
+					}
+				})
+			},
 			logout() {
 				uni.showModal({
 					content: '确定要退出当前账号吗',

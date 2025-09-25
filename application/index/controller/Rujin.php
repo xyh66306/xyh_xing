@@ -15,7 +15,7 @@ class Rujin extends Frontend
     public function index()
     {
         $RujinModel = new RujinModel();
-        $time = time()-3600*3;
+        $time = time()-3600*1;
         $list = $RujinModel->where("status",1)->where("pay_status","<=",1)->where('ctime','<',$time)->select();
 
         foreach ($list as $key => $value) {

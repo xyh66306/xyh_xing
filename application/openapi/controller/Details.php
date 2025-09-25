@@ -95,7 +95,7 @@ class Details extends Api
         }
 
 
-        $bankInfo = $UserBankcard->field("username,bank_name,bank_nums,bank_zhdz")->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->find();
+        $bankInfo = $UserBankcard->field("username,bank_name,bank_nums,bank_zhmc")->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->find();
         $wxpayinfo = $userPayewm->field("username,pay_skpt,pay_ewm_image")->where(['user_id'=>$userInfo['id'],'pay_skpt'=>'wxpay','status'=>'normal','sys_status'=>'normal'])->find();
         $alipayinfo = $userPayewm->field("username,pay_skpt,pay_ewm_image")->where(['user_id'=>$userInfo['id'],'pay_skpt'=>'alipay','status'=>'normal','sys_status'=>'normal'])->find();
         if(!$bankInfo && !$wxpayinfo && !$alipayinfo){
@@ -166,6 +166,7 @@ class Details extends Api
 
         try {
             $data = [
+                'status' => 1,
                 'pay_status' => 2,
                 'pay_time' => time(),
                 'pay_type' => $pay_type,

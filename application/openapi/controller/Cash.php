@@ -95,6 +95,9 @@ class Cash extends Api
         if(empty($params['backurl'])) {
             $this->error('回调地址错误');
         }        
+        if(empty($params['payername'])) {
+            $this->error('付款人姓名不能为空');
+        }         
 
         $userModel = new UserModel();
 
@@ -118,7 +121,8 @@ class Cash extends Api
             $where['sfz_status'] = 1;
             $where['pay_status'] = "normal";
             $order = 'pay_sort desc,id desc';
-            $userInfo = $userModel->where($where)->where('usdt','>',0)->order($order)->find();
+            // $userInfo = $userModel->where($where)->where('usdt','>',0)->order($order)->find();
+            $userInfo = $userModel->where($where)->where('id','<>','168017')->order($order)->find();
         }
 
         
@@ -188,7 +192,7 @@ class Cash extends Api
                 'supply_usdt'=>$supply_usdt,
                 'user_usdt'=>$user_usdt,
                 'user_fee'=>$user_fee,
-                'status' => 1,
+                'status' => 2,
                 'pay_status'=>1,
                 'pintai_id'=>$this->access_key,
                 'callback' =>$params['backurl'],
