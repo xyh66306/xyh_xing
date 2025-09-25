@@ -61,7 +61,7 @@ class Rebate extends Api
 
          $map['pid'] = $user_id;
 
-         $data = $userRebate->where($map)->page($page)->select();
+         $data = $userRebate->where($map)->page($page)->order("id desc")->select();
 
          if(!$data){
              $this->error('暂无数据');
@@ -150,9 +150,15 @@ class Rebate extends Api
         }
 
         $group_id = $this->auth->group_id;
-        if($group_id>=2){
-            
+        
+        if( $group_id != 2 ){
+            $father_info = $userRebate->where(['user_id'=>$this->auth->id,'type'=>$info['type'],'churu'=>$info['churu']])->find();
+            if($rate > $father_info['rate']){
+                $this->error('佣金比例不能大于自己的比例');
+            }
         }
+
+     
 
         $res = $userRebate->where("id",$id)->update(['rate'=>$rate]);
 

@@ -105,7 +105,9 @@
 	export default {
 		data() {
 			return {
-				user: {},
+				user: {
+					nickname:'.'
+				},
 				open_team: false,
 				times: 0,
 				timer: null,

@@ -4,6 +4,7 @@ namespace app\admin\controller\user;
 
 use app\common\controller\Backend;
 use app\common\model\User as UserModel;
+use app\common\model\company\Profit as companyProfit;
 use Exception;
 use think\Db;
 use think\db\exception\BindParamException;
@@ -73,6 +74,11 @@ class Withdraw extends Backend
                 //减少用户冻结余额
                 $userModel = new UserModel();
                 $userModel->usdt_dj($row['usdt'],$row['user_id'],3,2);
+
+                //添加公司金额
+                $companyProfit1 = new companyProfit();
+                $companyProfit1->addLog($row['usdt'],$row['fee'],3,1,1,$row['id']);   
+
             }
 
             //是否采用模型验证

@@ -7,11 +7,13 @@ use app\common\model\Task;
 use app\common\model\User;
 use app\common\model\user\Bankcard;
 use app\common\model\user\Payewm;
+use app\common\model\UserRebate;
 use app\common\model\order\Rujin;
 use app\common\model\Bank;
 use app\common\model\order\Chujin;
 use app\common\model\Bi as BiModel;
 use app\common\model\company\Profit as companyProfit;
+use app\common\model\Commission;
 use app\admin\model\supply\Usdtlog;
 use think\Queue;
 use think\Db;
@@ -46,15 +48,15 @@ class Demo extends Frontend
         // $orderid = 44544;
         // $row = $rujin->where('orderid', $orderid)->find();
 
-        $model = new Chujin();
-        $list = $model->where('id',6)->select();
+        // $model = new Chujin();
+        // $list = $model->where('id',6)->select();
 
-        foreach ($list as $k => $row) { 
-            $companyProfit1 = new companyProfit();
-            $companyProfit1->addLog($row['usdt'],$row['supply_fee'],2,3,1,$row['orderid']);   
-            $companyProfit2 = new companyProfit();
-            $companyProfit2->addLog($row['usdt'],$row['user_fee'],2,1,1,$row['orderid']); 
-        }
+        // foreach ($list as $k => $row) { 
+        //     $companyProfit1 = new companyProfit();
+        //     $companyProfit1->addLog($row['usdt'],$row['supply_fee'],2,3,1,$row['orderid']);   
+        //     $companyProfit2 = new companyProfit();
+        //     $companyProfit2->addLog($row['usdt'],$row['user_fee'],2,1,1,$row['orderid']); 
+        // }
         // $model = new Rujin();
         // $list = $model->where('pay_status', 4)->select();
 
@@ -73,7 +75,83 @@ class Demo extends Frontend
     public function test()
     {
 
+        $orderId = 'f932703753';
+        $merchantOrderNo = '1757319239';
+        $user_usdt = '197.7808';
 
+        $this->commission(168017,$orderId,$merchantOrderNo,$user_usdt);
+
+        
+
+    }
+
+
+    /***
+     * 分佣
+     */
+    public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
+    {
+
+        $Commission = new Commission();
+        $userModel  = new User();
+
+        $uinfo = $userModel->where("id", $user_id)->find();
+        $invite = $uinfo['invite'];
+
+
+       $rateLst =  $this->getrate($uinfo);
+
+        die;
+
+        $userRebate = new UserRebate();
+
+        $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$invite,'churu'=>'duichu','type'=>'bank'])->find();
+        if(!$rateInfo){
+            return true;
+        }
+        $money = $number * $rateInfo['rate'] / 100;
+
+        if($money<=0){
+            return true;
+        }
+
+        Db::startTrans();
+        try {
+
+            $rebateData = [
+                'user_id' =>$user_id,
+                'p_userid' => $invite,
+                'fy_orderid' => $fy_orderid,
+                'p4b_orderid' => $p4b_orderid,
+                'number' => $number,
+                'rate'  => $rateInfo['rate'],
+                'money' => $money,
+                'type' => 1,
+                'source' => 2,
+                'level' => 1,
+                'status' => 2,
+                'chaoshi' => 1,
+                'ctime' => time(),
+                'utime' => time(),
+            ];
+            $Commission->save($rebateData);
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            $this->error('操作失败' . $e->getMessage());
+        }
+        return true;
+    }
+
+
+    public function getrate($uinfo){
+
+        $sparent_str = str_replace("A", "", $uinfo['sparent']);
+        $sparent_arr = explode(",", $sparent_str);
+        $sparent_arr = array_diff($sparent_arr, [$uinfo['id']]); //删除自身
 
     }
 

@@ -29,6 +29,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {checkbox: true},
                         {field: 'order_id', title: __('Order_id'), operate: 'LIKE'},
                         {field: 'usdt', title: __('Nums'), operate:'BETWEEN'},
+                        {field: 'fee', title: "手续费", operate:'BETWEEN'},
                         {field: 'hash', title: __('Hash'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'type', title:"通道", operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'pay_ewm_image', title: "提币二维码", operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
