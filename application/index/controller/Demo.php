@@ -29,6 +29,13 @@ class Demo extends Frontend
     public function index()
     {
 
+
+        $a = 1001;
+        $b = 7.21;
+
+        echo truncateDecimal($a/$b,4);
+
+
         // $Usdtlog = new Usdtlog();
         // $usdt = '1987.4474';
         // $orderid = 'f540827457';

@@ -148,11 +148,11 @@ class Chujin extends Backend
         }
 
         unset($params['access_key']);
-        // if($this->supply_info['access_key'] == $row['access_key']){            
-        //     if($params['supply_usdt'] > $this->supply_info['usdt']){
-        //         $this->error('提现数量超出可提现数量');
-        //     }
-        // }
+        if($this->supply_info['access_key'] == $row['access_key']){            
+            if($params['supply_usdt'] > $this->supply_info['usdt']){
+                $this->error('提现数量超出可提现数量');
+            }
+        }
 
 
         $params = $this->preExcludeFields($params);
@@ -322,7 +322,7 @@ class Chujin extends Backend
 
             $BiModel = new BiModel();
             $biinfo = $BiModel->where("id", 1)->find();
-            $params['user_usdt'] = sprintf('%.4f',$params['withdrawAmount']/$biinfo['duichu']);
+            $params['user_usdt'] = sprintf('%.4f',truncateDecimal($params['withdrawAmount']/$biinfo['duichu'],4));
             $params['user_fee'] = $params['usdt'] - $params['user_usdt'];
 
             $result = $this->model->allowField(true)->save($params);
