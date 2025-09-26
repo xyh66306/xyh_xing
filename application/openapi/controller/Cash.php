@@ -157,7 +157,7 @@ class Cash extends Api
                 $supply_usdt = $usdt - $supply_fee;  
 
                 $user_rate = config('site.fee_dalu_user_duiru');
-                $user_fee = $user_rate && $user_rate>0 ? sprintf('%.4f',truncateDecimal($usdt * ($info['duiru'] - $user_rate),4)):0;
+                $user_fee = $user_rate && $user_rate>0 ? sprintf('%.4f',truncateDecimal($usdt *$user_rate/100)):0;
                 $user_usdt = $usdt + $user_fee;  //加上用户汇率差 审核时候扣除
 
             } elseif($params['diqu']==2){
@@ -166,7 +166,7 @@ class Cash extends Api
                 $supply_usdt = $usdt - $supply_fee;
 
                 $user_rate = config('site.fee_jc_user_duiru');
-                $user_fee = $user_rate && $user_rate>0 ? sprintf('%.4f',truncateDecimal($usdt * ($info['duiru'] - $user_rate))):0;
+                $user_fee = $user_rate && $user_rate>0 ? sprintf('%.4f',truncateDecimal($usdt * $user_rate/100)):0;
                 $user_usdt = $usdt + $user_fee;  //加上用户手续费 审核时候扣除
 
             }
@@ -203,9 +203,6 @@ class Cash extends Api
 
 
             $res = $rujinModel->insert($data);
-
-
-            // $this->commission($userInfo['id'],$merchantOrderNo,$params['orderid'],$usdt);
             
             $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setInc('sort',1);
             $UserBankcard->update(['sort'=>1],['id'=>$bankInfo['id']]);
@@ -229,62 +226,6 @@ class Cash extends Api
 
     }
 
-
-
-    /***
-     * 分佣
-     */
-    public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
-    {
-
-        $Commission = new Commission();
-        $userModel  = new UserModel();
-
-        $uinfo = $userModel->where("id", $user_id)->find();
-        $invite = $uinfo['invite'];
-
-        $userRebate = new UserRebate();
-
-        $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$invite,'churu'=>'duiru','type'=>'bank'])->find();
-        if(!$rateInfo){
-            return true;
-        }
-        $money = $number * $rateInfo['rate'] / 100;
-
-        if($money<=0){
-            return true;
-        }
-
-        Db::startTrans();
-        try {
-
-            $rebateData = [
-                'user_id' =>$user_id,
-                'p_userid' => $invite,
-                'fy_orderid' => $fy_orderid,
-                'p4b_orderid' => $p4b_orderid,
-                'number' => $number,
-                'rate'  => $rateInfo['rate'],
-                'money' => $money,
-                'type' => 1,
-                'source' => 1,
-                'level' => 1,
-                'status' => 2,
-                'chaoshi' => 1,
-                'ctime' => time(),
-                'utime' => time(),
-            ];
-            $Commission->save($rebateData);
-
-            // 提交事务
-            Db::commit();
-        } catch (\Exception $e) {
-            // 回滚事务
-            Db::rollback();
-            $this->error('操作失败' . $e->getMessage());
-        }
-        return true;
-    }
 
 
 }

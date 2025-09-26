@@ -9,6 +9,7 @@ use app\common\model\Bi as BiModel;
 use app\admin\model\supply\Usdtlog;
 use app\common\model\User as UserModel;
 use app\common\model\company\Profit as companyProfit;
+use app\common\model\Commission;
 use think\Db;
 use Exception;
 use think\db\exception\BindParamException;
@@ -180,6 +181,7 @@ class Chujin extends Backend
                     $this->error('扣除承兑商冻结金额失败');                    
                 }
 
+
                 //添加公司金额
                 $companyProfit1 = new companyProfit();
                 $res3 =  $companyProfit1->addLog($row['usdt'],$row['supply_fee'],2,3,1,$row['orderid']);  
@@ -195,6 +197,22 @@ class Chujin extends Backend
                     $this->error('添加公司金额承兑商手续费失败');                    
                 } 
 
+                //添加代理商佣金
+                $commissionModel = new Commission();
+
+                $comlist = $commissionModel->where("fy_orderid",$row['orderid'])->select();
+                $comSum  = $commissionModel->where("fy_orderid",$row['orderid'])->sum('money');
+                if($comSum>0){
+                    foreach ($comlist as $vo) {
+                        $userModel = new UserModel();
+                        $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$row['orderid']);
+                    }
+
+                    $companyProfit3 = new companyProfit();
+                    $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['orderid']); 
+                    $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['orderid']]);
+                }
+ 
             }
             //是否采用模型验证
             if ($this->modelValidate) {
@@ -451,6 +469,31 @@ class Chujin extends Backend
             $this->error('添加失败');
         }
 
+    }
+
+
+    /**
+     * chaoshi1 返佣
+     * chaoshi2 超时
+     * 佣金
+     */
+    public function commission($fy_orderid,$chaoshi=1){
+
+        $commissionModel = new Commission();
+
+        if($chaoshi==2){
+            $commissionModel->update(['status'=>1,'chaoshi'=>2],['fy_orderid'=>$fy_orderid]);
+            return;
+        }
+
+        $list = $commissionModel->where("fy_orderid",$fy_orderid)->select();
+        foreach ($list as $row) {
+            $userModel = new UserModel();
+            $userModel->usdt($row['money'],$row['p_userid'],5,1,$fy_orderid);
+        }
+
+        $commissionModel->update(['status'=>1],['fy_orderid'=>$fy_orderid]);
+        return true;
     }
 
 }

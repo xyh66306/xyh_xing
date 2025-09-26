@@ -105,44 +105,50 @@ class Demo extends Frontend
         $uinfo = $userModel->where("id", $user_id)->find();
         $invite = $uinfo['invite'];
 
-
-       $rateLst =  $this->getrate($uinfo);
-
-        die;
-
         $userRebate = new UserRebate();
 
         $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$invite,'churu'=>'duichu','type'=>'bank'])->find();
         if(!$rateInfo){
             return true;
         }
-        $money = $number * $rateInfo['rate'] / 100;
 
-        if($money<=0){
-            return true;
-        }
+        $rateLst =  $this->getrate($uinfo);
 
-        Db::startTrans();
-        try {
+        $result = [];
+        foreach ($rateLst as $key => $value) { 
+
+            $money = truncateDecimal($number * $value['rate'] / 100);
+            if($money<=0){
+                continue;
+            }
 
             $rebateData = [
                 'user_id' =>$user_id,
-                'p_userid' => $invite,
+                'p_userid' => $value['user_id'],
                 'fy_orderid' => $fy_orderid,
                 'p4b_orderid' => $p4b_orderid,
                 'number' => $number,
-                'rate'  => $rateInfo['rate'],
+                'rate'  => $value['rate'],
                 'money' => $money,
                 'type' => 1,
                 'source' => 2,
-                'level' => 1,
+                'level' => $key+1,
                 'status' => 2,
                 'chaoshi' => 1,
                 'ctime' => time(),
                 'utime' => time(),
             ];
-            $Commission->save($rebateData);
 
+            $result[] = $rebateData;
+        }
+
+        if(count($result)==0){
+            return true;    
+        }
+
+        Db::startTrans();
+        try {
+            $Commission->saveAll($result);
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
@@ -160,6 +166,28 @@ class Demo extends Frontend
         $sparent_arr = explode(",", $sparent_str);
         $sparent_arr = array_diff($sparent_arr, [$uinfo['id']]); //删除自身
 
+        $result = [];
+        $max = 0;
+        $user_id = $uinfo['id'];
+
+        foreach ($sparent_arr as $key => $value) { 
+            $res = [];
+            $userRebate = new UserRebate();
+            $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$value,'churu'=>'duichu','type'=>'bank'])->find();
+
+            $user_id = $value;
+            if(!$rateInfo || $rateInfo['rate']<=0){
+                continue;
+            }
+            $res['user_id'] = $value;
+            $res['rate'] = $rateInfo['rate'] -$max;
+            if($rateInfo['rate']>0){
+                $max = $rateInfo['rate'];
+            }
+            $result[] = $res;
+            
+        }
+        return $result;
     }
 
 
