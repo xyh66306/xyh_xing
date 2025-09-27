@@ -30,7 +30,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'fy_orderid', title: __('Fy_orderid'), operate: 'LIKE'},
                         {field: 'p4b_orderid', title: __('P4b_orderid'), operate: 'LIKE'},
                         {field: 'number', title: __('Number'), operate:'BETWEEN'},
-                        {field: 'rate', title: __('Rate'), operate:'BETWEEN'},
+                        // {field: 'rate', title: __('Rate'), operate:'BETWEEN'},
+                        {field: 'rate', title: __('Rate'), operate: 'BETWEEN', formatter: function (value, row, index) {
+                            return value + ' %';
+                        }},
                         {field: 'money', title: __('Money'), operate:'BETWEEN'},
                         {field: 'type', title: __('Type'), searchList: {"1":__('Type 1')}, formatter: Table.api.formatter.normal},
                         {field: 'level', title: __('Level')},
