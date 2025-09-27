@@ -12,7 +12,7 @@ return [
     'Type 1'        => '常规',
     'Level'         => '层级',
     'Status'        => '状态',
-    'Status 1'      => '已通过',
+    'Status 1'      => '已审核',
     'Set status to 1'=> '设为已通过',
     'Status 2'      => '待审核',
     'Set status to 2'=> '设为待审核',
