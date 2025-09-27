@@ -41,6 +41,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'chaoshi', title: __('Chaoshi'), searchList: {"1":__('Chaoshi 1'),"2":__('Chaoshi 2')}, formatter: Table.api.formatter.normal},
                         {field: 'ctime', title: __('Ctime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'utime', title: __('Utime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
+                        {field: 'puser.nickname', title: __('Puser.nickname'), operate: 'LIKE'},
                         {field: 'user.nickname', title: __('User.nickname'), operate: 'LIKE'},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
