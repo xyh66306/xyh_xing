@@ -224,6 +224,14 @@
 				this.getLst();
 			}
 		},
+		onPullDownRefresh(){
+			let that =this
+			setTimeout(function () {
+				that.page=1;
+				that.getLst();
+				uni.stopPullDownRefresh();
+			}, 1000);
+		}
 	}
 </script>
 

@@ -643,6 +643,9 @@ class User extends Api
         $bank_zhmc = $this->request->post("bank_zhmc","");
         $bank_zhdz = $this->request->post("bank_zhdz","");
         $status = $this->request->post("status","normal");
+        $min_cny = $this->request->post("min_cny","0");
+        $max_cny = $this->request->post("max_cny","10000");
+
         $id = $this->request->post("id","");
 
         $userBankcard = new UserBankcard();
@@ -656,6 +659,8 @@ class User extends Api
                 "bank_zhdz"=>$bank_zhdz,
                 'status'=>$status,
                 'sys_status'=>'normal',
+                'min_cny'   =>$min_cny,
+                'max_cny'   =>$max_cny,
             ],["id"=>$id]);
         } else {
             $ret = $userBankcard::create([
@@ -667,6 +672,8 @@ class User extends Api
                 "bank_nums"=>$bank_nums,
                 "bank_zhmc"=>$bank_zhmc,
                 "bank_zhdz"=>$bank_zhdz,
+                'min_cny'   =>$min_cny,
+                'max_cny'   =>$max_cny,                
                 'status'=>'normal',
                 'sys_status'=>'normal',
                 "ctime"=>time()
@@ -692,16 +699,23 @@ class User extends Api
         $userPayewm = new UserPayewm();
         $paycount = $userPayewm::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->count();
 
+        $min_cny = $userBankcard::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->min('min_cny');
+        $max_cny = $userBankcard::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->max('max_cny');
+
         $userModel = new UserModel();
 
         if($bankcount > 0 || $paycount > 0){
             $userModel->update([
                 "pay_status"=>'normal',
+                'min_cny'=>$min_cny,
+                'max_cny'=>$max_cny,
             ],["id"=>$user_id]);
         } else {
             $userModel = new UserModel();
             $userModel->update([
                 "pay_status"=>'normal',
+                'min_cny'=>$min_cny,
+                'max_cny'=>$max_cny,                
             ],["id"=>$user_id]);
         }  
 

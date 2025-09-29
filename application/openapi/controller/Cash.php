@@ -130,23 +130,22 @@ class Cash extends Api
             if($rj_user_id && $rj_user_id>0){
                 $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
             } else {
-                $userInfo = $userModel->where($where)->where('id','<>','168017')->order($order)->find();
+                $userInfo = $userModel->where($where)->where('id','<>','168017')->where("min_cny",'>=',$params['amount'])->where("max_cny",'<=',$params['amount'])->order($order)->find();
             }
 
         }
-
 
         if(!$userInfo) {
           return  $this->error('收银员不存在');
         }
         $UserBankcard = new UserBankcard();
-        $count = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->count();
+        $count = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->where("min_cny",'>=',$params['amount'])->where("max_cny",'<=',$params['amount'])->count();
 
 
         if($count==0){
            return $this->error('收款账户不存在');
         }
-        $bankInfo = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->order('sort desc,id desc')->find();
+        $bankInfo = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->where("min_cny",'>=',$params['amount'])->where("max_cny",'<=',$params['amount'])->order('sort desc,id desc')->find();
         $rujinModel = new Rujin();
         $rjInfo = $rujinModel->where(['orderid'=>$params['orderid']])->find();
         if($rjInfo){ 
