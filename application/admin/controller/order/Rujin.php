@@ -380,6 +380,42 @@ class Rujin extends Backend
 
             }
 
+            //追回订单
+            if ($params['pay_status'] == 5 && $row['pay_status']==4) {
+                //减少商户USDT
+                $SpullyUsdtLog = new SpullyUsdtLog();
+                $SpullyUsdtLog->addLog($row['pintai_id'], $row['supply_usdt'], 1, 2,'ping-'. $row['orderid']);
+
+                //增加用户usdt 金额
+                $userModel = new UserModel();
+                $userModel->usdt($row['user_usdt'],$row['user_id'], 6, 1);
+
+                //减少公司金额
+                $companyProfit1 = new companyProfit();
+                $companyProfit1->addLog($row['usdt'],$row['supply_fee'],1,1,2,'ping-'.$row['orderid']);   
+
+                $companyProfit2 = new companyProfit();
+                $companyProfit2->addLog($row['usdt'],$row['user_fee'],1,3,2,'ping-'.$row['orderid']); 
+
+                //减少代理商佣金
+                if($row['order_status']==1){
+                    $commissionModel = new Commission();                         
+                    $comlist = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->select();
+                    $comSum  = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->sum('money');
+                    if($comSum>0){
+                        
+                        foreach ($comlist as $vo) {
+                            $userModel = new UserModel();
+                            $userModel->usdt($vo['money'],$vo['p_userid'],5,2,$row['merchantOrderNo']);
+                        }
+
+                        $companyProfit3 = new companyProfit();
+                        $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,1,$row['merchantOrderNo']); 
+                        $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
+                    }   
+                }
+            }  
+
             //是否采用模型验证
             if ($this->modelValidate) {
                 $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));

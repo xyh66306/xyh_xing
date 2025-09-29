@@ -156,6 +156,48 @@ class Usdtlog extends Model
     }
 
     /**
+     * 取消兑出
+     */
+    public function quxiaotxLog($supply_id, $usdt, $flow_type = 1, $memo = '',$type=3)
+    {
+
+
+        $supply = new Supply();
+        $info = $supply->where('access_key', $supply_id)->find();
+        $after = $info['usdt'] + $usdt;
+        if ($after < 0) {
+            return false;
+        }
+        Db::startTrans();
+        try {
+            $data = [
+                'supply_id'  => $supply_id,
+                'bianhao'   => getOrderNo('uzhuanchu'),
+                'usdt'      => $usdt,
+                'before'     => $info['usdt'],
+                'after'      => $after,
+                'memo'       => $memo,
+                'flow_type'  => $flow_type,
+                'type'       => $type,
+                'createtime' => time(),
+            ];
+            $this->save($data);
+
+            //减少金额，添加冻结金额
+            $freeze_usdt = $info['freeze_usdt'] - $usdt;
+            $supply->update(['usdt' => $after, 'freeze_usdt' => $freeze_usdt], ['access_key' => $supply_id]);
+
+            Db::commit();
+        } catch (ValidateException|PDOException|Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        return true;
+    }
+
+
+    /**
      * 审核提现记录
      */
     public function authtxLog($supply_id, $usdt, $memo = '')

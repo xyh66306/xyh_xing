@@ -236,7 +236,7 @@ class Details extends Api
 
         $userRebate = new UserRebate();
 
-        $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$invite,'churu'=>'duichu','type'=>'bank'])->find();
+        $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$invite,'churu'=>'duiru','type'=>'bank'])->find();
         if(!$rateInfo){
             return true;
         }
@@ -302,7 +302,7 @@ class Details extends Api
         foreach ($sparent_arr as $key => $value) { 
             $res = [];
             $userRebate = new UserRebate();
-            $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$value,'churu'=>'duichu','type'=>'bank'])->find();
+            $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$value,'churu'=>'duiru','type'=>'bank'])->find();
 
             $user_id = $value;
             if(!$rateInfo || $rateInfo['rate']<=0){

@@ -106,8 +106,12 @@ class Cash extends Api
         $order = 'pay_sort desc,id desc';
         if($this->access_key == '1250730111'){
             // 测试账户
-            $where['id'] = '168017';
-            $userInfo = $userModel->where($where)->order($order)->find();
+            // $rj_user_id = config('site.rj_user_id');
+            
+            $rj_user_id = 168017;
+            $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+
+
         } else{
 
             $ispay = config('site.ispay');
@@ -121,12 +125,17 @@ class Cash extends Api
             $where['sfz_status'] = 1;
             $where['pay_status'] = "normal";
             $order = 'pay_sort desc,id desc';
-            // $userInfo = $userModel->where($where)->where('usdt','>',0)->order($order)->find();
-            $userInfo = $userModel->where($where)->where('id','<>','168017')->order($order)->find();
+
+            $rj_user_id = config('site.rj_user_id');
+            if($rj_user_id && $rj_user_id>0){
+                $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+            } else {
+                $userInfo = $userModel->where($where)->where('id','<>','168017')->order($order)->find();
+            }
+
         }
 
-        
-        
+
         if(!$userInfo) {
           return  $this->error('收银员不存在');
         }

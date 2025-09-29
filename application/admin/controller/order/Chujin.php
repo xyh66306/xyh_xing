@@ -214,6 +214,14 @@ class Chujin extends Backend
                 }
  
             }
+            //取消商户订单
+            if ($params['pay_status'] == 6 && $row['pay_status']<=2) {
+                 //添加商户冻结金额
+                $Usdtlog = new Usdtlog();
+                $Usdtlog->quxiaotxLog($row['access_key'],$row['supply_usdt'],1,$row['orderid'],2);
+            }
+
+
             //是否采用模型验证
             if ($this->modelValidate) {
                 $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));

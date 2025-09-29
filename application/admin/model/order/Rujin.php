@@ -44,7 +44,7 @@ class Rujin extends Model
 
     public function getPayStatusList()
     {
-        return ['0' => __('Pay_status 0'), '1' => __('Pay_status 1'), '2' => __('Pay_status 2'), '3' => __('Pay_status 3'), '4' => __('Pay_status 4')];
+        return ['0' => __('Pay_status 0'), '1' => __('Pay_status 1'), '2' => __('Pay_status 2'), '3' => __('Pay_status 3'), '4' => __('Pay_status 4'), '5' => __('Pay_status 5')];
     }
 
     public function getStatusList()
