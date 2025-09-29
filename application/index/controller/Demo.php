@@ -30,10 +30,10 @@ class Demo extends Frontend
     {
 
 
-        $a = 1001;
-        $b = 7.21;
+        // $a = 1001;
+        // $b = 7.21;
 
-        echo truncateDecimal($a/$b,4);
+        // echo truncateDecimal($a/$b,4);
 
 
         // $Usdtlog = new Usdtlog();
@@ -82,11 +82,16 @@ class Demo extends Frontend
     public function test()
     {
 
-        $orderId = 'f932703753';
-        $merchantOrderNo = '1757319239';
-        $user_usdt = '197.7808';
 
-        $this->commission(168017,$orderId,$merchantOrderNo,$user_usdt);
+        $userModel = new User();
+        $userModel->usdt(1378.8993,168025, 8, 2,'50445');
+
+
+                    // $orderId = 'f932703753';
+        // $merchantOrderNo = '1757319239';
+        // $user_usdt = '197.7808';
+
+        // $this->commission(168017,$orderId,$merchantOrderNo,$user_usdt);
 
         
 

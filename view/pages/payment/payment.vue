@@ -31,7 +31,7 @@
 			</view>	
 			<view class="u-info">汇率</view>
 			<view class="flex u-border-bottom">
-				<view>7.21</view>
+				<view>{{biData.duiru || '' }}</view>
 			</view>											
 			<template v-if="details.pay_type=='bank'">
 				<view class="u-info">付款账户</view>
@@ -162,6 +162,7 @@
 				pay_ewm:[],
 				pay_ewm_txt:'',
 				userInfo:{},
+				biData:{},
 			}
 		},
 		onLoad(e) {
@@ -170,6 +171,24 @@
 			this.detail();
 		},
 		methods: {
+			getBiLst(){
+				uni.$u.http.post('/api/index/getBiLst', {
+					id: this.id,
+				}).then(res => {
+					if (res.code == 1) {
+						res.data.forEach(res=>{
+							if(res.default==1){
+								this.biData = res;
+							}
+						})
+					} else {
+						uni.$u.toast(res.msg);
+					}
+				
+				}).catch(res => {
+					console.log(res)
+				});
+			},			
 			copy(text){
 				uni.setClipboardData({
 					data: text,

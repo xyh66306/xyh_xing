@@ -137,8 +137,12 @@
 		},
 		onLoad() {
 			// this.getBiLst(); //所有币类型
-			this.getLst();
+			// this.getLst();
 		},	
+		onShow() {
+			this.page=1;
+			this.getLst();
+		},			
 		methods: {
 			zonghe(){
 				this.lst = [];
@@ -178,15 +182,15 @@
 				where['page'] = this.page
 				uni.$u.http.post('/api/chujin/index',where).then(res => {
 					if (res.code == 1) {
-						const _list = res.data.list;
-						this.lst = [...this.lst, ..._list];
-						if (res.data.count > this.lst.length) {
-							this.loadStatus = 'more';
-							this.page++;
-						} else {
-							// 数据已加载完毕
-							this.loadStatus = 'noMore';
-						}
+						// const _list = res.data.list;
+						this.lst = res.data.list;
+						// if (res.data.count > this.lst.length) {
+						// 	this.loadStatus = 'more';
+						// 	this.page++;
+						// } else {
+						// 	// 数据已加载完毕
+						// 	this.loadStatus = 'noMore';
+						// }
 					} else {
 						console.log(res)
 						// uni.$u.toast(res.msg);
