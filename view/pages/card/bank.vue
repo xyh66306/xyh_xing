@@ -35,7 +35,7 @@
 			<view class="item">
 				<view class="left">最高收款：</view>	
 				<view class="right">
-					<input type="number" v-model="max_cny" class="input" placeholder="请输入最低收款金额"  placeholder-class="placeholder"/>
+					<input type="number" v-model="max_cny" class="input" placeholder="请输入最高收款金额"  placeholder-class="placeholder"/>
 				</view>
 			</view>					
 			<view class="item">
@@ -67,8 +67,8 @@
 	export default {
 		data() {
 			return {
-				min_cny:0,
-				max_cny:10000,
+				min_cny:'',
+				max_cny:'',
 				id:'',
 				name:'',
 				type:1, //1CNY 2THB 3INR
@@ -128,6 +128,8 @@
 						this.bank_nums = res.data.bank_nums
 						this.bank_zhmc = res.data.bank_zhmc
 						this.radiovalue1 = res.data.status
+						this.min_cny = res.data.min_cny
+						this.max_cny = res.data.max_cny
 					}
 				})	
 			},

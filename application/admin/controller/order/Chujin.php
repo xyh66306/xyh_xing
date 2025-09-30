@@ -108,15 +108,21 @@ class Chujin extends Backend
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
 
             $list = $this->model
-                ->with(['user'])
                 ->where($where)
                 ->order($sort, $order)
                 ->paginate($limit);
 
+
             foreach ($list as $row) {
                 $row->visible(['id', 'user_id','orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image']);
+                $UserModel = new UserModel();
 
-                $row->getRelation('user')->visible(['nickname']);
+                if($row->user_id){
+                    $row->nickname = $UserModel->where('id',$row->user_id)->value('nickname');
+                } else {
+                    $row->nickname = '--';
+                    $row->user_id = 0;
+                }
             }
 
             $result = array("total" => $list->total(), "rows" => $list->items());
