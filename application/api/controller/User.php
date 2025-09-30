@@ -728,7 +728,16 @@ class User extends Api
      */
     public function czusdt(){ 
 
+        $UsdtModel = new UsdtModel();
+
         $post = $this->request->post();
+
+        $info = $UsdtModel->where("user_id",$this->auth->id)->where("status","hidden")->find();
+        if($info){
+            $this->error("存在待审核的订单");
+        }
+
+        
         $post['user_id'] = $this->auth->id;
         $post['status'] = 'hidden';
 
@@ -740,7 +749,6 @@ class User extends Api
         }
         $post['act_num'] = $post['num']-$post['fee'];
         $post['bianhao'] = getOrderNo('withdraw');
-        $UsdtModel = new UsdtModel();
         $res = $UsdtModel->allowField(true)->save($post);
         if($res){
             $this->success("添加成功");

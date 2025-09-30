@@ -158,10 +158,11 @@ class Cash extends Api
             $BiModel = new BiModel();
             $info = $BiModel->where(['default'=>1,'status'=>1])->find();
 
-            $usdt = truncateDecimal($params['amount'] / $info['duiru']);     //CNY 转 USDT(接收的cny/兑入汇率7.26)
+            $usdt = truncateDecimal($params['amount'] / $info['duiru']);     //CNY 转 USDT(接收的cny/兑入汇率7.25)
             if($params['diqu']==1){
-                $supply_rate = config('site.fee_dalu_supply_duiru');
-                $supply_fee = $supply_rate && $supply_rate>0 ? sprintf('%.4f',truncateDecimal($usdt * $supply_rate/100,4)):0;
+                // $supply_rate = config('site.fee_dalu_supply_duiru');
+                // $supply_fee = $supply_rate && $supply_rate>0 ? sprintf('%.4f',truncateDecimal($usdt * $supply_rate/100,4)):0;
+                $supply_fee = $usdt - truncateDecimal($params['amount'] / 7.26);
                 $supply_usdt = $usdt - $supply_fee;  
 
                 $user_rate = config('site.fee_dalu_user_duiru');
@@ -169,8 +170,9 @@ class Cash extends Api
                 $user_usdt = $usdt + $user_fee;  //加上用户汇率差 审核时候扣除
 
             } elseif($params['diqu']==2){
-                $supply_rate = config('site.fee_jc_supply_duiru');
-                $supply_fee = $supply_rate && $supply_rate>0 ? sprintf('%.4f',truncateDecimal($usdt * $supply_rate/100,4)):0;
+                // $supply_rate = config('site.fee_jc_supply_duiru');
+                // $supply_fee = $supply_rate && $supply_rate>0 ? sprintf('%.4f',truncateDecimal($usdt * $supply_rate/100,4)):0;
+                $supply_fee = $usdt - truncateDecimal($params['amount'] / 7.26);
                 $supply_usdt = $usdt - $supply_fee;
 
                 $user_rate = config('site.fee_jc_user_duiru');
