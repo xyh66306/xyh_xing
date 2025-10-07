@@ -5,13 +5,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'company/profit/index' + location.search,
-                    add_url: 'company/profit/add',
-                    edit_url: 'company/profit/edit',
-                    del_url: 'company/profit/del',
-                    multi_url: 'company/profit/multi',
-                    import_url: 'company/profit/import',
-                    table: 'company_profit',
+                    index_url: 'bank/index' + location.search,
+                    add_url: 'bank/add',
+                    edit_url: 'bank/edit',
+                    del_url: 'bank/del',
+                    multi_url: 'bank/multi',
+                    import_url: 'bank/import',
+                    table: 'bank',
                 }
             });
 
@@ -26,14 +26,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
-                        {field: 'source_id', title: __('Source_id'), operate: 'LIKE'},
-                        {field: 'type', title: __('Type'),searchList: {"1":__('Type 1'),"2":__('Type 2'),"3":__('Type 3'),"4":__('Type 4'),"5":__('Type 5'),"6":__('Type 6'),"7":__('Type 7'),"8":__('Type 8'),"9":__('Type 9'),"10":__('Type 10')}, formatter: Table.api.formatter.normal},
-                        {field: 'user_type', title: __('User_type'), searchList: {"1":__('User_type 1'),"2":__('User_type 2'),"3":__('User_type 3')}, formatter: Table.api.formatter.normal},
-                        {field: 'flow_type', title: __('Flow_type'), searchList: {"1":__('Flow_type 1'),"2":__('Flow_type 2')}, formatter: Table.api.formatter.normal},
-                        {field: 'order_usdt', title:"交易数量", operate:'BETWEEN'},
-                        {field: 'usdt', title: __('Usdt'), operate:'BETWEEN'},
-                        {field: 'before', title: __('Before'), operate:'BETWEEN'},
-                        {field: 'after', title: __('After'), operate:'BETWEEN'},                        
+                        {field: 'bank_name', title: __('Bank_name'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
+                        {field: 'bank_code', title: __('Bank_code'), operate: 'LIKE'},
+                        {field: 'status', title: __('Status'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.status},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]

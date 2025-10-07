@@ -27,6 +27,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 columns: [
                     [
                         {checkbox: true},
+						{field: 'id', title: "ID"},
                         {field: 'orderid', title: __('Orderid'), operate: 'LIKE'},
                         {field: 'merchantOrderNo', title: __('Merchantorderno'), operate: 'LIKE'},
                         {field: 'realName', title: __('Realname'), operate: 'LIKE'},
