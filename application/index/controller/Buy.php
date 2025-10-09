@@ -92,7 +92,7 @@ class Buy extends Frontend
         $data['signature'] = $sign;
         $data['backurl'] = 'https://bingocn.wobeis.com/index/index/ceshi';
         $data['orderid'] = "casher".date("YmdHis",time());
-        $data['amount'] = '43560';
+        $data['amount'] = '3625';
         $data['diqu'] = 1;
         $data['payername'] = '李四';
 

@@ -36,7 +36,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'bankBranchName', title: __('Bankbranchname'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         // {field: 'pay_type', title: __('Pay_type'), searchList: {"qtpay":__('Pay_type qtpay'),"wxpay":__('Pay_type wxpay'),"alipay":__('Pay_type alipay')}, formatter: Table.api.formatter.normal},
                         {field: 'pay_ewm_image', title: __('Pay_ewm_image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
-                        {field: 'withdrawCurrency', title: "提现金额(CNY)", operate: 'LIKE'},
+                        {field: 'withdrawAmount', title: "提现金额(CNY)", operate: 'LIKE'},
                         // {field: 'usdt', title: "结算数量(USDT)", operate: 'LIKE'},
                         // {field: 'supply_fee', title: "手续费(USDT)", operate: 'LIKE'},
                         {field: 'user_usdt', title: "承兑商结算数量(USDT)", operate: 'LIKE'},
