@@ -140,6 +140,9 @@
 				if(!this.num){
 					return uni.$u.toast("请输入数量")
 				}
+				if(!this.hash){
+					return uni.$u.toast("请输入哈希值")
+				}				
 				uni.$u.http.post('/api/user/czusdt',{
 					hash:this.hash,
 					remark:this.remark,
