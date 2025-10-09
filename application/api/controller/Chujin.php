@@ -296,7 +296,11 @@ class Chujin extends Api
      */
     public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
     {
-
+		$fanyong = config("site.fanyong");
+		
+		if($fanyong==0){
+			return;
+		}
         $Commission = new Commission();
         $userModel  = new UserModel();
 

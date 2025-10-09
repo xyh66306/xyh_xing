@@ -312,7 +312,7 @@ class Rujin extends Backend
         $result = false;
         Db::startTrans();
         try {
-            if ($params['pay_status'] == 4 && $row['callback']) {
+            if ($params['pay_status'] == 4 && $row['pay_status'] != 4 && $row['callback']) {
 
                 $row['act_amount'] = $params['amount'];
                 $params['pay_time'] = time();

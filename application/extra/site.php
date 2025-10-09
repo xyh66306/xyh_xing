@@ -42,11 +42,11 @@ return array (
   ),
   'recharge' => 
   array (
-    'TRC-20' => '',
-    'BSC/BEP-20' => '0x6e6b4957ec141e764e73087713142ad3667f1e83',
+    'TRC-20' => 'TTqsaYD98Gtqg5nHokuf8tZuiNkjfXvtwb',
+    'BSC/BEP-20' => '0x3B769fB6eb7EBF7D84a8D5e3F00444C1070E0E79',
   ),
   'fee_zhuan' => '2',
-  'fee_ti' => '0',
+  'fee_ti' => '5',
   'admin_money_txfee' => '0',
   'admin_money_txbili' => '0',
   'admin_usdt_txfee' => '0',
@@ -59,10 +59,12 @@ return array (
   'fee_chongzhi' => '0',
   'fee_dalu_supply_duiru' => '2.5',
   'fee_jc_supply_duiru' => '3.5',
-  'fee_dalu_user_duiru' => '2.5',
+  'fee_dalu_user_duiru' => '0',
   'fee_jc_user_duiru' => '3.5',
   'fee_dalu_supply_duichu' => '0.5',
   'fee_jc_supply_duichu' => '0.5',
   'ispay' => '1',
   'tbpay_switch' => '1',
+  'rj_user_id' => '0',
+  'fanyong' => '1',
 );

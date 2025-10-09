@@ -124,9 +124,9 @@ class Usdtlog extends Model
         $supply = new Supply();
         $info = $supply->where('access_key', $supply_id)->find();
         $after = $info['usdt'] - $usdt;
-        if ($after < 0) {
-            return false;
-        }
+        // if ($after < 0) {
+        //     return false;
+        // }
         Db::startTrans();
         try {
             $data = [

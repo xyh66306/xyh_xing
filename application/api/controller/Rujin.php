@@ -108,6 +108,7 @@ class Rujin extends Api
 
         $data['ctime'] = date("Y-m-d H:i:s", $data['ctime']);
         $data['pay_ewm_image'] = $data['pay_ewm_image'] ? _sImage($data['pay_ewm_image']) : '';
+        $data['pinzheng_image'] = $data['pinzheng_image'] ? _sImage($data['pinzheng_image']) : '';
         $this->success('', $data);
     }
 

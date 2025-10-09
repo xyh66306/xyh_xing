@@ -1,6 +1,6 @@
 <?php
 
-namespace app\openapi\controller;
+namespace app\index\controller;
 
 use app\common\controller\Api;
 use app\common\model\Supply;
@@ -23,52 +23,10 @@ use think\Request;
 class Cash extends Api
 {
 
-    use Send;
     protected $noNeedRight = ['index'];
     protected $noNeedLogin = ['index'];
 
     protected $access_key = "";
-    public function __construct(Request $request)
-    {
-        parent::__construct(); // 确保调用父类构造函数
-
-        $this->request = $request;
-        $header = $this->request->header();
-
-        // 使用 input() 方法获取请求参数
-        if(empty($header['accesskey'])) {
-            $this->error('accesskey错误');
-        }
-        if(empty($header['gmtrequest'])) {
-            $this->error('请求时间错误');
-        }
-
-        if(empty($header['randomstr'])  && $header['randomstr'] != '32' ) {
-            $this->error('获取随机字符串错误');
-        }     
-        $time = time();
-        if($header['gmtrequest']+600<=$time){
-            $this->error('时间过期');
-        }
-
-        $supplyModel = new Supply();
-        $info = $supplyModel->where('access_key',$header['accesskey'])->find();
-
-        $this->access_key = $header['accesskey'];
-
-        if(empty($info)){
-            $this->error('商户不存在');
-        }
-
-        $params = [
-            'accesskey'    => $header['accesskey'],
-            'gmtrequest'    => $header['gmtrequest'],
-            'randomstr'     => $header['randomstr'],
-            'signature'     => $header['signature'],
-        ];
-        #先鉴权
-        $this->Authentication($params, $info['access_secret']);
-    }
 
 
     /**
@@ -79,12 +37,12 @@ class Cash extends Api
 
 
         $params = [
-            'orderid'    => $this->request->param('orderid',''),
-            'amount'    => $this->request->param('amount',''),
-            'payername'=> $this->request->param('payername',''),
-            'diqu'    => $this->request->param('diqu',1),
-            'backurl' => $this->request->param('backurl',''),
-            'yx_time' => $this->request->param('yx_time',60*20), // 900秒
+            'orderid'    => date("YmsHis").rand(1000,9999),
+            'amount'    => 43560,
+            'payername'=> "测试",
+            'diqu'    => 1,
+            'backurl' => 'https://bingocn.wobeis.com/index/index/ceshi',
+            'yx_time' => 900, // 900秒
         ];
         if(empty($params['orderid'])) {
             $this->error('订单号错误');
@@ -104,44 +62,33 @@ class Cash extends Api
 
         $where = [];
         $order = 'pay_sort desc,id desc';
-        if($this->access_key == '1250730111'){
-            // 测试账户
-            // $rj_user_id = config('site.rj_user_id');
-            
-            $rj_user_id = 168017;
+        $ispay = config('site.ispay');
+
+        // if($ispay && $ispay != '1'){
+        //     $this->error('系统维护中');
+        // }
+        $access_key = "1250803358";
+
+        $where['diqu'] = $params['diqu'];
+        $where['status'] = "normal";
+        $where['sfz_status'] = 1;
+        $where['pay_status'] = "normal";
+        $order = 'pay_sort desc,id desc';
+
+        $rj_user_id = config('site.rj_user_id');
+        if($rj_user_id && $rj_user_id>0){
             $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
-
-
-        } else{
-
-            $ispay = config('site.ispay');
-
-            if($ispay && $ispay != '1'){
-                $this->error('系统维护中');
-            }
-
-            $where['diqu'] = $params['diqu'];
-            $where['status'] = "normal";
-            $where['sfz_status'] = 1;
-            $where['pay_status'] = "normal";
-            $order = 'pay_sort desc,id desc';
-
-            $rj_user_id = config('site.rj_user_id');
-            if($rj_user_id && $rj_user_id>0){
-                $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
-            } else {
-                $userInfo = $userModel->where($where)->where('id','<>','168017')->where("min_cny",'>=',0)->where("max_cny",'>=',$params['amount'])->order($order)->find();
-            }
-
-
+        } else {
+            $userInfo = $userModel->where($where)->where('id','<>','168017')->where("min_cny",'>=',0)->where("max_cny",'>=',$params['amount'])->order($order)->find();
         }
-
-        $supplyModel = new Supply();
-        $supplyinfo = $supplyModel->where('access_key',$this->access_key)->find();
-
         if(!$userInfo) {           
           return  $this->error('收银员不存在');
         }
+
+        $supplyModel = new Supply();
+        $supplyinfo = $supplyModel->where('access_key',$access_key)->find();
+
+
         $UserBankcard = new UserBankcard();
         $count = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->where("min_cny",'>=',0)->where("max_cny",'>=',$params['amount'])->count();
 
@@ -156,8 +103,8 @@ class Cash extends Api
             return $this->error('订单编号已存在');
         }
 
-        Db::startTrans();
-        try{ 
+        // Db::startTrans();
+        // try{ 
 
             $BiModel = new BiModel();
             $info = $BiModel->where(['default'=>1,'status'=>1])->find();
@@ -213,7 +160,8 @@ class Cash extends Api
                 'utime' => $time,
             ];
 
-
+            dump($data);
+            return;
 
             $res = $rujinModel->insert($data);
             
@@ -223,19 +171,19 @@ class Cash extends Api
 
             $userModel->where('id','<>', $userInfo['id'])->setInc('pay_sort',1);
             $userModel->update(['pay_sort'=>1],['id'=>$userInfo['id']]);
-            Db::commit();
+        //     Db::commit();
 
-        } catch(\Exception $e) {
-            Db::rollback();
-            return $this->error($e->getMessage());
-        }
+        // } catch(\Exception $e) {
+        //     Db::rollback();
+        //     return $this->error($e->getMessage());
+        // }
 
 
-        if($res){
-            return $this->success('success',request()->domain().'/cash/#/?orderid='.$params['orderid'].'&access_key='.$this->access_key);
-        }else{
-            return $this->error('fail');
-        }
+        // if($res){
+        //     return $this->success('success',request()->domain().'/cash/#/?orderid='.$params['orderid'].'&access_key='.$this->access_key);
+        // }else{
+        //     return $this->error('fail');
+        // }
 
     }
 

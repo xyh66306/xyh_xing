@@ -72,14 +72,17 @@
 						<template v-if="details.pay_type=='wxpay'">微信</template>
 					
 					</view>
-				</view>
-				<view class="u-info">付款二维码</view>
-				<view class="flex u-border-bottom">
+				</view>			
+			</template>	
+		
+			<template v-if="details.pay_ewm_image">
+				<view class="u-info">付款凭证</view>
+				<view class="flex u-border-bottom" @click="previewImage()">
 					<view>
 						<image :src="details.pay_ewm_image" class="pay_ewm_img"></image>
 					</view>
-				</view>				
-			</template>	
+				</view>		
+			</template>		
 			<template v-if="details.ctime"> 
 				<view class="u-info">发起时间</view>
 				<view class="flex u-border-bottom">
@@ -169,8 +172,18 @@
 			this.userInfo = uni.getStorageSync('user') || {};
 			this.orderid = e.orderid
 			this.detail();
+			this.getBiLst();
 		},
 		methods: {
+			previewImage(index) {
+			  const urls = [
+				this.details.pay_ewm_image
+			  ];
+			  uni.previewImage({
+				current: 1,
+				urls: urls
+			  });
+			},				
 			getBiLst(){
 				uni.$u.http.post('/api/index/getBiLst', {
 					id: this.id,
@@ -254,6 +267,7 @@
 							usdt:data.usdt,
 							huilv:data.huilv,
 							withdrawAmount:data.withdrawAmount, 
+							pay_ewm_image:data.pay_ewm_image,
 							ctime:data.ctime, 
 						}
 						if(data.pinzheng_image){

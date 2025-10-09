@@ -15,6 +15,8 @@ use app\common\model\Bi as BiModel;
 use app\common\model\company\Profit as companyProfit;
 use app\common\model\Commission;
 use app\admin\model\supply\Usdtlog;
+use app\admin\model\user\usdt\Log as UsdtLogModel;
+use app\admin\model\user\Usdt as UsdtModel;
 use think\Queue;
 use think\Db;
 
@@ -28,55 +30,164 @@ class Demo extends Frontend
 
     public function index()
     {
+        // $model = new UsdtModel();
+
+        // $user_czLst = $model->order("id desc")->select();
+
+        // foreach($user_czLst as $k=>$row){
+        //     $usdtLog = new UsdtLogModel();
+        //     $usdtLog->addLog($row['user_id'],2,1,$row['act_num']);
+        //     $model = new UsdtModel();
+        //     $model->update(['status'=>'normal'],['id'=>$row['id']]);
+        // }
+      
+        
+       /* $Rujin = new Rujin();
+        $list = $Rujin->order("id desc")->select();
+        foreach($list as $k=>$v){
+
+            // //承兑商确认模拟
+            // $userModel = new User();
+            // //添加usdt_dj 冻结金额
+            // $userModel->usdt_dj($v['user_usdt'],$v['user_id'], 8, 1);
+            // //扣除usdt 金额
+            // $userModel->usdt($v['user_usdt'], $v['user_id'], 8, 2);
+
+            // $Rujin = new Rujin();
+            // $Rujin->update(['pay_status' => 3], ['id' => $v['id']]);
+
+            // //模拟后台确认
+            // //增加商户USDT
+            // $SpullyUsdtLog = new Usdtlog();
+            // $SpullyUsdtLog->addLog($v['pintai_id'], $v['supply_usdt'], 1, 1, $v['orderid']);
+            // //减少用户usdt_dj 冻结金额
+            // $userModel = new User();
+            // $userModel->usdt_dj($v['user_usdt'],$v['user_id'], 6, 2);
+
+            // //添加公司金额
+            // $companyProfit1 = new companyProfit();
+            // $companyProfit1->addLog($v['usdt'],$v['supply_fee'],1,1,1,$v['orderid']);   
+
+            // $companyProfit2 = new companyProfit();
+            // $companyProfit2->addLog($v['usdt'],$v['user_fee'],1,3,1,$v['orderid']);             
+
+            // $Rujin = new Rujin();
+            // $Rujin->update(['pay_status' => 4], ['id' => $v['id']]);
+
+            //更新时间
+            // $info = Db::name("company_profit")->where(['type'=>1,'user_type'=>1,'order_usdt'=>$v['usdt']])->find();
+            // if($info){
+            //     Db::name("company_profit")->where(['type'=>1,'user_type'=>1,'order_usdt'=>$v['usdt']])->update(['createtime'=>$v['ctime']+3600*4]);
+            //     Db::name("company_profit")->where(['type'=>1,'user_type'=>3,'order_usdt'=>$v['usdt']])->update(['createtime'=>$v['ctime']+3600*4]);
+            // } else {
+            //     echo Db::name("company_profit")->getlastsql();
+            //     dump($info);
+            // }
+
+            // $info2 = Db::name("user_usdt_log")->where(['type'=>8,'usdt'=>$v['user_usdt']])->find();
+            // if($info2){
+            //     Db::name("user_usdt_log")->where(['type'=>8,'usdt'=>$v['user_usdt']])->update(['createtime'=>$v['ctime']+3600*2]);
+            //     Db::name("supply_usdt_log")->where(['type'=>1,'usdt'=>$v['supply_usdt']])->update(['createtime'=>$v['ctime']+3600*2]);
+            // }else {
+            //     echo Db::name("user_usdt_log")->getlastsql();
+            //     dump($info2);
+            // }
 
 
-        // $a = 1001;
-        // $b = 7.21;
-
-        // echo truncateDecimal($a/$b,4);
+        }*/
 
 
-        // $Usdtlog = new Usdtlog();
-        // $usdt = '1987.4474';
-        // $orderid = 'f540827457';
-        // $Usdtlog->addtxLog('1250803358',$usdt,2,$orderid,2);
+        /*     
+        $Chujin = new Chujin();
+        $list = $Chujin->order("id desc")->select();
+        foreach($list as $k=>$v){
 
-        // $model = new Chujin();
-        // $list = $model->select();
 
-        // foreach ($list as $k => $row) { 
-        //     $Usdtlog = new Usdtlog();
-        //     $Usdtlog->addtxLog('1250803358',$row['supply_usdt'],2,$row['orderid'],2);
+            //扣除商户冻结金额
+            // $Usdtlog = new Usdtlog();
+            // $Usdtlog->addtxLog($v['access_key'],$v['supply_usdt'],2,$v['orderid'],2);
+            // $data = [
+            //     'pay_status' =>3
+            // ];
+            // $Chujin = new Chujin();
+            // $res = $Chujin->update($data,['orderid'=>$v['orderid']]);
+
+            // $userModel = new User();
+            // //添加用户冻结金额
+            // $res2 =  $userModel->usdt_dj($v['user_usdt'],$v['user_id'],6,1);
+            // //添加用户金额
+            // $res3 =  $userModel->usdt($v['user_usdt'],$v['user_id'],7,1);
+
+            // if($v['id']>=6){
+            //      $this->commission($v['user_id'],$v['orderid'],$v['merchantOrderNo'],$v['user_usdt']);
+            // } 
+           
+            //  //模拟后台确认
+            // $Usdtlog = new Usdtlog();
+            // //扣除商户冻结金额
+            // $res = $Usdtlog->authtxLog($v['access_key'],$v['supply_usdt'],$v['orderid']);                 
+            // $userModel = new User();
+            // $res2 = $userModel->usdt_dj($v['user_usdt'],$v['user_id'],7,2);
+            // $companyProfit1 = new companyProfit();
+            // $res3 =  $companyProfit1->addLog($v['usdt'],$v['supply_fee'],2,3,1,$v['orderid']);                   
+            // $companyProfit2 = new companyProfit();
+            // $res4 = $companyProfit2->addLog($v['usdt'],$v['user_fee'],2,1,1,$v['orderid']); 
+
+            // //添加代理商佣金
+            // $commissionModel = new Commission();
+
+            // $comlist = $commissionModel->where("fy_orderid",$v['orderid'])->select();
+            // $comSum  = $commissionModel->where("fy_orderid",$v['orderid'])->sum('money');
+            // if($comSum>0){
+            //     foreach ($comlist as $vo) {
+            //         $userModel = new User();
+            //         $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$v['orderid']);
+            //     }
+
+            //     $companyProfit3 = new companyProfit();
+            //     $res5 = $companyProfit3->addLog($v['usdt'],$comSum,10,2,2,$v['orderid']); 
+            //     $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$v['orderid']]);
+            // }    
+               
+            // $data = [
+            //     'pay_status' =>5
+            // ];
+            // $Chujin = new Chujin();
+            // $res = $Chujin->update($data,['orderid'=>$v['orderid']]);
+            
+
+
+            Db::name("user_usdt_log")->where(['user_id'=>$v['user_id'],'usdt'=>$v['user_usdt'],'type'=>7])->update(['createtime'=>$v['createtime']+3600*4]);
+            Db::name("supply_usdt_log")->where(['type'=>2,'usdt'=>$v['supply_usdt']])->update(['createtime'=>$v['createtime']+3600*4]);
+            // $info = Db::name("company_profit")->where(['type'=>2,'user_type'=>1,'usdt'=>$v['user_fee']])->find();
+            // var_dump($info);
+
+
+            // Db::name("company_profit")->where(['type'=>2,'user_type'=>1,'usdt'=>$v['user_fee']])->update(['createtime'=>$v['createtime']+3600*4]);
+            // Db::name("company_profit")->where(['type'=>2,'user_type'=>3,'usdt'=>$v['supply_fee']])->update(['createtime'=>$v['createtime']+3600*4]);
+
+        }*/
+
+        //充值修改时间
+        // $list = Db::name("user_usdt")->select();
+        // foreach($list as $k=>$v){
+        //     Db::name("user_usdt_log")->where("type",2)->where('usdt',$v['num'])->update(['createtime'=>$v['createtime']+3600*3]);
         // }
 
 
+        // $userModel = new User();
 
-        // $rujin = new Rujin();
-        // $orderid = 44544;
-        // $row = $rujin->where('orderid', $orderid)->find();
-
-        // $model = new Chujin();
-        // $list = $model->where('id',6)->select();
-
-        // foreach ($list as $k => $row) { 
-        //     $companyProfit1 = new companyProfit();
-        //     $companyProfit1->addLog($row['usdt'],$row['supply_fee'],2,3,1,$row['orderid']);   
-        //     $companyProfit2 = new companyProfit();
-        //     $companyProfit2->addLog($row['usdt'],$row['user_fee'],2,1,1,$row['orderid']); 
-        // }
-        // $model = new Rujin();
-        // $list = $model->where('pay_status', 4)->select();
-
-        // foreach ($list as $k => $row) {
-        //     $companyProfit1 = new companyProfit();
-        //     $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 1, 3, 1, $row['orderid']);
-        //     $companyProfit2 = new companyProfit();
-        //     $companyProfit2->addLog($row['usdt'], $row['user_fee'], 1, 1, 1, $row['orderid']);
-        // }
+        // $usdt = 3309.1667;
+        // $remark = "";
+        // // //转账扣除
+        // $ret = $userModel->usdt($usdt,168031,1,2,$remark,'转出:1171746715@qq.com');
+        // // //转账对象增加
+        // $ret = $userModel->usdt($usdt,168025,1,1,$remark,'转入:604647740@qq.com');
 
 
+        //     $usdtlogModel = new Usdtlog();
+        //     $res =  $usdtlogModel->addtxLog("1250803358",5000, '2', '提现申请',3);
 
-        // return $this->view->fetch();
     }
 
     public function test()
@@ -103,7 +214,11 @@ class Demo extends Frontend
      */
     public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
     {
-
+		// $fanyong = config("site.fanyong");
+		
+		// if($fanyong==0){
+		// 	return;
+		// }
         $Commission = new Commission();
         $userModel  = new User();
 

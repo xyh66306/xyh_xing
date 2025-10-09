@@ -51,7 +51,6 @@
 					</u-col>
 				</u-row>
 			</view>
-
 		</view>
 		<view v-if="open_team">
 			<view class="money">

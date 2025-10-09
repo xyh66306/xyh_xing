@@ -30,7 +30,7 @@ class Sell extends Frontend
         $orderNo = '555666';
         $customerId = '393';
         $orderCurrency = "CNY";
-        $orderAmount = 100;
+        $orderAmount = 1000;
         $exchangeRate = 7.13;
         $md5_key = 'sgFTS4BbMg';
 

@@ -5,6 +5,12 @@
 			<view class="flex u-border-bottom">
 				<view>{{details.orderid}}</view>
 			</view>		
+			<template  v-if="details.payername">
+				<view class="u-info">付款人</view>
+				<view class="flex u-border-bottom">
+					<view>{{details.payername}}</view>
+				</view>	
+			</template>			
 			<view class="u-info">订单金额</view>
 			<view class="flex u-border-bottom">
 				<view>{{details.amount}}</view>
@@ -47,7 +53,7 @@
 			
 			</template>
 			<view class="u-info">凭证</view>
-			<view class="flex u-border-bottom">
+			<view class="flex u-border-bottom" @click="previewImage()">
 				<image :src="details.pinzheng_image" class="pay_ewm_img"></image>
 			</view>					
 			<template v-if="details.ctime"> 
@@ -94,6 +100,15 @@
 			this.getPayDetails();
 		},
 		methods: {
+			previewImage(index) {
+			  const urls = [
+				this.details.pinzheng_image
+			  ];
+			  uni.previewImage({
+				current: 1,
+				urls: urls
+			  });
+			},			
 			open() {
 			  // this.show = true
 			},
