@@ -21,6 +21,11 @@
                         <a href="javascript:;" class="btn btn-success btn-edit btn-disabled disabled {:$auth->check('order/rujin/edit')?'':'hide'}" title="{:__('Edit')}" ><i class="fa fa-pencil"></i> {:__('Edit')}</a>
                         <a href="javascript:;" class="btn btn-danger btn-del btn-disabled disabled {:$auth->check('order/rujin/del')?'':'hide'}" title="{:__('Delete')}" ><i class="fa fa-trash"></i> {:__('Delete')}</a>
                         
+                        <a href="javascript:;" class="btn btn-default" style="font-size:14px;color:dodgerblue;">
+                            <span class="extend">
+                                结算数量: <span id="supply_price">0</span>usdt&nbsp;手续费: <span id="fee">0</span>usdt&nbsp;
+                            </span>
+                        </a>                          
 
                         <div class="dropdown btn-group {:$auth->check('order/rujin/multi')?'':'hide'}">
                             <a class="btn btn-primary btn-more dropdown-toggle btn-disabled disabled" data-toggle="dropdown"><i class="fa fa-cog"></i> {:__('More')}</a>

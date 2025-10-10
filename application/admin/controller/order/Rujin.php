@@ -122,8 +122,14 @@ class Rujin extends Backend
                 $row->getRelation('supply')->visible(['title']);
                 $row->fee = $row->supply_fee;
             }
+            $supply_price = $this->model->where("pay_status",4)->cache(3600)->sum("supply_usdt");
+            $user_price = $this->model->where("pay_status",4)->cache(3600)->sum("user_usdt");
+            $user_fee = $this->model->where("pay_status",4)->cache(3600)->sum("user_fee");
+            $supply_fee = $this->model->where("pay_status",4)->cache(3600)->sum("supply_fee");
+            $company_price =  $user_fee + $supply_fee;
 
-            $result = array("total" => $list->total(), "rows" => $list->items());
+
+            $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('supply_price','user_price','company_price'));
 
             return json($result);
         }
@@ -133,70 +139,6 @@ class Rujin extends Backend
 
     public function supply()
     {
-
-        /*
-        $adminAuths = $this->auth->getGroups($this->auth->id);
-        $authIds = '';
-        if (!empty($adminAuths)) {
-            foreach ($adminAuths as $k => $v) {
-                $authIds .= $v['id'] . ',';
-            }
-        }
-        $authIds = rtrim($authIds, ',');
-        $authGroup = model('auth_group')->where('id', 'in', $authIds)->where('isBoothView', 1)->find();
-        $isBoothView = 0;
-        if (!empty($authGroup)) {
-            $isBoothView = 1;
-        }
-        $this->assignconfig('isBoothView', $isBoothView);
-
-        $diqu = '';
-        $group_ids = $this->auth->getGroupIds($this->auth->id);
-
-
-        if ($group_ids[0] == 3 || $group_ids[0] == 7) {
-            $diqu = 1;
-        } elseif ($group_ids[0] == 5 || $group_ids[0] == 8) {
-            $diqu = 2;
-        } elseif ($group_ids[0] == 6 || $group_ids[0] == 9) {
-            $diqu = 3;
-        }
-
-        //当前是否为关联查询
-        $this->relationSearch = true;
-        //设置过滤方法
-        $this->request->filter(['strip_tags', 'trim']);
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
-
-        if ($diqu) {
-            $list = $this->model
-                ->with(['supply'])
-                ->where($where)
-                ->where('diqu', $diqu)
-                ->order($sort, $order)
-                ->paginate($limit);
-        } else {
-            $list = $this->model
-                ->with(['supply'])
-                ->where($where)
-                ->order($sort, $order)
-                ->paginate($limit);
-        }
-
-
-        foreach ($list as $row) {
-            $row->visible(['id', 'orderid', 'amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt']);
-            $row->visible(['supply']);
-            $row->getRelation('supply')->visible(['title']);
-            $row->fee = $row->supply_fee;
-        }
-
-        // 获取分页显示
-        $page = $list->render();
-        // 模板变量赋值
-        $this->assign('list', $list);
-        $this->assign('page', $page);
-        return $this->view->fetch();*/
 
         $supplyModel = new Supply();
         $admin_id = $this->auth->id;
@@ -232,8 +174,9 @@ class Rujin extends Backend
                 $row->getRelation('supply')->visible(['title']);
                 $row->fee = $row->supply_fee;
             }
-
-            $result = array("total" => $list->total(), "rows" => $list->items());
+            $supply_price = $this->model->where("pay_status",4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_usdt");
+            $supply_fee = $this->model->where("pay_status",4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_fee");
+            $result = array("total" => $list->total(), "rows" => $list->items(),'extend'=>compact('supply_price','supply_fee'));
 
             return json($result);
         }

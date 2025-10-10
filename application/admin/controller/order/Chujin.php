@@ -114,7 +114,7 @@ class Chujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'user_id','orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image','withdrawAmount']);
+                $row->visible(['id', 'user_id','orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image']);
                 $UserModel = new UserModel();
 
                 if($row->user_id){
@@ -124,8 +124,14 @@ class Chujin extends Backend
                     $row->user_id = 0;
                 }
             }
+            $supply_price = $this->model->where("pay_status",5)->cache(3600)->sum("supply_usdt");
+            $user_price = $this->model->where("pay_status",5)->cache(3600)->sum("user_usdt");
+            $user_fee = $this->model->where("pay_status",5)->cache(3600)->sum("user_fee");
+            $supply_fee = $this->model->where("pay_status",5)->cache(3600)->sum("supply_fee");
 
-            $result = array("total" => $list->total(), "rows" => $list->items());
+            $company_price =  $user_fee + $supply_fee;
+
+            $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('supply_price','user_price','company_price'));
 
             return json($result);
         }
@@ -408,7 +414,10 @@ class Chujin extends Backend
                 $row->visible(['id', 'orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image']);
             }
 
-            $result = array("total" => $list->total(), "rows" => $list->items());
+            $supply_price = $this->model->where("pay_status",5)->where('access_key', $supply_info['access_key'])->cache(3600)->sum("supply_usdt");
+            $supply_fee = $this->model->where("pay_status",5)->where('access_key', $supply_info['access_key'])->cache(3600)->sum("supply_fee");
+       
+            $result = array("total" => $list->total(), "rows" => $list->items(),'extend'=>compact('supply_price','supply_fee'));
 
             return json($result);
         }
