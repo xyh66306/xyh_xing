@@ -48,7 +48,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'supply_fee',  title: __('Supply Fee')},                        
                         {field: 'fee',  title: __('Fee')},
                         {field: 'bi_type', title: __('Bi_Type')},
-                        {field: 'order_status',  title: "超时", searchList: {"1":"否","2":"是"},formatter: Table.api.formatter.status},
+                        {field: 'order_status',  title: "超时", searchList: {"1":"否","2":"是"}},
                         {field: 'payername', title: __('Payername')},
                         {field: 'pinzheng_image', title: __('Pinzheng_image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
                         {field: 'pay_status', title: __('Pay_status'), searchList: {"0":__('Pay_status 0'),"1":__('Pay_status 1'),"2":__('Pay_status 2'),"3":__('Pay_status 3'),"4":__('Pay_status 4'),"5":__('Pay_status 5')}, formatter: Table.api.formatter.status},
@@ -75,6 +75,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 } else {
                     table.bootstrapTable('hideColumn', 'fee');
                 }
+
+                $("#supply_price").text(data.extend.supply_price);
+                $("#company_price").text(data.extend.company_price);
+                $("#user_price").text(data.extend.user_price);
+
             });
 
 
@@ -116,7 +121,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'usdt',  title: __('Order Usdt')},
                         {field: 'supply_fee',  title: __('Supply Fee')},
                         {field: 'supply_usdt',  title: __('Act Usdt')},
-                        {field: 'pay_status', title: __('Pay_status'), searchList: {"0":__('Pay_status 0'),"1":__('Pay_status 1'),"2":__('Pay_status 2'),"3":__('Pay_status 3'),"4":__('Pay_status 4')}, formatter: Table.api.formatter.status},
+                        {field: 'pay_status', title: __('Pay_status'), searchList: {"0":__('Pay_status 0'),"1":__('Pay_status 1'),"2":__('Pay_status 2'),"3":__('Pay_status 3'),"4":__('Pay_status 4'),"5":__('Pay_status 5')}, formatter: Table.api.formatter.status},
                         {field: 'ctime', title: __('Ctime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'payername', title: __('Payername')},
                         {field: 'utime_text', title: __('Utime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
@@ -124,6 +129,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     ]
                 ]
             });
+
+            table.on('load-success.bs.table',function (e,data){
+                $("#supply_price").text(data.extend.supply_price);
+                $("#fee").text(data.extend.supply_fee);
+            });              
             // 为表格绑定事件
             Table.api.bindevent(table);
         },        
