@@ -120,10 +120,17 @@
 			this.getBiLst();
 		},
 		onShow() {
-			this.userInfo = uni.getStorageSync('user') || {};
+			this.getUserInfo();
 			// this.open_team = uni.getStorageSync('open_team') ? true : false;
 		},
 		methods: {
+			getUserInfo(){
+				uni.$u.http.post('/api/user/getUserinfo').then(res => {
+					if(res.code == 1) {
+						this.userInfo =res.data;
+					}
+				})
+			},			
 			biSelect(e){
 				this.biName = e.name				
 				this.biArr.forEach(res=>{
