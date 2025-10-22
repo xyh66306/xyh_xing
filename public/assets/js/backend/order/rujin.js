@@ -101,6 +101,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             });
 
             var table = $("#table");
+             var extendData = null;
 
             // 初始化表格
             table.bootstrapTable({
@@ -116,24 +117,26 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'orderid', title: __('Orderid'), operate: 'LIKE'},
                         {field: 'pay_type_text', title: __('Pay_type')},
                         {field: 'amount', title: __('Amount'), operate:'BETWEEN'},
-                        {field: 'huilv', title: __('Huilv')},                    
+                        {field: 'supply_huilv', title: __('Huilv')},             
                         {field: 'bi_type', title: __('Bi_Type')},
                         {field: 'usdt',  title: __('Order Usdt')},
                         {field: 'supply_fee',  title: __('Supply Fee')},
                         {field: 'supply_usdt',  title: __('Act Usdt')},
                         {field: 'pay_status', title: __('Pay_status'), searchList: {"0":__('Pay_status 0'),"1":__('Pay_status 1'),"2":__('Pay_status 2'),"3":__('Pay_status 3'),"4":__('Pay_status 4'),"5":__('Pay_status 5')}, formatter: Table.api.formatter.status},
-                        {field: 'ctime', title: __('Ctime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
+                        // {field: 'ctime', title: __('Ctime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'payername', title: __('Payername')},
-                        {field: 'utime_text', title: __('Utime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
+                        {field: 'ctime_text', title: __('Ctime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
             });
 
             table.on('load-success.bs.table',function (e,data){
+                extendData = data.extend;
+                window.tableExtendData = data.extend; // 保留这行以兼容其他可能的使用
                 $("#supply_price").text(data.extend.supply_price);
                 $("#fee").text(data.extend.supply_fee);
-            });              
+            });             
             // 为表格绑定事件
             Table.api.bindevent(table);
         },        

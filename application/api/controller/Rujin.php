@@ -13,6 +13,7 @@ use app\common\controller\Api;
 
 use app\common\model\User as UserModel;
 use app\common\model\order\Rujin as RujinModel;
+use app\common\model\company\Profit as companyProfit;
 use app\common\model\UserRebate;
 use app\common\model\UserPayewm;
 use app\common\model\UserBankcard;
@@ -20,6 +21,7 @@ use app\common\model\OrderShensu;
 use app\common\model\Commission;
 use app\common\model\Task;
 use app\common\model\Supply;
+use app\admin\model\supply\Usdtlog as SpullyUsdtLog;
 use app\common\model\user\Address as UsdtAddress;
 use fast\Random;
 use think\Config;
@@ -108,7 +110,18 @@ class Rujin extends Api
 
         $data['ctime'] = date("Y-m-d H:i:s", $data['ctime']);
         $data['pay_ewm_image'] = $data['pay_ewm_image'] ? _sImage($data['pay_ewm_image']) : '';
-        $data['pinzheng_image'] = $data['pinzheng_image'] ? _sImage($data['pinzheng_image']) : '';
+        if($data['pinzheng_image']){
+            $arr = explode(",", $data['pinzheng_image']);
+            for ($i = 0; $i < count($arr); $i++) {
+                $arr[$i] = _sImage($arr[$i]);
+            }
+            $data['pinzheng_image_arr'] = $arr;
+            
+        } else {
+            $data['pinzheng_image'] = '';
+            $data['pinzheng_image_arr'] = [];
+        }
+        // $data['pinzheng_image'] = $data['pinzheng_image'] ? _sImage($data['pinzheng_image']) : '';
         $this->success('', $data);
     }
 
@@ -155,10 +168,11 @@ class Rujin extends Api
 
             $model->update(['pay_status' => 3, 'pay_time' => time(), 'utime' => time(),'order_status'=>$order_status], ['id' => $data['id']]);
 
+            // $this->quren($data);
             // $this->commission($data);
 
-            //通知订单完成
-            // $taskModel = new Task();
+            // 通知订单完成
+            $taskModel = new Task();
             // $data = [
             //     'name' => 'sell',
             //     'message' => '',
@@ -169,7 +183,23 @@ class Rujin extends Api
             //     ]
             // ];
 
-            // $taskModel->addTask($data, "Sell");
+            $supplyModel = new Supply();
+            $info = $supplyModel->where('access_key', $data['pintai_id'])->find();
+
+            $taskModel = new Task();
+            $data = [
+                'access_key'    => $info['access_key'],
+                'access_secret' => $info['access_secret'],
+                'name' => 'cash',
+                'message' => '',
+                'params' => [
+                    'orderid' =>  $orderid,
+                    'url'  => $data['callback'],
+                    'pay_status' => 3
+                ]
+            ];            
+
+            $taskModel->addTask($data, "Sell");
 
             // 提交事务
             Db::commit();
@@ -182,7 +212,66 @@ class Rujin extends Api
         $this->success('操作成功');
     }
 
+    public function quren($data){
 
+        $supplyModel = new Supply();
+        $info = $supplyModel->where('access_key', $data['pintai_id'])->find();
+        if ($info) {
+            $taskModel = new Task();
+            $data = [
+                'access_key'    => $info['access_key'],
+                'access_secret' => $info['access_secret'],
+                'name' => 'cash',
+                'message' => '',
+                'params' => [
+                    'orderid' => $data['orderid'],
+                    'url'  => $data['callback'],
+                    'pay_status' => 3
+                ]
+            ];
+            $taskModel->addTask($data, "Cash");
+        }
+        //增加商户USDT
+        $SpullyUsdtLog = new SpullyUsdtLog();
+        $SpullyUsdtLog->addLog($data['pintai_id'], $data['supply_usdt'], 1, 1, $data['orderid']);
+
+        //减少用户usdt_dj 冻结金额
+        $userModel = new UserModel();
+        $userModel->usdt_dj($data['user_usdt'],$data['user_id'], 6, 2);
+
+
+        //添加公司金额
+        $companyProfit1 = new companyProfit();
+        $companyProfit1->addLog($data['usdt'],$data['supply_fee'],1,1,1,$data['orderid']);   
+
+        $companyProfit2 = new companyProfit();
+        $companyProfit2->addLog($data['usdt'],$data['user_fee'],1,3,1,$data['orderid']); 
+
+        //添加代理商佣金
+        $commissionModel = new Commission();
+        if($data['order_status']==2){
+            $commissionModel->update(['status'=>1,'chaoshi'=>2],['fy_orderid'=>$data['merchantOrderNo']]);
+        } else {
+
+            $comlist = $commissionModel->where("fy_orderid",$data['merchantOrderNo'])->select();
+            $comSum  = $commissionModel->where("fy_orderid",$data['merchantOrderNo'])->sum('money');
+            if($comSum>0){
+                
+                foreach ($comlist as $vo) {
+                    $userModel = new UserModel();
+                    $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$data['merchantOrderNo']);
+                }
+
+                $companyProfit3 = new companyProfit();
+                $res5 = $companyProfit3->addLog($data['usdt'],$comSum,10,2,2,$data['merchantOrderNo']); 
+                $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$data['merchantOrderNo']]);
+            }                
+
+        }  
+        $model = new RujinModel();
+        $model->update(['pay_status' => 4], ['id' => $data['id']]);
+
+    }
 
 
     /***

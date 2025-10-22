@@ -53,8 +53,8 @@
 			
 			</template>
 			<view class="u-info">凭证</view>
-			<view class="flex u-border-bottom" @click="previewImage()">
-				<image :src="details.pinzheng_image" class="pay_ewm_img"></image>
+			<view class="flex u-border-bottom">
+				<image :src="vo" v-for="(vo,index) in details.pinzheng_image_arr" :key="index"  @click="previewImage(index)" class="pay_ewm_img"></image>
 			</view>					
 			<template v-if="details.ctime"> 
 				<view class="u-info">发起时间</view>
@@ -101,11 +101,9 @@
 		},
 		methods: {
 			previewImage(index) {
-			  const urls = [
-				this.details.pinzheng_image
-			  ];
+			  const urls = this.details.pinzheng_image_arr
 			  uni.previewImage({
-				current: 1,
+				current: index,
 				urls: urls
 			  });
 			},			
@@ -223,6 +221,7 @@
 	.pay_ewm_img {
 		width:230rpx;
 		height:230rpx;
+		margin: 0 10rpx;
 	}
 	.popArea {
 		padding-top:50rpx;

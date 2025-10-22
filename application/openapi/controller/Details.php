@@ -23,6 +23,8 @@ use app\common\model\UserRebate;
 use app\common\model\Commission;
 use app\common\model\Task;
 use app\common\model\order\Rujin;
+use app\common\library\Sms as Smslib;
+use app\common\library\Ems as Emslib;
 use think\Db;
 use think\Request;
 
@@ -77,7 +79,7 @@ class Details extends Api
         $userModel = new UserModel();
 
 
-        $detailsInfo = $rujinModel->field("orderid,user_id,amount,yx_time,diqu")->where(['orderid'=>$orderid])->find();
+        $detailsInfo = $rujinModel->field("orderid,user_id,amount,yx_time,diqu,user_usdt,pay_time")->where(['orderid'=>$orderid])->find();
 
         if(!$detailsInfo){
             return $this->error('订单不存在');
@@ -115,6 +117,8 @@ class Details extends Api
         $info['alipay'] = $alipayinfo;
         $info['bankInfo'] = $bankInfo;
         $info['amount'] = $detailsInfo['amount'];
+        $info['usdt'] = $detailsInfo['user_usdt'];
+        $info['pay_time'] = $detailsInfo['pay_time'] ? date("Y-m-d H:i:s",$detailsInfo['pay_time']):'';
 
         return $this->success('success',$info);
 
@@ -215,8 +219,12 @@ class Details extends Api
             return $this->error($e->getMessage());
         }
         // $this->fenyong($orderid,$info['user_id'],$info['amount'],$pay_type);
-        
+        $userModel = new UserModel();
+        $userInfo = $userModel->where(['id'=>$info['user_id']])->find();
+
+        $this->sendEmsNotice($userInfo['email']);
         $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['usdt']);
+        $this->sendNotice();
         $this->success('下单成功，等待确认');
     }    
 
@@ -324,5 +332,21 @@ class Details extends Api
         return $result;
     }
 
+
+    public function sendNotice(){
+
+        $mobile = "18919660526";
+        $event = "resetpwd";
+        $code = rand(1111,9999);
+        $ret = Smslib::notice($mobile, $code, $event);
+    }
+
+
+    public function sendEmsNotice($email){
+
+        // $email = "870416982@qq.com";
+        $msg = "当前有一笔新的兑出订单，您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        Emslib::notice($email, $msg, "resetpwd");
+    }
 
 }
