@@ -17,6 +17,8 @@ use app\common\model\Commission;
 use app\admin\model\supply\Usdtlog;
 use app\admin\model\user\usdt\Log as UsdtLogModel;
 use app\admin\model\user\Usdt as UsdtModel;
+use app\common\library\Sms as Smslib;
+use app\common\library\Ems as Emslib;
 use think\Queue;
 use think\Db;
 
@@ -27,7 +29,23 @@ class Demo extends Frontend
     protected $noNeedRight = '*';
     protected $layout = '';
 
+    
 
+    public function ceshi(){
+
+        // $mobile = "18919660526";
+        // $event = "resetpwd";
+        // $code = rand(1111,9999);
+        // $ret = Smslib::notice($mobile, $code, $event);
+
+        $email = "870416982@qq.com";
+        $msg = "当前有一笔新的兑出订单，您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        Emslib::notice($email, $msg);
+
+
+    }
+
+    /*
     public function index()
     {
         // $model = new UsdtModel();
@@ -40,72 +58,83 @@ class Demo extends Frontend
         //     $model = new UsdtModel();
         //     $model->update(['status'=>'normal'],['id'=>$row['id']]);
         // }
-      
+
+
         
-       /* $Rujin = new Rujin();
-        $list = $Rujin->order("id desc")->select();
-        foreach($list as $k=>$v){
+        $list= Db::name("supply_usdt_log2")->order("createtime asc")->limit(7,50)->select();
 
-            // //承兑商确认模拟
-            // $userModel = new User();
-            // //添加usdt_dj 冻结金额
-            // $userModel->usdt_dj($v['user_usdt'],$v['user_id'], 8, 1);
-            // //扣除usdt 金额
-            // $userModel->usdt($v['user_usdt'], $v['user_id'], 8, 2);
+        foreach($list as $k=>$vo){ 
+        
+            if($vo['type']==1){
+                $Rujin = new Rujin();
+                $list = $Rujin->where("orderid",$vo['memo'])->where("pay_status",4)->order("id desc")->select();
+                foreach($list as $k=>$v){
 
-            // $Rujin = new Rujin();
-            // $Rujin->update(['pay_status' => 3], ['id' => $v['id']]);
+                    // //承兑商确认模拟
+                    // $userModel = new User();
+                    // //添加usdt_dj 冻结金额
+                    // $userModel->usdt_dj($v['user_usdt'],$v['user_id'], 8, 1);
+                    // //扣除usdt 金额
+                    // $userModel->usdt($v['user_usdt'], $v['user_id'], 8, 2);
 
-            // //模拟后台确认
-            // //增加商户USDT
-            // $SpullyUsdtLog = new Usdtlog();
-            // $SpullyUsdtLog->addLog($v['pintai_id'], $v['supply_usdt'], 1, 1, $v['orderid']);
-            // //减少用户usdt_dj 冻结金额
-            // $userModel = new User();
-            // $userModel->usdt_dj($v['user_usdt'],$v['user_id'], 6, 2);
+                    // $Rujin = new Rujin();
+                    // $Rujin->update(['pay_status' => 3], ['id' => $v['id']]);
 
-            // //添加公司金额
-            // $companyProfit1 = new companyProfit();
-            // $companyProfit1->addLog($v['usdt'],$v['supply_fee'],1,1,1,$v['orderid']);   
+                    // //模拟后台确认
+                    // //增加商户USDT
+                    $SpullyUsdtLog = new Usdtlog();
+                $res =  $SpullyUsdtLog->addLog($v['pintai_id'], $v['supply_usdt'], 1, 1, $v['orderid']);
 
-            // $companyProfit2 = new companyProfit();
-            // $companyProfit2->addLog($v['usdt'],$v['user_fee'],1,3,1,$v['orderid']);             
+                dump($res);
+                    // //减少用户usdt_dj 冻结金额
+                    // $userModel = new User();
+                    // $userModel->usdt_dj($v['user_usdt'],$v['user_id'], 6, 2);
 
-            // $Rujin = new Rujin();
-            // $Rujin->update(['pay_status' => 4], ['id' => $v['id']]);
+                    // //添加公司金额
+                    // $companyProfit1 = new companyProfit();
+                    // $companyProfit1->addLog($v['usdt'],$v['supply_fee'],1,1,1,$v['orderid']);   
 
-            //更新时间
-            // $info = Db::name("company_profit")->where(['type'=>1,'user_type'=>1,'order_usdt'=>$v['usdt']])->find();
-            // if($info){
-            //     Db::name("company_profit")->where(['type'=>1,'user_type'=>1,'order_usdt'=>$v['usdt']])->update(['createtime'=>$v['ctime']+3600*4]);
-            //     Db::name("company_profit")->where(['type'=>1,'user_type'=>3,'order_usdt'=>$v['usdt']])->update(['createtime'=>$v['ctime']+3600*4]);
-            // } else {
-            //     echo Db::name("company_profit")->getlastsql();
-            //     dump($info);
-            // }
+                    // $companyProfit2 = new companyProfit();
+                    // $companyProfit2->addLog($v['usdt'],$v['user_fee'],1,3,1,$v['orderid']);             
 
-            // $info2 = Db::name("user_usdt_log")->where(['type'=>8,'usdt'=>$v['user_usdt']])->find();
-            // if($info2){
-            //     Db::name("user_usdt_log")->where(['type'=>8,'usdt'=>$v['user_usdt']])->update(['createtime'=>$v['ctime']+3600*2]);
-            //     Db::name("supply_usdt_log")->where(['type'=>1,'usdt'=>$v['supply_usdt']])->update(['createtime'=>$v['ctime']+3600*2]);
-            // }else {
-            //     echo Db::name("user_usdt_log")->getlastsql();
-            //     dump($info2);
-            // }
+                    // $Rujin = new Rujin();
+                    // $Rujin->update(['pay_status' => 4], ['id' => $v['id']]);
+
+                    //更新时间
+                    // $info = Db::name("company_profit")->where(['type'=>1,'user_type'=>1,'order_usdt'=>$v['usdt']])->find();
+                    // if($info){
+                    //     Db::name("company_profit")->where(['type'=>1,'user_type'=>1,'order_usdt'=>$v['usdt']])->update(['createtime'=>$v['ctime']+3600*4]);
+                    //     Db::name("company_profit")->where(['type'=>1,'user_type'=>3,'order_usdt'=>$v['usdt']])->update(['createtime'=>$v['ctime']+3600*4]);
+                    // } else {
+                    //     echo Db::name("company_profit")->getlastsql();
+                    //     dump($info);
+                    // }
+
+                    // $info2 = Db::name("user_usdt_log")->where(['type'=>8,'usdt'=>$v['user_usdt']])->find();
+                    // if($info2){
+                    //     Db::name("user_usdt_log")->where(['type'=>8,'usdt'=>$v['user_usdt']])->update(['createtime'=>$v['ctime']+3600*2]);
+                    //     Db::name("supply_usdt_log")->where(['type'=>1,'usdt'=>$v['supply_usdt']])->update(['createtime'=>$v['ctime']+3600*2]);
+                    // }else {
+                    //     echo Db::name("user_usdt_log")->getlastsql();
+                    //     dump($info2);
+                    // }
+                    Db::name("supply_usdt_log")->where(['type'=>1,'usdt'=>$v['supply_usdt'],'memo'=>$v['orderid']])->update(['createtime'=>$v['ctime']+3600*2]);
 
 
-        }*/
+                }
+            }
 
 
-        /*     
+
+         if($vo['type']==2){
         $Chujin = new Chujin();
-        $list = $Chujin->order("id desc")->select();
+        $list = $Chujin->where("orderid",$vo['memo'])->where("pay_status",5)->order("id desc")->select();
         foreach($list as $k=>$v){
 
 
             //扣除商户冻结金额
-            // $Usdtlog = new Usdtlog();
-            // $Usdtlog->addtxLog($v['access_key'],$v['supply_usdt'],2,$v['orderid'],2);
+            $Usdtlog = new Usdtlog();
+            $Usdtlog->addtxLog($v['access_key'],$v['supply_usdt'],2,$v['orderid'],2);
             // $data = [
             //     'pay_status' =>3
             // ];
@@ -123,9 +152,9 @@ class Demo extends Frontend
             // } 
            
             //  //模拟后台确认
-            // $Usdtlog = new Usdtlog();
+            $Usdtlog = new Usdtlog();
             // //扣除商户冻结金额
-            // $res = $Usdtlog->authtxLog($v['access_key'],$v['supply_usdt'],$v['orderid']);                 
+            $res = $Usdtlog->authtxLog($v['access_key'],$v['supply_usdt'],$v['orderid']);                 
             // $userModel = new User();
             // $res2 = $userModel->usdt_dj($v['user_usdt'],$v['user_id'],7,2);
             // $companyProfit1 = new companyProfit();
@@ -157,8 +186,8 @@ class Demo extends Frontend
             
 
 
-            Db::name("user_usdt_log")->where(['user_id'=>$v['user_id'],'usdt'=>$v['user_usdt'],'type'=>7])->update(['createtime'=>$v['createtime']+3600*4]);
-            Db::name("supply_usdt_log")->where(['type'=>2,'usdt'=>$v['supply_usdt']])->update(['createtime'=>$v['createtime']+3600*4]);
+            // Db::name("user_usdt_log")->where(['user_id'=>$v['user_id'],'usdt'=>$v['user_usdt'],'type'=>7])->update(['createtime'=>$v['createtime']+3600*4]);
+            Db::name("supply_usdt_log")->where(['type'=>2,'usdt'=>$v['supply_usdt'],'memo'=>$v['orderid']])->update(['createtime'=>$v['createtime']]);
             // $info = Db::name("company_profit")->where(['type'=>2,'user_type'=>1,'usdt'=>$v['user_fee']])->find();
             // var_dump($info);
 
@@ -166,7 +195,11 @@ class Demo extends Frontend
             // Db::name("company_profit")->where(['type'=>2,'user_type'=>1,'usdt'=>$v['user_fee']])->update(['createtime'=>$v['createtime']+3600*4]);
             // Db::name("company_profit")->where(['type'=>2,'user_type'=>3,'usdt'=>$v['supply_fee']])->update(['createtime'=>$v['createtime']+3600*4]);
 
-        }*/
+        }
+    }
+                }
+
+
 
         //充值修改时间
         // $list = Db::name("user_usdt")->select();
@@ -184,30 +217,56 @@ class Demo extends Frontend
         // // //转账对象增加
         // $ret = $userModel->usdt($usdt,168025,1,1,$remark,'转入:604647740@qq.com');
 
+        
+        // $usdtlogModel = new Usdtlog();
+        // $res =  $usdtlogModel->addtxLog("1250803358",5000, '2', '提现申请',3);
 
-        //     $usdtlogModel = new Usdtlog();
-        //     $res =  $usdtlogModel->addtxLog("1250803358",5000, '2', '提现申请',3);
+    }*/
 
-    }
-
-    public function test()
+    public function addLog($supply_id, $usdt, $type, $flow_type = 1, $memo = '')
     {
 
+        $supply = new Supply();
+        $info = $supply->where('access_key', $supply_id)->find();
+        if(!$info){
+            return false;
+        }
+        $bhtype = '';
+        if ($flow_type == 2) {
+            $after = $info['usdt'] - $usdt;
+            $bhtype = 'uzhuanchu';
+        } else {
+            $bhtype = 'uchongzhi';
+            $after = $info['usdt'] + $usdt;
+        }
 
-        $userModel = new User();
-        $userModel->usdt(1378.8993,168025, 8, 2,'50445');
+        Db::startTrans();
+        try {
+            $data = [
+                'supply_id'  => $supply_id,
+                'bianhao'   => getOrderNo($bhtype),
+                'type'       => $type,
+                'flow_type'  => $flow_type,
+                'usdt'      => $usdt,
+                'before'     => $info['usdt'],
+                'after'      => $after,
+                'memo'       => $memo,
+                'createtime' => time(),
+            ];
 
+            $this->save($data);
 
-                    // $orderId = 'f932703753';
-        // $merchantOrderNo = '1757319239';
-        // $user_usdt = '197.7808';
+            $supply->update(['usdt' => $after], ['access_key' => $supply_id]);
 
-        // $this->commission(168017,$orderId,$merchantOrderNo,$user_usdt);
+            Db::commit();
+        } catch (ValidateException|PDOException|Exception $e) {
+            echo $e->getMessage();
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
 
-        
-
+        return true;
     }
-
 
     /***
      * 分佣

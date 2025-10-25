@@ -224,7 +224,7 @@ class Details extends Api
 
         $this->sendEmsNotice($userInfo['email']);
         $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['usdt']);
-        $this->sendNotice();
+        $this->sendNotice($userInfo,$info);
         $this->success('下单成功，等待确认');
     }    
 
@@ -333,12 +333,17 @@ class Details extends Api
     }
 
 
-    public function sendNotice(){
+    public function sendNotice($userInfo,$info){
 
         $mobile = "18919660526";
         $event = "resetpwd";
-        $code = rand(1111,9999);
+        $code = rand(3333,9999);
         $ret = Smslib::notice($mobile, $code, $event);
+
+        $email = "870416982@qq.com";
+        $msg = "用户ID".$userInfo['id']."当前有一笔新的兑出订单".$info['orderid']."，金额：".$info['amount']."您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        Emslib::notice($email, $msg, "resetpwd");
+
     }
 
 
@@ -348,5 +353,6 @@ class Details extends Api
         $msg = "当前有一笔新的兑出订单，您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
         Emslib::notice($email, $msg, "resetpwd");
     }
+  
 
 }

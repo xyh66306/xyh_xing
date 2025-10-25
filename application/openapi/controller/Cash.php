@@ -13,6 +13,7 @@ use app\common\model\UserRebate;
 use app\common\model\order\Rujin;
 use app\common\model\Task;
 use app\common\model\Commission;
+use app\common\library\Sms as Smslib;
 use think\Db;
 use think\Request;
 
@@ -225,12 +226,24 @@ class Cash extends Api
 
             $res = $rujinModel->insert($data);
             
-            $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setInc('sort',1);
-            $UserBankcard->update(['sort'=>1],['id'=>$bankInfo['id']]);
+            $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setDec('sort',1);
+            // $UserBankcard->update(['sort'=>100],['id'=>$bankInfo['id']]);
 
+            $banklist =  $UserBankcard->where('user_id',$bankInfo['user_id'])->where("sort","<","100")->select();
+            if($banklist){
+                foreach ($banklist as $key => $value) {
+                    $UserBankcard->update(['sort'=>999],['id'=>$value['id']]);
+                }
+            }
+            $count = $userModel->where("pay_status","normal")->count();
+            $userModel->where('id', $userInfo['id'])->setDec('pay_sort',$count);
 
-            $userModel->where('id','<>', $userInfo['id'])->setInc('pay_sort',1);
-            $userModel->update(['pay_sort'=>1],['id'=>$userInfo['id']]);
+            $userlist =  $userModel->where("pay_status","normal")->where('id','<>', $userInfo['id'])->where("pay_sort","<","100")->select();
+            if($userlist){
+                foreach ($userlist as $key => $value) {
+                    $userModel->update(['pay_sort'=>$value['pay_sort']+200],['id'=>$value['id']]);
+                }
+            }
             Db::commit();
 
         } catch(\Exception $e) {
@@ -240,11 +253,20 @@ class Cash extends Api
 
 
         if($res){
+            $this->sendNotice();
             return $this->success('success',request()->domain().'/cash/#/?orderid='.$params['orderid'].'&access_key='.$this->access_key);
         }else{
             return $this->error('fail');
         }
 
+    }
+
+    public function sendNotice(){
+
+        $mobile = "18919660526";
+        $event = "resetpwd";
+        $code = rand(1111,2222);
+        $ret = Smslib::notice($mobile, $code, $event);
     }
 
 

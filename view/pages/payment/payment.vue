@@ -75,11 +75,11 @@
 				</view>			
 			</template>	
 		
-			<template v-if="details.pay_ewm_image">
+			<template v-if="details.pay_ewm_image_arr.length>0">
 				<view class="u-info">付款凭证</view>
-				<view class="flex u-border-bottom" @click="previewImage()">
+				<view class="flex u-border-bottom">
 					<view>
-						<image :src="details.pay_ewm_image" class="pay_ewm_img"></image>
+						<image :src="vo" v-for="(vo,index) in details.pay_ewm_image_arr" :key="index"  @click="previewImage(index)" class="pay_ewm_img"></image>
 					</view>
 				</view>		
 			</template>		
@@ -122,13 +122,14 @@
 			
 		</template>
 
+
 		
 		<u-popup :show="show" @close="close" @open="open">
 			<view class="popArea">
 				<!-- <view class="pop_head">立即付款</view> -->
 				<view class="upload">
-					<u-upload :fileList="pay_ewm" @afterRead="afterRead" @delete="deletePic" :maxCount="1" name="pay_ewm"
-						width="150" height="150" uploadText="点击上传支付凭证"></u-upload>
+					<u-upload :fileList="pay_ewm" @afterRead="afterRead" :previewImage="true" :previewFullImage="true" @delete="deletePic" :maxCount="3" name="pay_ewm"
+						width="100" height="100" uploadText="点击上传支付凭证"></u-upload>
 				</view>
 				<view class="btn">
 					<u-button type="primary" @click="updatePayImg()">立即上传</u-button>
@@ -159,6 +160,8 @@
 					rate:'',
 					withdrawAmount:0,
 					ctime:'',
+					pay_ewm_image_arr:[],
+					authtoken:'',
 				},
 				pay_status:'',
 				orderid:'',
@@ -166,6 +169,7 @@
 				pay_ewm_txt:'',
 				userInfo:{},
 				biData:{},
+				pay_sub:false,
 			}
 		},
 		onLoad(e) {
@@ -176,9 +180,7 @@
 		},
 		methods: {
 			previewImage(index) {
-			  const urls = [
-				this.details.pay_ewm_image
-			  ];
+			  const urls = this.details.pay_ewm_image_arr
 			  uni.previewImage({
 				current: 1,
 				urls: urls
@@ -219,6 +221,9 @@
 			addOrder(){
 				let that = this;
 				
+				if(this.pay_sub){
+					return;
+				}				
 				// let data = this.details;
 				// data.orderid = this.orderid
 				uni.showModal({
@@ -232,10 +237,13 @@
 					confirmColor: '#007AFF', // 确认按钮颜色（默认#3CC51F）
 					success: function(res) {
 						if (res.confirm) {
+							that.pay_sub = true
 							uni.$u.http.post('/api/chujin/addCash', {
-								orderid:that.orderid
+								orderid:that.orderid,
+								auth_token:that.details.authtoken
 							}).then(res => {
 								if (res.code == 1) {
+									that.pay_sub = false
 									that.detail();									
 								} else {
 									uni.$u.toast(res.msg);
@@ -268,7 +276,9 @@
 							huilv:data.huilv,
 							withdrawAmount:data.withdrawAmount, 
 							pay_ewm_image:data.pay_ewm_image,
+							pay_ewm_image_arr:data.pay_ewm_image_arr,
 							ctime:data.ctime, 
+							authtoken:data.authtoken
 						}
 						if(data.pinzheng_image){
 							that.pay_ewm.push(data.pinzheng_image);
@@ -280,7 +290,8 @@
 			},
 			// 新增图片
 			async afterRead(event) {
-				let lists = [].concat(event.file);
+				/*let lists = [].concat(event.file);
+				let fileListLen  = this[`fileList${event.name}`].length;
 				let item = {
 					...event.file,
 					status: 'uploading',
@@ -291,8 +302,8 @@
 					filePath: event.file.url,
 					name: 'file',
 				}).then(res => {
-					if (res?.code == 1) {
-						this[event.name].splice(0, 1, Object.assign(item, {
+					if (res?.code == 1) {						
+						this[event.name].splice(fileListLen, 1, Object.assign(item, {
 							status: 'success',
 							message: '',
 							url: res.data.fullurl
@@ -306,7 +317,48 @@
 				}).catch(res => {
 					this[event.name] = [];
 					this.pay_ewm_txt = '';
+				});*/
+				// 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
+				let lists = [].concat(event.file);
+				let fileListLen = this.pay_ewm.length;
+				lists.map((item) => {
+				 this.pay_ewm.push({
+					...item,
+					status: "uploading",
+					message: "上传中",
+				  });
 				});
+				for (let i = 0; i < lists.length; i++) {
+				  const result = await this.uploadFilePromise(lists[i].url);
+				  let item = this.pay_ewm[fileListLen];
+				  this.pay_ewm.splice(
+					fileListLen,
+					1,
+					Object.assign(item, {
+					  status: "success",
+					  message: "",
+					  url: result,
+					})
+				  );
+				  fileListLen++;
+				}
+				
+			},
+			uploadFilePromise(url){
+				return new Promise((resolve, reject) => {
+				  
+					uni.$u.http.upload('/api/common/upload', {
+						filePath:url,
+						name: 'file',
+					}).then(res => {
+						  setTimeout(() => {
+							resolve(res.data.fullurl);
+						  }, 1000);
+					})
+				  
+				});
+				
+
 			},
 			deletePic(event) {
 				this[event.name].splice(event.index, 1);
@@ -314,12 +366,20 @@
 			},
 			updatePayImg(){
 				let that =this;
-				if(!that.pay_ewm_txt){
+				if(that.pay_ewm.length==0){
 					uni.$u.toast("请上传图片");
 				}
+				let pay_ewm_arr = []
+				for(var i=0;i<that.pay_ewm.length;i++){
+					pay_ewm_arr[i] = that.pay_ewm[i].url
+				}
+				let pay_ewm_txt = pay_ewm_arr.toString()
+				
+				that.pay_sub = true
 				let data = {
 					orderid:this.orderid,
-					pinzheng_image:this.pay_ewm_txt
+					pinzheng_image:pay_ewm_txt,
+					auth_token:that.details.authtoken
 				}
 				uni.$u.http.post('/api/chujin/uploadPzImg', data).then(res => {
 					if (res.code == 1) {
@@ -377,9 +437,10 @@
 			font-size:32rpx;
 		}
 		.upload {
-			width:300rpx;
-			height:300rpx;
-			margin:0 auto;
+			padding:10rpx 20rpx;
+			// width:300rpx;
+			// height:300rpx;
+			// margin:0 auto;
 		}
 	}
 </style>

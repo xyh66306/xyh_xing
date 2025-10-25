@@ -93,6 +93,8 @@
 				orderid:'',
 				pay_ewm:[],
 				pay_ewm_txt:'',
+				pay_sub:false,
+				token:'',
 			}
 		},
 		onLoad(e) {
@@ -146,6 +148,9 @@
 			},		
 			submit(){
 				let that = this;
+				if(this.pay_sub){
+					return;
+				}
 				
 				uni.showModal({
 					title: '确认支付订单！',
@@ -158,8 +163,10 @@
 					confirmColor: '#007AFF', // 确认按钮颜色（默认#3CC51F）
 					success: function(res) {
 						if (res.confirm) {
+							that.pay_sub = true
 							uni.$u.http.post('/api/rujin/payorder', {
-								orderid:that.orderid
+								orderid:that.orderid,
+								auth_token:that.details.authtoken
 							}).then(res => {
 								if (res.code == 1) {
 									that.getPayDetails();

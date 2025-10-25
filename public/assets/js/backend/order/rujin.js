@@ -50,7 +50,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'bi_type', title: __('Bi_Type')},
                         {field: 'order_status',  title: "超时", searchList: {"1":"否","2":"是"}},
                         {field: 'payername', title: __('Payername')},
-                        {field: 'pinzheng_image', title: __('Pinzheng_image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
+                        // {field: 'pinzheng_image', title: __('Pinzheng_image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
                         {field: 'pay_status', title: __('Pay_status'), searchList: {"0":__('Pay_status 0'),"1":__('Pay_status 1'),"2":__('Pay_status 2'),"3":__('Pay_status 3'),"4":__('Pay_status 4'),"5":__('Pay_status 5')}, formatter: Table.api.formatter.status},
                         {field: 'utime', title: __('Utime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'diqu', title: __('Diqu'), searchList: {"1":__('Diqu 1'),"2":__('Diqu 2'),"3":__('Diqu 3')}, formatter: Table.api.formatter.normal},

@@ -16,10 +16,10 @@ class Rujin extends Frontend
     {
         $RujinModel = new RujinModel();
         $time = time()-3600*1;
-        $list = $RujinModel->where("status",1)->where("pay_status","<=",1)->where('ctime','<',$time)->select();
+        $list = $RujinModel->where("pay_status","<=",1)->where('ctime','<',$time)->select();
 
         foreach ($list as $key => $value) {
-            $RujinModel->where("id",$value['id'])->update(["status"=>2]);
+            $RujinModel->where("id",$value['id'])->update(["status"=>2,'pay_status'=>5]);
         }
         
     }

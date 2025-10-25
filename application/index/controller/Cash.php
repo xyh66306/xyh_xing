@@ -103,8 +103,8 @@ class Cash extends Api
             return $this->error('订单编号已存在');
         }
 
-        // Db::startTrans();
-        // try{ 
+        Db::startTrans();
+        try{ 
 
             $BiModel = new BiModel();
             $info = $BiModel->where(['default'=>1,'status'=>1])->find();
@@ -165,25 +165,25 @@ class Cash extends Api
 
             $res = $rujinModel->insert($data);
             
-            $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setInc('sort',1);
+            $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setDec('sort',1);
             $UserBankcard->update(['sort'=>1],['id'=>$bankInfo['id']]);
 
 
-            $userModel->where('id','<>', $userInfo['id'])->setInc('pay_sort',1);
+            $userModel->where('id','<>', $userInfo['id'])->setDec('pay_sort',1);
             $userModel->update(['pay_sort'=>1],['id'=>$userInfo['id']]);
-        //     Db::commit();
+            Db::commit();
 
-        // } catch(\Exception $e) {
-        //     Db::rollback();
-        //     return $this->error($e->getMessage());
-        // }
+        } catch(\Exception $e) {
+            Db::rollback();
+            return $this->error($e->getMessage());
+        }
 
 
-        // if($res){
-        //     return $this->success('success',request()->domain().'/cash/#/?orderid='.$params['orderid'].'&access_key='.$this->access_key);
-        // }else{
-        //     return $this->error('fail');
-        // }
+        if($res){
+            return $this->success('success',request()->domain().'/cash/#/?orderid='.$params['orderid'].'&access_key='.$this->access_key);
+        }else{
+            return $this->error('fail');
+        }
 
     }
 

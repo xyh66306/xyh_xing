@@ -77,6 +77,7 @@ class Buy extends Frontend
         $header['signature'] = $sign;
 
 
+
         $params = [
             'access_key' => '1250803358',   
             'randomStr' => $randomStr,         
@@ -89,12 +90,13 @@ class Buy extends Frontend
         $data = $params;
         $data['access_secret'] = $access_secret;
         $data['signature'] = $sign;
-        $data['backurl'] = 'http://localhost/index/index/ceshi';
+        $data['backurl'] = 'https://bingocn.wobeis.com/index/index/ceshi';
         $data['orderid'] = "casher".date("YmdHis",time());
-        $data['amount'] = '3625';
+        $data['amount'] = '3800';
         $data['diqu'] = 1;
         $data['payername'] = '李四';
 
+        // var_dump($data);
         $res = $this->postCurl($url,$data,$header);
 
         var_dump($res);
