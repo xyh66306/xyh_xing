@@ -27,6 +27,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 columns: [
                     [
                         {checkbox: true},
+						{field: 'id', title: "ID"},
                         {field: 'orderid', title: __('Orderid'), operate: 'LIKE'},
                         {field: 'merchantOrderNo', title: __('Merchantorderno'), operate: 'LIKE'},
                         {field: 'realName', title: __('Realname'), operate: 'LIKE'},
@@ -48,6 +49,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 ]
             });
 
+            table.on('load-success.bs.table',function (e,data){
+                
+                $("#supply_price").text(data.extend.supply_price);
+                $("#company_price").text(data.extend.company_price);
+                $("#user_price").text(data.extend.user_price);
+
+            });
             // 为表格绑定事件
             Table.api.bindevent(table);
         },
@@ -90,13 +98,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'supply_fee', title: "手续费(USDT)", operate: 'LIKE'},
                         {field: 'supply_usdt', title: "结算数量(USDT)", operate: 'LIKE'},
                         {field: 'pay_status', title: __('Pay Status'),searchList: {"0":__('payStatus 0'),"1":__('payStatus 1'),"2":__('payStatus 2'),"3":__('payStatus 3'),"4":__('payStatus 4'),"5":__('payStatus 5'),"6":__('payStatus 6')},formatter: Table.api.formatter.status},
-                        {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
+                        {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.status},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
             });
 
+            table.on('load-success.bs.table',function (e,data){
+                $("#supply_price").text(data.extend.supply_price);
+                $("#fee").text(data.extend.supply_fee);
+            });            
             // 为表格绑定事件
             Table.api.bindevent(table);
         },        

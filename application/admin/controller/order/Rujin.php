@@ -9,6 +9,7 @@ use app\admin\model\supply\Usdtlog as SpullyUsdtLog;
 use app\admin\model\user\usdt\Log as UsdtLog;
 use app\common\model\User as UserModel;
 use app\common\model\company\Profit as companyProfit;
+use app\common\model\Commission;
 use think\Db;
 use Exception;
 use think\db\exception\BindParamException;
@@ -116,13 +117,19 @@ class Rujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'orderid', 'merchantOrderNo','amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt','utime','status']);
+                $row->visible(['id', 'orderid', 'merchantOrderNo','amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt','utime','status','order_status']);
                 $row->visible(['supply']);
                 $row->getRelation('supply')->visible(['title']);
                 $row->fee = $row->supply_fee;
             }
+            $supply_price = $this->model->where("pay_status",4)->cache(3600)->sum("supply_usdt");
+            $user_price = $this->model->where("pay_status",4)->cache(3600)->sum("user_usdt");
+            $user_fee = $this->model->where("pay_status",4)->cache(3600)->sum("user_fee");
+            $supply_fee = $this->model->where("pay_status",4)->cache(3600)->sum("supply_fee");
+            $company_price =  $user_fee + $supply_fee;
 
-            $result = array("total" => $list->total(), "rows" => $list->items());
+
+            $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('supply_price','user_price','company_price'));
 
             return json($result);
         }
@@ -132,70 +139,6 @@ class Rujin extends Backend
 
     public function supply()
     {
-
-        /*
-        $adminAuths = $this->auth->getGroups($this->auth->id);
-        $authIds = '';
-        if (!empty($adminAuths)) {
-            foreach ($adminAuths as $k => $v) {
-                $authIds .= $v['id'] . ',';
-            }
-        }
-        $authIds = rtrim($authIds, ',');
-        $authGroup = model('auth_group')->where('id', 'in', $authIds)->where('isBoothView', 1)->find();
-        $isBoothView = 0;
-        if (!empty($authGroup)) {
-            $isBoothView = 1;
-        }
-        $this->assignconfig('isBoothView', $isBoothView);
-
-        $diqu = '';
-        $group_ids = $this->auth->getGroupIds($this->auth->id);
-
-
-        if ($group_ids[0] == 3 || $group_ids[0] == 7) {
-            $diqu = 1;
-        } elseif ($group_ids[0] == 5 || $group_ids[0] == 8) {
-            $diqu = 2;
-        } elseif ($group_ids[0] == 6 || $group_ids[0] == 9) {
-            $diqu = 3;
-        }
-
-        //当前是否为关联查询
-        $this->relationSearch = true;
-        //设置过滤方法
-        $this->request->filter(['strip_tags', 'trim']);
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
-
-        if ($diqu) {
-            $list = $this->model
-                ->with(['supply'])
-                ->where($where)
-                ->where('diqu', $diqu)
-                ->order($sort, $order)
-                ->paginate($limit);
-        } else {
-            $list = $this->model
-                ->with(['supply'])
-                ->where($where)
-                ->order($sort, $order)
-                ->paginate($limit);
-        }
-
-
-        foreach ($list as $row) {
-            $row->visible(['id', 'orderid', 'amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt']);
-            $row->visible(['supply']);
-            $row->getRelation('supply')->visible(['title']);
-            $row->fee = $row->supply_fee;
-        }
-
-        // 获取分页显示
-        $page = $list->render();
-        // 模板变量赋值
-        $this->assign('list', $list);
-        $this->assign('page', $page);
-        return $this->view->fetch();*/
 
         $supplyModel = new Supply();
         $admin_id = $this->auth->id;
@@ -231,8 +174,12 @@ class Rujin extends Backend
                 $row->getRelation('supply')->visible(['title']);
                 $row->fee = $row->supply_fee;
             }
+            $supply_price = $this->model->where("pay_status",4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_usdt");
+            $supply_fee = $this->model->where("pay_status",4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_fee");
+            $duirurate = $supply_info['duiru'];
 
-            $result = array("total" => $list->total(), "rows" => $list->items());
+
+            $result = array("total" => $list->total(), "rows" => $list->items(),'extend'=>compact('supply_price','supply_fee','duirurate'));
 
             return json($result);
         }
@@ -311,7 +258,7 @@ class Rujin extends Backend
         $result = false;
         Db::startTrans();
         try {
-            if ($params['pay_status'] == 4 && $row['callback']) {
+            if ($params['pay_status'] == 4 && $row['pay_status'] != 4 && $row['callback']) {
 
                 $row['act_amount'] = $params['amount'];
                 $params['pay_time'] = time();
@@ -354,9 +301,66 @@ class Rujin extends Backend
 
                 $companyProfit2 = new companyProfit();
                 $companyProfit2->addLog($row['usdt'],$row['user_fee'],1,3,1,$row['orderid']); 
-                
+
+                //添加代理商佣金
+                $commissionModel = new Commission();
+                if($row['order_status']==2){
+                    $commissionModel->update(['status'=>1,'chaoshi'=>2],['fy_orderid'=>$row['merchantOrderNo']]);
+                } else {
+
+                    $comlist = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->select();
+                    $comSum  = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->sum('money');
+                    if($comSum>0){
+                        
+                        foreach ($comlist as $vo) {
+                            $userModel = new UserModel();
+                            $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$row['merchantOrderNo']);
+                        }
+
+                        $companyProfit3 = new companyProfit();
+                        $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['merchantOrderNo']); 
+                        $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
+                    }                
+
+                }
 
             }
+
+            //追回订单
+            if ($params['pay_status'] == 5 && $row['pay_status']==4) {
+                //减少商户USDT
+                $SpullyUsdtLog = new SpullyUsdtLog();
+                $SpullyUsdtLog->addLog($row['pintai_id'], $row['supply_usdt'], 1, 2,'ping-'. $row['orderid']);
+
+                //增加用户usdt 金额
+                $userModel = new UserModel();
+                $userModel->usdt($row['user_usdt'],$row['user_id'], 6, 1);
+
+                //减少公司金额
+                $companyProfit1 = new companyProfit();
+                $companyProfit1->addLog($row['usdt'],$row['supply_fee'],1,1,2,'ping-'.$row['orderid']);   
+
+                $companyProfit2 = new companyProfit();
+                $companyProfit2->addLog($row['usdt'],$row['user_fee'],1,3,2,'ping-'.$row['orderid']); 
+
+                //减少代理商佣金
+                if($row['order_status']==1){
+                    $commissionModel = new Commission();                         
+                    $comlist = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->select();
+                    $comSum  = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->sum('money');
+                    if($comSum>0){
+                        
+                        foreach ($comlist as $vo) {
+                            $userModel = new UserModel();
+                            $userModel->usdt($vo['money'],$vo['p_userid'],5,2,$row['merchantOrderNo']);
+                        }
+
+                        $companyProfit3 = new companyProfit();
+                        $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,1,$row['merchantOrderNo']); 
+                        $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
+                    }   
+                }
+            }  
 
             //是否采用模型验证
             if ($this->modelValidate) {

@@ -9,6 +9,7 @@ use app\common\model\Bi as BiModel;
 use app\admin\model\supply\Usdtlog;
 use app\common\model\User as UserModel;
 use app\common\model\company\Profit as companyProfit;
+use app\common\model\Commission;
 use think\Db;
 use Exception;
 use think\db\exception\BindParamException;
@@ -107,18 +108,30 @@ class Chujin extends Backend
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
 
             $list = $this->model
-                ->with(['user'])
                 ->where($where)
                 ->order($sort, $order)
                 ->paginate($limit);
 
+
             foreach ($list as $row) {
                 $row->visible(['id', 'user_id','orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image']);
+                $UserModel = new UserModel();
 
-                $row->getRelation('user')->visible(['nickname']);
+                if($row->user_id){
+                    $row->nickname = $UserModel->where('id',$row->user_id)->value('nickname');
+                } else {
+                    $row->nickname = '--';
+                    $row->user_id = 0;
+                }
             }
+            $supply_price = $this->model->where("pay_status",5)->cache(3600)->sum("supply_usdt");
+            $user_price = $this->model->where("pay_status",5)->cache(3600)->sum("user_usdt");
+            $user_fee = $this->model->where("pay_status",5)->cache(3600)->sum("user_fee");
+            $supply_fee = $this->model->where("pay_status",5)->cache(3600)->sum("supply_fee");
 
-            $result = array("total" => $list->total(), "rows" => $list->items());
+            $company_price =  $user_fee + $supply_fee;
+
+            $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('supply_price','user_price','company_price'));
 
             return json($result);
         }
@@ -180,6 +193,7 @@ class Chujin extends Backend
                     $this->error('扣除承兑商冻结金额失败');                    
                 }
 
+
                 //添加公司金额
                 $companyProfit1 = new companyProfit();
                 $res3 =  $companyProfit1->addLog($row['usdt'],$row['supply_fee'],2,3,1,$row['orderid']);  
@@ -195,7 +209,31 @@ class Chujin extends Backend
                     $this->error('添加公司金额承兑商手续费失败');                    
                 } 
 
+                //添加代理商佣金
+                $commissionModel = new Commission();
+
+                $comlist = $commissionModel->where("fy_orderid",$row['orderid'])->select();
+                $comSum  = $commissionModel->where("fy_orderid",$row['orderid'])->sum('money');
+                if($comSum>0){
+                    foreach ($comlist as $vo) {
+                        $userModel = new UserModel();
+                        $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$row['orderid']);
+                    }
+
+                    $companyProfit3 = new companyProfit();
+                    $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['orderid']); 
+                    $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['orderid']]);
+                }
+ 
             }
+            //取消商户订单
+            if ($params['pay_status'] == 6 && $row['pay_status']<=2) {
+                 //添加商户冻结金额
+                $Usdtlog = new Usdtlog();
+                $Usdtlog->quxiaotxLog($row['access_key'],$row['supply_usdt'],1,$row['orderid'],2);
+            }
+
+
             //是否采用模型验证
             if ($this->modelValidate) {
                 $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));
@@ -373,10 +411,13 @@ class Chujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image']);
+                $row->visible(['id', 'orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image','createtime']);
             }
 
-            $result = array("total" => $list->total(), "rows" => $list->items());
+            $supply_price = $this->model->where("pay_status",5)->where('access_key', $supply_info['access_key'])->cache(3600)->sum("supply_usdt");
+            $supply_fee = $this->model->where("pay_status",5)->where('access_key', $supply_info['access_key'])->cache(3600)->sum("supply_fee");
+       
+            $result = array("total" => $list->total(), "rows" => $list->items(),'extend'=>compact('supply_price','supply_fee'));
 
             return json($result);
         }
@@ -451,6 +492,31 @@ class Chujin extends Backend
             $this->error('添加失败');
         }
 
+    }
+
+
+    /**
+     * chaoshi1 返佣
+     * chaoshi2 超时
+     * 佣金
+     */
+    public function commission($fy_orderid,$chaoshi=1){
+
+        $commissionModel = new Commission();
+
+        if($chaoshi==2){
+            $commissionModel->update(['status'=>1,'chaoshi'=>2],['fy_orderid'=>$fy_orderid]);
+            return;
+        }
+
+        $list = $commissionModel->where("fy_orderid",$fy_orderid)->select();
+        foreach ($list as $row) {
+            $userModel = new UserModel();
+            $userModel->usdt($row['money'],$row['p_userid'],5,1,$fy_orderid);
+        }
+
+        $commissionModel->update(['status'=>1],['fy_orderid'=>$fy_orderid]);
+        return true;
     }
 
 }
