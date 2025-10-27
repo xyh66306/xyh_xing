@@ -17,6 +17,7 @@ use app\common\model\Supply;
 use app\common\model\user\Address as UsdtAddress;
 use fast\Random;
 use think\Config;
+use think\Cache;
 use think\Db;
 use think\Validate;
 
@@ -97,8 +98,21 @@ class Chujin extends Api
             $this->error('数据不存在');
         }
 
+        $data['authtoken'] = $this->getOrderToken($orderid);
         $data['ctime'] = date("Y-m-d H:i:s",$data['createtime']);
-        $data['pay_ewm_image'] = $data['pay_ewm_image']?_sImage($data['pay_ewm_image']):'';
+        // $data['pay_ewm_image'] = $data['pay_ewm_image']?_sImage($data['pay_ewm_image']):'';
+        if($data['pay_ewm_image']){
+            $arr = explode(",", $data['pay_ewm_image']);
+            for ($i = 0; $i < count($arr); $i++) {
+                $arr[$i] = _sImage($arr[$i]);
+            }
+            $data['pay_ewm_image_arr'] = $arr;
+            
+        } else {
+            $data['pay_ewm_image'] = '';
+            $data['pay_ewm_image_arr'] = [];
+        }
+
         $this->success('', $data);
 
     }
@@ -111,13 +125,19 @@ class Chujin extends Api
     public function addCash(){
 
         $orderid = input("orderid",'');
+        $authtoken = input("auth_token", '');
 
 
 
         if(!$orderid){
             $this->error('参数错误');
         }
-
+        if (!$authtoken) {
+            $this->error('参数错误');
+        }
+        if (!$this->checkOrderToken($orderid, $authtoken)) {
+            $this->error('参数错误');
+        }
  
         $chujinModel = new ChujinModel();
 
@@ -130,6 +150,7 @@ class Chujin extends Api
         if($orderInfo['pay_status']>=2 && $orderInfo['user_id'] == $this->auth->id){
             $this->error('请勿重复抢单');
         }
+
 
 
         Db::startTrans();
@@ -147,7 +168,7 @@ class Chujin extends Api
     }
 
 
-        /**
+    /**
      * 兑出抢单
      * 上传支付凭证
      */
@@ -155,6 +176,7 @@ class Chujin extends Api
 
         $orderId = input('post.orderid');
         $pinzheng_image = input('post.pinzheng_image');
+        $authtoken = input("auth_token", '');
 
         if(!$orderId || !$pinzheng_image) {
             $this->error('参数错误');
@@ -168,6 +190,9 @@ class Chujin extends Api
         }
         if($info['user_usdt']<=0){
             $this->error('订单金额不足');
+        }
+        if (!$this->checkOrderToken($orderId, $authtoken)) {
+            $this->error('参数错误');
         }
 
         Db::startTrans();
@@ -296,7 +321,11 @@ class Chujin extends Api
      */
     public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
     {
-
+		$fanyong = config("site.fanyong");
+		
+		if($fanyong==0){
+			return;
+		}
         $Commission = new Commission();
         $userModel  = new UserModel();
 
@@ -309,33 +338,44 @@ class Chujin extends Api
         if(!$rateInfo){
             return true;
         }
-        $money = $number * $rateInfo['rate'] / 100;
 
-        if($money<=0){
-            return true;
-        }
+        $rateLst =  $this->getrate($uinfo);
 
-        Db::startTrans();
-        try {
+        $result = [];
+        foreach ($rateLst as $key => $value) { 
+
+            $money = truncateDecimal($number * $value['rate'] / 100);
+            if($money<=0){
+                continue;
+            }
 
             $rebateData = [
                 'user_id' =>$user_id,
-                'p_userid' => $invite,
+                'p_userid' => $value['user_id'],
                 'fy_orderid' => $fy_orderid,
                 'p4b_orderid' => $p4b_orderid,
                 'number' => $number,
-                'rate'  => $rateInfo['rate'],
+                'rate'  => $value['rate'],
                 'money' => $money,
                 'type' => 1,
                 'source' => 2,
-                'level' => 1,
+                'level' => $key+1,
                 'status' => 2,
                 'chaoshi' => 1,
                 'ctime' => time(),
                 'utime' => time(),
             ];
-            $Commission->save($rebateData);
 
+            $result[] = $rebateData;
+        }
+
+        if(count($result)==0){
+            return true;    
+        }
+
+        Db::startTrans();
+        try {
+            $Commission->saveAll($result);
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
@@ -345,5 +385,56 @@ class Chujin extends Api
         }
         return true;
     }
+
+
+    public function getrate($uinfo){
+
+        $sparent_str = str_replace("A", "", $uinfo['sparent']);
+        $sparent_arr = explode(",", $sparent_str);
+        $sparent_arr = array_diff($sparent_arr, [$uinfo['id']]); //删除自身
+
+        $result = [];
+        $max = 0;
+        $user_id = $uinfo['id'];
+
+        foreach ($sparent_arr as $key => $value) { 
+            $res = [];
+            $userRebate = new UserRebate();
+            $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$value,'churu'=>'duichu','type'=>'bank'])->find();
+
+            $user_id = $value;
+            if(!$rateInfo || $rateInfo['rate']<=0){
+                continue;
+            }
+            $res['user_id'] = $value;
+            $res['rate'] = $rateInfo['rate'] -$max;
+            if($rateInfo['rate']>0){
+                $max = $rateInfo['rate'];
+            }
+            $result[] = $res;
+            
+        }
+        return $result;
+    }
+
+
+
+    //结合orderid 生成一个一次性令牌
+    public function getOrderToken($order_id)
+    { 
+        $token = md5($order_id . time() . uniqid());
+        Cache::set('order_token_' . $order_id, $token, 300); // 5分钟有效期
+        return $token;        
+    }
+    public function checkOrderToken($order_id, $token)
+    {
+        $cache_token = Cache::get('order_token_' . $order_id);
+        if ($cache_token == $token) {
+            // 验证成功 删除Token
+            Cache::rm('order_token_' . $order_id);
+            return true;
+        }
+        return false;
+    }    
 
 }

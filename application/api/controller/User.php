@@ -643,6 +643,9 @@ class User extends Api
         $bank_zhmc = $this->request->post("bank_zhmc","");
         $bank_zhdz = $this->request->post("bank_zhdz","");
         $status = $this->request->post("status","normal");
+        $min_cny = $this->request->post("min_cny","0");
+        $max_cny = $this->request->post("max_cny","10000");
+
         $id = $this->request->post("id","");
 
         $userBankcard = new UserBankcard();
@@ -656,6 +659,8 @@ class User extends Api
                 "bank_zhdz"=>$bank_zhdz,
                 'status'=>$status,
                 'sys_status'=>'normal',
+                'min_cny'   =>$min_cny,
+                'max_cny'   =>$max_cny,
             ],["id"=>$id]);
         } else {
             $ret = $userBankcard::create([
@@ -667,6 +672,8 @@ class User extends Api
                 "bank_nums"=>$bank_nums,
                 "bank_zhmc"=>$bank_zhmc,
                 "bank_zhdz"=>$bank_zhdz,
+                'min_cny'   =>$min_cny,
+                'max_cny'   =>$max_cny,                
                 'status'=>'normal',
                 'sys_status'=>'normal',
                 "ctime"=>time()
@@ -692,16 +699,23 @@ class User extends Api
         $userPayewm = new UserPayewm();
         $paycount = $userPayewm::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->count();
 
+        $min_cny = $userBankcard::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->min('min_cny');
+        $max_cny = $userBankcard::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->max('max_cny');
+
         $userModel = new UserModel();
 
         if($bankcount > 0 || $paycount > 0){
             $userModel->update([
                 "pay_status"=>'normal',
+                'min_cny'=>$min_cny,
+                'max_cny'=>$max_cny,
             ],["id"=>$user_id]);
         } else {
             $userModel = new UserModel();
             $userModel->update([
                 "pay_status"=>'normal',
+                'min_cny'=>$min_cny,
+                'max_cny'=>$max_cny,                
             ],["id"=>$user_id]);
         }  
 
@@ -714,7 +728,16 @@ class User extends Api
      */
     public function czusdt(){ 
 
+        $UsdtModel = new UsdtModel();
+
         $post = $this->request->post();
+
+        $info = $UsdtModel->where("user_id",$this->auth->id)->where("status","hidden")->find();
+        if($info){
+            $this->error("存在待审核的订单");
+        }
+
+        
         $post['user_id'] = $this->auth->id;
         $post['status'] = 'hidden';
 
@@ -726,7 +749,6 @@ class User extends Api
         }
         $post['act_num'] = $post['num']-$post['fee'];
         $post['bianhao'] = getOrderNo('withdraw');
-        $UsdtModel = new UsdtModel();
         $res = $UsdtModel->allowField(true)->save($post);
         if($res){
             $this->success("添加成功");
@@ -750,10 +772,10 @@ class User extends Api
             $this->error(__('Invalid parameters'));
         }
 
-        $ret = $this->auth->checkpaypwd($paypwd);
-        if (!$ret) {
-            $this->error($this->auth->getError());
-        }
+        // $ret = $this->auth->checkpaypwd($paypwd);
+        // if (!$ret) {
+        //     $this->error($this->auth->getError());
+        // }
         $userModel = new UserModel();
         $fuserInfo = $userModel->where("email",$email)->find();
         if(!$fuserInfo){
@@ -766,9 +788,9 @@ class User extends Api
             $this->error("余额不足");
         }
         //转账扣除
-        $ret = $userModel->usdt($usdt,$this->auth->id,1,2,$remark,'转出:'.$fuserInfo->nickname);
+        $ret = $userModel->usdt($usdt,$this->auth->id,1,2,$remark,'转出:'.$fuserInfo->email);
         //转账对象增加
-        $ret = $userModel->usdt($usdt,$fuserInfo->id,1,1,$remark,'转入:'.$this->auth->nickname);
+        $ret = $userModel->usdt($usdt,$fuserInfo->id,1,1,$remark,'转入:'.$this->auth->email);
 
         if($ret){
             $this->success("转账成功");

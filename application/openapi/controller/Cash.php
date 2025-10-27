@@ -13,6 +13,7 @@ use app\common\model\UserRebate;
 use app\common\model\order\Rujin;
 use app\common\model\Task;
 use app\common\model\Commission;
+use app\common\library\Sms as Smslib;
 use think\Db;
 use think\Request;
 
@@ -97,7 +98,14 @@ class Cash extends Api
         }        
         if(empty($params['payername'])) {
             $this->error('付款人姓名不能为空');
-        }         
+        } 
+        if($params['amount']<3500) {
+            $this->error('不能小于最低金额3500');
+        }     
+        
+        if($params['amount']>=200000) {
+            $this->error('不能大于最低金额20万');
+        }           
 
         $userModel = new UserModel();
 
@@ -106,8 +114,12 @@ class Cash extends Api
         $order = 'pay_sort desc,id desc';
         if($this->access_key == '1250730111'){
             // 测试账户
-            $where['id'] = '168017';
-            $userInfo = $userModel->where($where)->order($order)->find();
+            // $rj_user_id = config('site.rj_user_id');
+            
+            $rj_user_id = 168017;
+            $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+
+
         } else{
 
             $ispay = config('site.ispay');
@@ -121,23 +133,31 @@ class Cash extends Api
             $where['sfz_status'] = 1;
             $where['pay_status'] = "normal";
             $order = 'pay_sort desc,id desc';
-            // $userInfo = $userModel->where($where)->where('usdt','>',0)->order($order)->find();
-            $userInfo = $userModel->where($where)->where('id','<>','168017')->order($order)->find();
+
+            $rj_user_id = config('site.rj_user_id');
+            if($rj_user_id && $rj_user_id>0){
+                $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+            } else {
+                $userInfo = $userModel->where($where)->where('usdt',">",0)->where('id','<>','168017')->order($order)->find();
+            }
+
+
         }
 
-        
-        
-        if(!$userInfo) {
+        $supplyModel = new Supply();
+        $supplyinfo = $supplyModel->where('access_key',$this->access_key)->find();
+
+        if(!$userInfo) {           
           return  $this->error('收银员不存在');
         }
         $UserBankcard = new UserBankcard();
-        $count = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->count();
+        $count = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->where("max_cny",'>=',$params['amount'])->count();
 
 
         if($count==0){
            return $this->error('收款账户不存在');
         }
-        $bankInfo = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->order('sort desc,id desc')->find();
+        $bankInfo = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->where("max_cny",'>=',$params['amount'])->order('sort desc,id desc')->find();
         $rujinModel = new Rujin();
         $rjInfo = $rujinModel->where(['orderid'=>$params['orderid']])->find();
         if($rjInfo){ 
@@ -150,24 +170,24 @@ class Cash extends Api
             $BiModel = new BiModel();
             $info = $BiModel->where(['default'=>1,'status'=>1])->find();
 
-            $usdt = $params['amount'] / $info['duiru'];     //CNY 转 USDT(接收的cny/兑入汇率7.26)
+            $usdt = truncateDecimal($params['amount'] / $supplyinfo['duiru']);     //CNY 转 USDT(接收的cny/商户兑入7.26)
             if($params['diqu']==1){
-                $supply_rate = config('site.fee_dalu_supply_duiru');
-                $supply_fee = $supply_rate && $supply_rate>0 ? sprintf('%.4f',truncateDecimal($usdt * $supply_rate/100,4)):0;
-                $supply_usdt = $usdt - $supply_fee;  
+                $fee_dalu_supply_duiru =  config('site.fee_dalu_supply_duiru');
 
-                $user_rate = config('site.fee_dalu_user_duiru');
-                $user_fee = $user_rate && $user_rate>0 ? sprintf('%.4f',truncateDecimal($usdt * ($info['duiru'] - $user_rate),4)):0;
-                $user_usdt = $usdt + $user_fee;  //加上用户汇率差 审核时候扣除
-
-            } elseif($params['diqu']==2){
-                $supply_rate = config('site.fee_jc_supply_duiru');
-                $supply_fee = $supply_rate && $supply_rate>0 ? sprintf('%.4f',truncateDecimal($usdt * $supply_rate/100,4)):0;
+                $supply_fee = truncateDecimal($usdt * $fee_dalu_supply_duiru/100);
                 $supply_usdt = $usdt - $supply_fee;
 
-                $user_rate = config('site.fee_jc_user_duiru');
-                $user_fee = $user_rate && $user_rate>0 ? sprintf('%.4f',truncateDecimal($usdt * ($info['duiru'] - $user_rate))):0;
-                $user_usdt = $usdt + $user_fee;  //加上用户手续费 审核时候扣除
+                $user_usdt = truncateDecimal($params['amount'] / $info['duiru']);
+                $user_fee = truncateDecimal($user_usdt - $usdt);
+
+            } elseif($params['diqu']==2){
+
+                $fee_jc_supply_duiru =  config('site.fee_jc_supply_duiru');
+                $supply_fee = truncateDecimal($usdt * $fee_jc_supply_duiru/100);
+                $supply_usdt = $usdt - $supply_fee;
+
+                $user_usdt = truncateDecimal($params['amount'] / $info['duiru']);
+                $user_fee = truncateDecimal($user_usdt - $usdt);
 
             }
 
@@ -188,6 +208,7 @@ class Cash extends Api
                 'bi_type'  => 'USDT',
                 'usdt'=>$usdt,
                 'huilv'=>$info['duiru'],
+				'supply_huilv'=>$supplyinfo['duiru'],
                 'supply_fee'=>$supply_fee,
                 'supply_usdt'=>$supply_usdt,
                 'user_usdt'=>$user_usdt,
@@ -202,17 +223,27 @@ class Cash extends Api
             ];
 
 
+
             $res = $rujinModel->insert($data);
-
-
-            // $this->commission($userInfo['id'],$merchantOrderNo,$params['orderid'],$usdt);
             
-            $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setInc('sort',1);
-            $UserBankcard->update(['sort'=>1],['id'=>$bankInfo['id']]);
+            $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setDec('sort',1);
+            // $UserBankcard->update(['sort'=>100],['id'=>$bankInfo['id']]);
 
+            $banklist =  $UserBankcard->where('user_id',$bankInfo['user_id'])->where("sort","<","100")->select();
+            if($banklist){
+                foreach ($banklist as $key => $value) {
+                    $UserBankcard->update(['sort'=>999],['id'=>$value['id']]);
+                }
+            }
+            $count = $userModel->where("pay_status","normal")->count();
+            $userModel->where('id', $userInfo['id'])->setDec('pay_sort',$count);
 
-            $userModel->where('id','<>', $userInfo['id'])->setInc('pay_sort',1);
-            $userModel->update(['pay_sort'=>1],['id'=>$userInfo['id']]);
+            $userlist =  $userModel->where("pay_status","normal")->where('id','<>', $userInfo['id'])->where("pay_sort","<","100")->select();
+            if($userlist){
+                foreach ($userlist as $key => $value) {
+                    $userModel->update(['pay_sort'=>$value['pay_sort']+200],['id'=>$value['id']]);
+                }
+            }
             Db::commit();
 
         } catch(\Exception $e) {
@@ -222,6 +253,7 @@ class Cash extends Api
 
 
         if($res){
+            $this->sendNotice();
             return $this->success('success',request()->domain().'/cash/#/?orderid='.$params['orderid'].'&access_key='.$this->access_key);
         }else{
             return $this->error('fail');
@@ -229,62 +261,14 @@ class Cash extends Api
 
     }
 
+    public function sendNotice(){
 
-
-    /***
-     * 分佣
-     */
-    public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
-    {
-
-        $Commission = new Commission();
-        $userModel  = new UserModel();
-
-        $uinfo = $userModel->where("id", $user_id)->find();
-        $invite = $uinfo['invite'];
-
-        $userRebate = new UserRebate();
-
-        $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$invite,'churu'=>'duiru','type'=>'bank'])->find();
-        if(!$rateInfo){
-            return true;
-        }
-        $money = $number * $rateInfo['rate'] / 100;
-
-        if($money<=0){
-            return true;
-        }
-
-        Db::startTrans();
-        try {
-
-            $rebateData = [
-                'user_id' =>$user_id,
-                'p_userid' => $invite,
-                'fy_orderid' => $fy_orderid,
-                'p4b_orderid' => $p4b_orderid,
-                'number' => $number,
-                'rate'  => $rateInfo['rate'],
-                'money' => $money,
-                'type' => 1,
-                'source' => 1,
-                'level' => 1,
-                'status' => 2,
-                'chaoshi' => 1,
-                'ctime' => time(),
-                'utime' => time(),
-            ];
-            $Commission->save($rebateData);
-
-            // 提交事务
-            Db::commit();
-        } catch (\Exception $e) {
-            // 回滚事务
-            Db::rollback();
-            $this->error('操作失败' . $e->getMessage());
-        }
-        return true;
+        $mobile = "18919660526";
+        $event = "resetpwd";
+        $code = rand(1111,2222);
+        $ret = Smslib::notice($mobile, $code, $event);
     }
+
 
 
 }

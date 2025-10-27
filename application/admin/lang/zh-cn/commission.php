@@ -12,7 +12,7 @@ return [
     'Type 1'        => '常规',
     'Level'         => '层级',
     'Status'        => '状态',
-    'Status 1'      => '已通过',
+    'Status 1'      => '已审核',
     'Set status to 1'=> '设为已通过',
     'Status 2'      => '待审核',
     'Set status to 2'=> '设为待审核',
@@ -21,5 +21,6 @@ return [
     'Chaoshi 2'     => '是',
     'Ctime'         => '创建时间',
     'Utime'         => '审核时间',
-    'User.nickname' => '昵称'
+    'User.nickname' => '返佣对象昵称',
+    'Puser.nickname' => '返佣上级昵称'
 ];

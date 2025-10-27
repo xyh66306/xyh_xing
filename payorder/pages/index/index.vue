@@ -114,7 +114,7 @@
 </template>
 
 <script>
-	const base_url = "https://bingocn.wobeis.com/"
+	const base_url = "http://ceshiotc.wobeis.com"
 	export default {
 		data() {
 			return {
@@ -351,7 +351,11 @@
 							},
 							success: (uploadFileRes) => {
 								let resinfo = JSON.parse(uploadFileRes.data)
-								that.pinzheng = resinfo.data.fullurl
+								if(that.pinzheng){
+									that.pinzheng = that.pinzheng + "," +resinfo.data.fullurl
+								} else {
+									that.pinzheng = resinfo.data.fullurl
+								}
 							},
 							fail: (error) => {
 								if (error && error.response) {
@@ -388,7 +392,7 @@
 								
 				// 模拟凭证上传
 				uni.request({
-					url: base_url + "openapi/details/payorder",
+					url: base_url + "/openapi/details/payorder",
 					method: "POST",
 					data: {
 						access_key: that.access_key,
@@ -403,9 +407,12 @@
 								title: '凭证提交成功！',
 								icon: 'success'
 							});
+							uni.navigateTo({
+								url:'/pages/result/index?orderid='+that.orderid + "&access_key="+that.access_key
+							})
 						} else {
 							uni.showToast({
-								title: '凭证提交失败！',
+								title: data.msg,
 								icon: 'none'
 							});
 						}

@@ -102,4 +102,10 @@ class Commission extends Model
     {
         return $this->belongsTo('User', 'user_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
+
+    public function puser()
+    {
+        return $this->belongsTo('User', 'p_userid', 'id', [], 'LEFT')->setEagerlyType(0);
+    }
+
 }

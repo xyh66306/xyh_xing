@@ -5,6 +5,12 @@
 			<view class="flex u-border-bottom">
 				<view>{{details.orderid}}</view>
 			</view>		
+			<template  v-if="details.payername">
+				<view class="u-info">付款人</view>
+				<view class="flex u-border-bottom">
+					<view>{{details.payername}}</view>
+				</view>	
+			</template>			
 			<view class="u-info">订单金额</view>
 			<view class="flex u-border-bottom">
 				<view>{{details.amount}}</view>
@@ -48,7 +54,7 @@
 			</template>
 			<view class="u-info">凭证</view>
 			<view class="flex u-border-bottom">
-				<image :src="details.pinzheng_image" class="pay_ewm_img"></image>
+				<image :src="vo" v-for="(vo,index) in details.pinzheng_image_arr" :key="index"  @click="previewImage(index)" class="pay_ewm_img"></image>
 			</view>					
 			<template v-if="details.ctime"> 
 				<view class="u-info">发起时间</view>
@@ -87,6 +93,8 @@
 				orderid:'',
 				pay_ewm:[],
 				pay_ewm_txt:'',
+				pay_sub:false,
+				token:'',
 			}
 		},
 		onLoad(e) {
@@ -94,6 +102,13 @@
 			this.getPayDetails();
 		},
 		methods: {
+			previewImage(index) {
+			  const urls = this.details.pinzheng_image_arr
+			  uni.previewImage({
+				current: index,
+				urls: urls
+			  });
+			},			
 			open() {
 			  // this.show = true
 			},
@@ -133,6 +148,9 @@
 			},		
 			submit(){
 				let that = this;
+				if(this.pay_sub){
+					return;
+				}
 				
 				uni.showModal({
 					title: '确认支付订单！',
@@ -145,8 +163,10 @@
 					confirmColor: '#007AFF', // 确认按钮颜色（默认#3CC51F）
 					success: function(res) {
 						if (res.confirm) {
+							that.pay_sub = true
 							uni.$u.http.post('/api/rujin/payorder', {
-								orderid:that.orderid
+								orderid:that.orderid,
+								auth_token:that.details.authtoken
 							}).then(res => {
 								if (res.code == 1) {
 									that.getPayDetails();
@@ -208,6 +228,7 @@
 	.pay_ewm_img {
 		width:230rpx;
 		height:230rpx;
+		margin: 0 10rpx;
 	}
 	.popArea {
 		padding-top:50rpx;

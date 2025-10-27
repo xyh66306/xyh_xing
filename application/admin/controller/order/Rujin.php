@@ -176,10 +176,7 @@ class Rujin extends Backend
             }
             $supply_price = $this->model->where("pay_status",4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_usdt");
             $supply_fee = $this->model->where("pay_status",4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_fee");
-            $duirurate = $supply_info['duiru'];
-
-
-            $result = array("total" => $list->total(), "rows" => $list->items(),'extend'=>compact('supply_price','supply_fee','duirurate'));
+            $result = array("total" => $list->total(), "rows" => $list->items(),'extend'=>compact('supply_price','supply_fee'));
 
             return json($result);
         }

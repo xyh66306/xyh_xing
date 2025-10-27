@@ -1,0 +1,48 @@
+---------------------------------------------------------------
+[ 2025-10-20T10:54:06+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.110994s] [吞吐率：0.47req/s] [内存消耗：3,790.20kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]
+---------------------------------------------------------------
+[ 2025-10-20T10:56:30+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.101707s] [吞吐率：0.48req/s] [内存消耗：3,790.46kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]
+---------------------------------------------------------------
+[ 2025-10-20T10:59:01+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.104850s] [吞吐率：0.48req/s] [内存消耗：3,792.95kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]
+---------------------------------------------------------------
+[ 2025-10-20T11:00:54+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.102047s] [吞吐率：0.48req/s] [内存消耗：3,792.94kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]
+---------------------------------------------------------------
+[ 2025-10-20T11:04:39+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.097426s] [吞吐率：0.48req/s] [内存消耗：3,792.94kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]
+---------------------------------------------------------------
+[ 2025-10-20T11:07:50+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.099821s] [吞吐率：0.48req/s] [内存消耗：3,792.95kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]
+---------------------------------------------------------------
+[ 2025-10-20T11:12:46+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.105495s] [吞吐率：0.47req/s] [内存消耗：3,793.03kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]
+---------------------------------------------------------------
+[ 2025-10-20T11:13:08+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.094472s] [吞吐率：0.48req/s] [内存消耗：3,793.03kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]
+---------------------------------------------------------------
+[ 2025-10-20T11:24:21+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.530119s] [吞吐率：0.40req/s] [内存消耗：3,793.06kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]
+---------------------------------------------------------------
+[ 2025-10-20T11:30:54+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.529773s] [吞吐率：0.40req/s] [内存消耗：3,793.45kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]
+---------------------------------------------------------------
+[ 2025-10-20T11:32:56+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.662680s] [吞吐率：0.38req/s] [内存消耗：3,793.20kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]
+---------------------------------------------------------------
+[ 2025-10-20T12:02:42+08:00 ] 127.0.0.1 POST localhost/openapi/details/payorder
+[运行时间：2.621447s] [吞吐率：0.38req/s] [内存消耗：3,793.20kb] [文件加载：84]
+[ error ] [0]Malformed UTF-8 characters, possibly incorrectly encoded[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\response\Json.php:39]

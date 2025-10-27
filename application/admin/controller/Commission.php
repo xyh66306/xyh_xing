@@ -66,14 +66,14 @@ class Commission extends Backend
 
             if($diqu){
               $list = $this->model
-                  ->with(['user'])
+                  ->with(['user','puser'])
                   ->where($where)
                   ->where('user.diqu',$diqu)
                   ->order($sort, $order)
                   ->paginate($limit);
             } else {
               $list = $this->model
-                    ->with(['user'])
+                    ->with(['user','puser'])
                     ->where($where)
                     ->order($sort, $order)
                     ->paginate($limit);
@@ -82,6 +82,7 @@ class Commission extends Backend
 
             foreach ($list as $row) {
                 
+              $row->getRelation('puser')->visible(['nickname']);
                 $row->getRelation('user')->visible(['nickname']);
             }
 

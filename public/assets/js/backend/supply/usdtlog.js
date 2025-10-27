@@ -32,14 +32,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'bianhao', title: __('Bianhao')},
-                        {field: 'type_text', title:"类型", operate:'BETWEEN'},
-                        {field: 'flow_type_text', title:"流水方向", operate:'BETWEEN'},
+                        {field: 'type', title:"类型", searchList: {"1":"入金订单", "2":"兑出订单", "3":"提现", "4":"获赠", "5":"返佣", "6":"冻结"}, formatter: Table.api.formatter.normal},
+                        {field: 'flow_type', title:"流水方向", searchList: {"1":"收入", "2":"支出"}, formatter: Table.api.formatter.normal},
                         {field: 'usdt', title: __('Usdt'), operate:'BETWEEN'},
                         {field: 'before', title: __('Before'), operate:'BETWEEN'},
                         {field: 'after', title: __('After'), operate:'BETWEEN'},
                         {field: 'memo', title: __('Memo'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
             });

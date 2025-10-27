@@ -33,37 +33,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'usdt', title: __('Usdt'), operate:'BETWEEN'},
                         {field: 'usdt_dj', title: __('Usdt_dj'), operate:'BETWEEN'},
                         {field: 'sfz_fimage', title: __('Sfz_fimage'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image,
-                            // formatter: function(value, row, index) {
-                            //     console.log('value',value);
-                            //     console.log('row',row);
-                            //     if (row.sfz_show) {
-                            //         return value; 
-                            //     } else {
-                            //         return '--';
-                            //     }
-                            // },  
-                        },
-                        {field: 'sfz_bimage', title: __('Sfz_bimage'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image,
-                            // formatter: function(value, row, index) {
-                            //     if (row.sfz_show) {
-                            //         return value; 
-                            //     } else {
-                            //         return '--';
-                            //     }
-                            // }
 
                         },
-                        {field: 'sfz_pimage', title: __('Sfz_pimage'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image,
+                        // {field: 'sfz_bimage', title: __('Sfz_bimage'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image,
 
-                            // formatter: function(value, row, index) {
-                            //     if (row.sfz_show) {
-                            //         return value; 
-                            //     } else {
-                            //         return '--';
-                            //     }
-                            // },
+                        // },
+                        // {field: 'sfz_pimage', title: __('Sfz_pimage'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image,
 
-                        },
+                        // },
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Status normal'),"hidden":__('Status hidden'),"check":__('Status check')}, formatter: Table.api.formatter.status},
                         {field: 'sfz_status', title: __('Sfz_status'), searchList: {"0":__('Sfz_status 0'),"1":__('Sfz_status 1'),"2":__('Sfz_status 2')}, formatter: Table.api.formatter.status},
@@ -82,6 +59,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     table.bootstrapTable('hideColumn', 'sfz_bimage');
                     table.bootstrapTable('hideColumn', 'sfz_fimage');
                 }
+                $("#usdt").text(data.extend.usdt);
+                $("#usdt_dj").text(data.extend.usdt_dj);
                 // if (Config.isBoothView) {
                 //     table.bootstrapTable('hideColumn', 'sfz_pimage');
                 //     table.bootstrapTable('hideColumn', 'newversion');

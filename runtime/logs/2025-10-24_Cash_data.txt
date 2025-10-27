@@ -1,0 +1,36 @@
+
+----------------Start-------------------
+
+2025-10-24 17:42:34
+E:\wwwroot\2025\git\xyh_xing\application\index\controller\Index.php：69行,调用方法：ceshi
+Error：'{"access_key":"1250803358","access_secret":"4dc96ddbcc1190b66b478e2b98887bad","name":"cash","message":"","params":{"orderid":"56043","url":"https:\\/\\/asiacnbo.com\\/pay\\/back\\/XinHuoPay","pay_status":3},"orderid":"56043","pay_status":3}'
+
+----------------End---------------------
+
+
+----------------Start-------------------
+
+2025-10-24 17:42:34
+E:\wwwroot\2025\git\xyh_xing\application\index\controller\Index.php：70行,调用方法：ceshi
+Error：'{"accesskey":"1250803358","gmtrequest":1761298954,"randomstr":"bzGhVfOXngkg8YOY59vztaSSVoBKNzQZ","sign":"4CD8810969C155C3ED2DF5D012875DFC"}'
+
+----------------End---------------------
+
+
+----------------Start-------------------
+
+2025-10-24 17:42:44
+E:\wwwroot\2025\git\xyh_xing\application\index\controller\Index.php：69行,调用方法：ceshi
+Error：'{"access_key":"1250803358","access_secret":"4dc96ddbcc1190b66b478e2b98887bad","name":"cash","message":"","params":{"orderid":"56068","url":"https:\\/\\/asiacnbo.com\\/pay\\/back\\/XinHuoPay","pay_status":3},"orderid":"56068","pay_status":3}'
+
+----------------End---------------------
+
+
+----------------Start-------------------
+
+2025-10-24 17:42:44
+E:\wwwroot\2025\git\xyh_xing\application\index\controller\Index.php：70行,调用方法：ceshi
+Error：'{"accesskey":"1250803358","gmtrequest":1761298964,"randomstr":"GKPaDMmYN1Msz6X3qbpifAp73tpqY1NA","sign":"3E420CDE010F8DAC1107102527E89BFF"}'
+
+----------------End---------------------
+

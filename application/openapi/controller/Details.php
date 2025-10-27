@@ -23,6 +23,8 @@ use app\common\model\UserRebate;
 use app\common\model\Commission;
 use app\common\model\Task;
 use app\common\model\order\Rujin;
+use app\common\library\Sms as Smslib;
+use app\common\library\Ems as Emslib;
 use think\Db;
 use think\Request;
 
@@ -77,7 +79,7 @@ class Details extends Api
         $userModel = new UserModel();
 
 
-        $detailsInfo = $rujinModel->field("orderid,user_id,amount,yx_time,diqu")->where(['orderid'=>$orderid])->find();
+        $detailsInfo = $rujinModel->field("orderid,user_id,amount,yx_time,diqu,user_usdt,pay_time")->where(['orderid'=>$orderid])->find();
 
         if(!$detailsInfo){
             return $this->error('订单不存在');
@@ -115,6 +117,8 @@ class Details extends Api
         $info['alipay'] = $alipayinfo;
         $info['bankInfo'] = $bankInfo;
         $info['amount'] = $detailsInfo['amount'];
+        $info['usdt'] = $detailsInfo['user_usdt'];
+        $info['pay_time'] = $detailsInfo['pay_time'] ? date("Y-m-d H:i:s",$detailsInfo['pay_time']):'';
 
         return $this->success('success',$info);
 
@@ -214,73 +218,141 @@ class Details extends Api
             Db::rollback();
             return $this->error($e->getMessage());
         }
-        $this->fenyong($orderid,$info['user_id'],$info['amount'],$pay_type);
+        // $this->fenyong($orderid,$info['user_id'],$info['amount'],$pay_type);
+        $userModel = new UserModel();
+        $userInfo = $userModel->where(['id'=>$info['user_id']])->find();
+
+        $this->sendEmsNotice($userInfo['email']);
+        $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['usdt']);
+        $this->sendNotice($userInfo,$info);
         $this->success('下单成功，等待确认');
     }    
 
 
-    /**
-     * type ewm bank
-     * 推广用户分配
+
+    /***
+     * 分佣
      */
-    private function fenyong($orderid,$userid,$amount,$pay_type){
+    public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
+    {
+		$fanyong = config("site.fanyong");
+		
+		if($fanyong==0){
+			return;
+		}
 
-        $userModel = new UserModel();
-        $UserRebate = new UserRebate();
         $Commission = new Commission();
+        $userModel  = new UserModel();
 
-        $invite = $userModel->where(['id'=>$userid])->value("invite");    //推广上级
-        if(!$invite){
-            return $this->error('推广用户不存在');
-        }
-        $type = '';
-        if($pay_type == 'alipay' || $pay_type == 'wxpay'){
-            $type = 'ewm';
-        } else {
-            $type = 'bank';
-        }
-        $userRebateInfo = $UserRebate->where(['user_id'=>$userid,'pid'=>$invite,'type'=>$type])->find();
+        $uinfo = $userModel->where("id", $user_id)->find();
+        $invite = $uinfo['invite'];
 
-        if(!$userRebateInfo){ 
-            return $this->error('推广用户费率未设置');
+        $userRebate = new UserRebate();
+
+        $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$invite,'churu'=>'duiru','type'=>'bank'])->find();
+        if(!$rateInfo){
+            return true;
         }
 
-        Db::startTrans();
+        $rateLst =  $this->getrate($uinfo);
 
-        try { 
+        $result = [];
+        foreach ($rateLst as $key => $value) { 
 
-            $yongjin = sprintf("%.2f",$amount*$userRebateInfo['rate']/100);
+            $money = truncateDecimal($number * $value['rate'] / 100);
+            if($money<=0){
+                continue;
+            }
 
-            $rujinModel = new Rujin();
-            $info = $rujinModel->where(['orderid'=>$orderid])->find();
-            $res = $rujinModel->update(['recomer'=>$invite,'commission'=>$yongjin],['orderid'=>$orderid]);
-
-            $log = [
-                'user_id' => $userid,
-                'p_userid'=>$invite,
-                'fy_orderid'=>$orderid,
-                'p4b_orderid' => $info['merchantOrderNo'],
-                'number' => 0,
-                'rate' => $userRebateInfo['rate'],
-                'money' => $yongjin,
-                'type'  =>1,
-                'level' =>1,
-                'status'=>2,
-                'chaoshi'=>1,
+            $rebateData = [
+                'user_id' =>$user_id,
+                'p_userid' => $value['user_id'],
+                'fy_orderid' => $fy_orderid,
+                'p4b_orderid' => $p4b_orderid,
+                'number' => $number,
+                'rate'  => $value['rate'],
+                'money' => $money,
+                'type' => 1,
+                'source' => 2,
+                'level' => $key+1,
+                'status' => 2,
+                'chaoshi' => 1,
                 'ctime' => time(),
                 'utime' => time(),
             ];
-            $Commission->insert($log);       
-            
-            Db::commit();
 
-        } catch(\Exception $e) {
-            Db::rollback();
-            return $this->error($e->getMessage());
+            $result[] = $rebateData;
         }
 
-        return $this->success('推广用户分配成功');
+        if(count($result)==0){
+            return true;    
+        }
 
-    }    
+        Db::startTrans();
+        try {
+            $Commission->saveAll($result);
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            $this->error('操作失败' . $e->getMessage());
+        }
+        return true;
+    }
+
+
+    public function getrate($uinfo){
+
+        $sparent_str = str_replace("A", "", $uinfo['sparent']);
+        $sparent_arr = explode(",", $sparent_str);
+        $sparent_arr = array_diff($sparent_arr, [$uinfo['id']]); //删除自身
+
+        $result = [];
+        $max = 0;
+        $user_id = $uinfo['id'];
+
+        foreach ($sparent_arr as $key => $value) { 
+            $res = [];
+            $userRebate = new UserRebate();
+            $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$value,'churu'=>'duiru','type'=>'bank'])->find();
+
+            $user_id = $value;
+            if(!$rateInfo || $rateInfo['rate']<=0){
+                continue;
+            }
+            $res['user_id'] = $value;
+            $res['rate'] = $rateInfo['rate'] -$max;
+            if($rateInfo['rate']>0){
+                $max = $rateInfo['rate'];
+            }
+            $result[] = $res;
+            
+        }
+        return $result;
+    }
+
+
+    public function sendNotice($userInfo,$info){
+
+        $mobile = "18919660526";
+        $event = "resetpwd";
+        $code = rand(3333,9999);
+        $ret = Smslib::notice($mobile, $code, $event);
+
+        $email = "870416982@qq.com";
+        $msg = "用户ID".$userInfo['id']."当前有一笔新的兑出订单".$info['orderid']."，金额：".$info['amount']."您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        Emslib::notice($email, $msg, "resetpwd");
+
+    }
+
+
+    public function sendEmsNotice($email){
+
+        // $email = "870416982@qq.com";
+        $msg = "当前有一笔新的兑出订单，您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        Emslib::notice($email, $msg, "resetpwd");
+    }
+  
 
 }

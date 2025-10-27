@@ -115,7 +115,4 @@ class User extends Model
     {
         return $this->belongsTo('app\admin\model\user\Group', 'groupid', 'id', [], 'LEFT')->setEagerlyType(0);
     }
-
-
-
 }

@@ -68,7 +68,7 @@ class Usdtlog extends Backend
                     ->with(['supply'])
                     ->where('supply_id', $supply_info['access_key'])
                     ->where($where)
-                    ->order($sort, $order)
+                    ->order("createtime desc,id desc")
                     ->paginate($limit);
 
             foreach ($list as $row) {

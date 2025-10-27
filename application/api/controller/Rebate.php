@@ -170,5 +170,46 @@ class Rebate extends Api
 
     }
 
+
+    public function settingGroup()
+    {
+        
+        $pid = input("pid",'');  
+        $churu = input("churu",'duichu');  
+        $rate = input("rate",'');
+        $type = input("type",'bank');
+
+        if(!$pid || !$rate || !$type || !$churu){
+            $this->error('参数错误');
+        }
+        $userRebate = new UserRebateModel();
+        $count = $userRebate->where("pid",$pid)->count("id");
+        if($count==0){
+            $this->error('团队不存在');
+        }
+
+        $info = $userRebate->where("user_id",$pid)->where('churu',$churu)->where('type',$type)->find();
+
+        if(!$info){
+            $this->error('数据不存在');
+        }
+
+        $father_info = $userRebate->where(['user_id'=>$pid,'pid'=>$this->auth->id,'type'=>$info['type'],'churu'=>$info['churu']])->find();
+
+        if($rate > $father_info['rate']){
+            $this->error('佣金比例不能大于'.$father_info['rate']);
+        }
+
+
+        $res = $userRebate->where(['pid'=>$pid,'type'=>$info['type'],'churu'=>$info['churu']])->update(['rate'=>$rate]);
+
+        if($res){
+            $this->success('设置成功');
+        }else{
+            $this->error('设置失败');
+        }
+
+    }    
+
 }
 ?>

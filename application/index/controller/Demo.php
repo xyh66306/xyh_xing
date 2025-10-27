@@ -17,6 +17,8 @@ use app\common\model\Commission;
 use app\admin\model\supply\Usdtlog;
 use app\admin\model\user\usdt\Log as UsdtLogModel;
 use app\admin\model\user\Usdt as UsdtModel;
+use app\common\library\Sms as Smslib;
+use app\common\library\Ems as Emslib;
 use think\Queue;
 use think\Db;
 
@@ -27,7 +29,23 @@ class Demo extends Frontend
     protected $noNeedRight = '*';
     protected $layout = '';
 
+    
 
+    public function ceshi(){
+
+        // $mobile = "18919660526";
+        // $event = "resetpwd";
+        // $code = rand(1111,9999);
+        // $ret = Smslib::notice($mobile, $code, $event);
+
+        $email = "870416982@qq.com";
+        $msg = "当前有一笔新的兑出订单，您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        Emslib::notice($email, $msg);
+
+
+    }
+
+    /*
     public function index()
     {
         // $model = new UsdtModel();
@@ -42,7 +60,7 @@ class Demo extends Frontend
         // }
 
 
-
+        
         $list= Db::name("supply_usdt_log2")->order("createtime asc")->limit(7,50)->select();
 
         foreach($list as $k=>$vo){ 
@@ -181,6 +199,50 @@ class Demo extends Frontend
     }
                 }
 
+    public function addLog($supply_id, $usdt, $type, $flow_type = 1, $memo = '')
+    {
+
+        $supply = new Supply();
+        $info = $supply->where('access_key', $supply_id)->find();
+        if(!$info){
+            return false;
+        }
+        $bhtype = '';
+        if ($flow_type == 2) {
+            $after = $info['usdt'] - $usdt;
+            $bhtype = 'uzhuanchu';
+        } else {
+            $bhtype = 'uchongzhi';
+            $after = $info['usdt'] + $usdt;
+        }
+
+        Db::startTrans();
+        try {
+            $data = [
+                'supply_id'  => $supply_id,
+                'bianhao'   => getOrderNo($bhtype),
+                'type'       => $type,
+                'flow_type'  => $flow_type,
+                'usdt'      => $usdt,
+                'before'     => $info['usdt'],
+                'after'      => $after,
+                'memo'       => $memo,
+                'createtime' => time(),
+            ];
+
+            $this->save($data);
+
+            $supply->update(['usdt' => $after], ['access_key' => $supply_id]);
+
+            Db::commit();
+        } catch (ValidateException|PDOException|Exception $e) {
+            echo $e->getMessage();
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        return true;
+    }
 
 
         //充值修改时间
@@ -203,7 +265,7 @@ class Demo extends Frontend
         // $usdtlogModel = new Usdtlog();
         // $res =  $usdtlogModel->addtxLog("1250803358",5000, '2', '提现申请',3);
 
-    }
+    }*/
 
     public function addLog($supply_id, $usdt, $type, $flow_type = 1, $memo = '')
     {
