@@ -1,3 +1,4 @@
 # 忽略目录下的所有文件
 /view/unpackage/*
 /thinkphp/*
+/payorder/unpackage/*

@@ -32,7 +32,7 @@
 </template>
 
 <script>
-const base_url = "http://ceshiotc.wobeis.com"	
+const base_url = "https://bingocn.wobeis.com"	
 export default {
 	data() {
 		return {
