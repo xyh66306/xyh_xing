@@ -170,6 +170,7 @@
 				userInfo:{},
 				biData:{},
 				pay_sub:false,
+				upThumb:false,
 			}
 		},
 		onLoad(e) {
@@ -290,35 +291,7 @@
 			},
 			// 新增图片
 			async afterRead(event) {
-				/*let lists = [].concat(event.file);
-				let fileListLen  = this[`fileList${event.name}`].length;
-				let item = {
-					...event.file,
-					status: 'uploading',
-					message: '上传中'
-				};
-				this[event.name] = [].concat(item);
-				const res = await uni.$u.http.upload('/api/common/upload', {
-					filePath: event.file.url,
-					name: 'file',
-				}).then(res => {
-					if (res?.code == 1) {						
-						this[event.name].splice(fileListLen, 1, Object.assign(item, {
-							status: 'success',
-							message: '',
-							url: res.data.fullurl
-						}));
-						this.pay_ewm_txt = res.data.url;
-					} else {
-						uni.$u.toast(res.msg || '上传失败');
-						this[event.name] = [];
-						this.pay_ewm_txt = '';
-					}
-				}).catch(res => {
-					this[event.name] = [];
-					this.pay_ewm_txt = '';
-				});*/
-				// 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
+				this.upThumb = false
 				let lists = [].concat(event.file);
 				let fileListLen = this.pay_ewm.length;
 				lists.map((item) => {
@@ -341,6 +314,7 @@
 					})
 				  );
 				  fileListLen++;
+				  this.upThumb = true
 				}
 				
 			},
@@ -366,8 +340,13 @@
 			},
 			updatePayImg(){
 				let that =this;
+				if(!this.upThumb){
+					uni.$u.toast("请上传图片");
+					return;
+				}
 				if(that.pay_ewm.length==0){
 					uni.$u.toast("请上传图片");
+					return;
 				}
 				let pay_ewm_arr = []
 				for(var i=0;i<that.pay_ewm.length;i++){
