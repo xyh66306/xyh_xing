@@ -2,3 +2,4 @@
 /view/unpackage/*
 /thinkphp/*
 /payorder/unpackage/*
+/application/database.php
