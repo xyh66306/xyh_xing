@@ -199,6 +199,50 @@ class Demo extends Frontend
     }
                 }
 
+    public function addLog($supply_id, $usdt, $type, $flow_type = 1, $memo = '')
+    {
+
+        $supply = new Supply();
+        $info = $supply->where('access_key', $supply_id)->find();
+        if(!$info){
+            return false;
+        }
+        $bhtype = '';
+        if ($flow_type == 2) {
+            $after = $info['usdt'] - $usdt;
+            $bhtype = 'uzhuanchu';
+        } else {
+            $bhtype = 'uchongzhi';
+            $after = $info['usdt'] + $usdt;
+        }
+
+        Db::startTrans();
+        try {
+            $data = [
+                'supply_id'  => $supply_id,
+                'bianhao'   => getOrderNo($bhtype),
+                'type'       => $type,
+                'flow_type'  => $flow_type,
+                'usdt'      => $usdt,
+                'before'     => $info['usdt'],
+                'after'      => $after,
+                'memo'       => $memo,
+                'createtime' => time(),
+            ];
+
+            $this->save($data);
+
+            $supply->update(['usdt' => $after], ['access_key' => $supply_id]);
+
+            Db::commit();
+        } catch (ValidateException|PDOException|Exception $e) {
+            echo $e->getMessage();
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        return true;
+    }
 
 
         //充值修改时间
