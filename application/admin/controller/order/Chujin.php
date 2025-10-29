@@ -521,7 +521,7 @@ class Chujin extends Backend
 
         $mobile = "18919660526";
         $event = "resetpwd";
-        $code = rand(1111,9999);
+        $code = rand(7777,9999);
         $ret = Smslib::notice($mobile, $code, $event);
     }
 

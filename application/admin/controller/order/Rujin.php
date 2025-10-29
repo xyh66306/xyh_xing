@@ -314,11 +314,11 @@ class Rujin extends Backend
                         
                         foreach ($comlist as $vo) {
                             $userModel = new UserModel();
-                            $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$row['merchantOrderNo']);
+                            $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$row['orderid']);
                         }
 
                         $companyProfit3 = new companyProfit();
-                        $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['merchantOrderNo']); 
+                        $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['orderid']); 
                         $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
                     }                
 
@@ -352,11 +352,11 @@ class Rujin extends Backend
                         
                         foreach ($comlist as $vo) {
                             $userModel = new UserModel();
-                            $userModel->usdt($vo['money'],$vo['p_userid'],5,2,$row['merchantOrderNo']);
+                            $userModel->usdt($vo['money'],$vo['p_userid'],5,2,$row['orderid']);
                         }
 
                         $companyProfit3 = new companyProfit();
-                        $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,1,$row['merchantOrderNo']); 
+                        $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,1,$row['orderid']); 
                         $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
                     }   
                 }

@@ -163,7 +163,7 @@ class Rujin extends Api
             //添加usdt_dj 冻结金额
             $userModel->usdt_dj($data['user_usdt'], $this->auth->id, 8, 1);
             //扣除usdt 金额
-            $userModel->usdt($data['user_usdt'], $this->auth->id, 8, 2);
+            $userModel->usdt($data['user_usdt'], $this->auth->id, 8, 2,$orderid);
 
             $uinfo = $userModel->where("id", $this->auth->id)->find();
 
