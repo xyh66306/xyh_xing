@@ -42,29 +42,16 @@ class Index extends Frontend
             ]
         ];            
 
-        $signArr = [];
-
-        $randomStr =  $this->getRandomStr(32);
-        $time      = time();
-
-        $signArr['accesskey'] = $data['access_key'];
-        $signArr['gmtrequest'] = $time;
-        $signArr['randomstr']  = $randomStr;
-
-        //生成签名
-        $sign = $this->makeSign($signArr,$data['access_secret']);
-
-        $signArr['sign']  = $sign;
-
-
-
+        dump($data);
         $taskModel->addTask($data, "Sell");
+        // return $this->view->fetch();
 
-        $data['orderid'] = $orderid;
-        $data['pay_status'] = 3;
-        $header = $signArr;
-        
-        $res = $this->postCurl($url, $data,$header);
+        // $data['orderid'] = "o202508011824004289";
+        // $data['pay_status'] = 2;
+
+        // $res = $this->postCurl("https://bingocn.wobeis.com/index/index/test",$data);
+
+        // dump($res);
 
     }
 
@@ -73,78 +60,6 @@ class Index extends Frontend
     {
 
         echo "success";
-    }
-
-
-
-    
-    public function makeSign($params = [], $secret = '')
-    {
-
-        if(empty($params) || !is_array($params)) {
-             $this->error('签名错误');
-        }
-
-        foreach($params as $key => $v) {
-            if(empty($v)) {
-                unset($params[$key]);
-            }
-        }
-        $ascii_str = $this->ascii($params);
-        if($ascii_str == false) {
-            $this->error('签名错误');
-        }
-
-        $stringSignTemp = $ascii_str."&key=".$secret;
-        return strtoupper(MD5($stringSignTemp));
-        
-    }
-
-
-    /**
-     * 入参参数名ASCII码从小到大排序（字典序）
-     *
-     * @param array $params
-     * @return void
-     */
-    public function ascii($params = []){
-        if(!empty($params) && is_array($params)){
-            $p =  ksort($params);
-            if($p){
-                foreach ($params as $k => $v){
-                    if(is_array($v)){
-                        $params[$k] = json_encode($v);
-                    }
-                }
-                $strs = urldecode(http_build_query($params));
-                $strs = str_replace('\\','',$strs);
-                return $strs;
-            }
-        }
-        return false;
-    }
-
-
-    /**
-     * 获得随机字符串
-     * @param $len          需要的长度
-     * @param $special      是否需要特殊符号
-     * @return string       返回随机字符串
-     */
-    public function getRandomStr($len, $special = false){
-        $chars = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-
-       if($special){
-           $chars = array_merge($chars, ["!", "@", "#", "$", "?", "|", "{", "/", ":", ";", "%", "^", "&", "*", "(", ")", "-", "_", "[", "]", "}", "<", ">", "~", "+", "=", ",", "."]);
-       }
-
-       $charsLen = count($chars) - 1;
-       shuffle($chars);                            //打乱数组顺序
-       $str = '';
-       for($i=0; $i < $len; $i++){
-           $str .= $chars[mt_rand(0, $charsLen)];    //随机取出一位
-       }
-       return $str;
     }
 
 

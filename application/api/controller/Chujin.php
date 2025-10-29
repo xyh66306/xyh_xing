@@ -194,6 +194,9 @@ class Chujin extends Api
         if (!$this->checkOrderToken($orderId, $authtoken)) {
             $this->error('参数错误');
         }
+        if($info['pay_status']==3){
+             $this->error('已上传，请勿重复上传');
+        }
 
         Db::startTrans();
         try{ 

@@ -9,6 +9,7 @@ use app\common\model\Bi as BiModel;
 use app\admin\model\supply\Usdtlog;
 use app\common\model\User as UserModel;
 use app\common\model\company\Profit as companyProfit;
+use app\common\library\Sms as Smslib;
 use app\common\model\Commission;
 use think\Db;
 use Exception;
@@ -109,20 +110,17 @@ class Chujin extends Backend
 
             $list = $this->model
                 ->where($where)
+                ->with(['user'])
                 ->order($sort, $order)
                 ->paginate($limit);
 
 
-            foreach ($list as $row) {
-                $row->visible(['id', 'user_id','orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image']);
-                $UserModel = new UserModel();
+            foreach ($list as $k=>$row) {
+                $row->visible(['id', 'user_id','orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image','withdrawAmount']);
 
-                if($row->user_id){
-                    $row->nickname = $UserModel->where('id',$row->user_id)->value('nickname');
-                } else {
-                    $row->nickname = '--';
-                    $row->user_id = 0;
-                }
+                $row->visible(['user']);
+				$row->getRelation('user')->visible(['nickname']);
+
             }
             $supply_price = $this->model->where("pay_status",5)->cache(3600)->sum("supply_usdt");
             $user_price = $this->model->where("pay_status",5)->cache(3600)->sum("user_usdt");
@@ -479,7 +477,7 @@ class Chujin extends Backend
 
             $Usdtlog = new Usdtlog();
             $Usdtlog->addtxLog($params['access_key'],$params['withdrawAmount'],2,$orderid,2);    
-
+            $this->sendNotice();
             Db::commit();
         } catch (ValidateException | PDOException | Exception $e) {
             Db::rollback();
@@ -518,5 +516,14 @@ class Chujin extends Backend
         $commissionModel->update(['status'=>1],['fy_orderid'=>$fy_orderid]);
         return true;
     }
+
+    public function sendNotice(){
+
+        $mobile = "18919660526";
+        $event = "resetpwd";
+        $code = rand(1111,9999);
+        $ret = Smslib::notice($mobile, $code, $event);
+    }
+
 
 }

@@ -48,6 +48,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 ]
             });
 
+            table.on('load-success.bs.table',function (e,data){
+                
+                $("#total").text(data.extend.total);
+                $("#duiru").text(data.extend.duiru);
+                $("#duichu").text(data.extend.duichu);
+
+            });            
             // 为表格绑定事件
             Table.api.bindevent(table);
         },

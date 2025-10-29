@@ -86,7 +86,11 @@ class Commission extends Backend
                 $row->getRelation('user')->visible(['nickname']);
             }
 
-            $result = array("total" => $list->total(), "rows" => $list->items());
+            $total = $this->model->where("status",1)->cache(3600)->sum("money");
+            $duiru = $this->model->where("status",1)->where("source",1)->cache(3600)->sum("money");
+            $duichu = $this->model->where("status",1)->where("source",2)->cache(3600)->sum("money");
+
+            $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('total','duiru','duichu'));
 
             return json($result);
         }

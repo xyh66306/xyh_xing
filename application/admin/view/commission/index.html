@@ -16,7 +16,7 @@
             <div class="tab-pane fade active in" id="one">
                 <div class="widget-body no-padding">
                     <div id="toolbar" class="toolbar">
-                        <a href="javascript:;" class="btn btn-primary btn-refresh" title="{:__('Refresh')}" ><i class="fa fa-refresh"></i> </a>
+                        <!-- <a href="javascript:;" class="btn btn-primary btn-refresh" title="{:__('Refresh')}" ><i class="fa fa-refresh"></i> </a>
                         <a href="javascript:;" class="btn btn-success btn-add {:$auth->check('commission/add')?'':'hide'}" title="{:__('Add')}" ><i class="fa fa-plus"></i> {:__('Add')}</a>
                         <a href="javascript:;" class="btn btn-success btn-edit btn-disabled disabled {:$auth->check('commission/edit')?'':'hide'}" title="{:__('Edit')}" ><i class="fa fa-pencil"></i> {:__('Edit')}</a>
                         <a href="javascript:;" class="btn btn-danger btn-del btn-disabled disabled {:$auth->check('commission/del')?'':'hide'}" title="{:__('Delete')}" ><i class="fa fa-trash"></i> {:__('Delete')}</a>
@@ -29,7 +29,12 @@
                                 <li><a class="btn btn-link btn-multi btn-disabled disabled" href="javascript:" data-params="status={$key}">{:__('Set status to ' . $key)}</a></li>
                                 {/foreach}
                             </ul>
-                        </div>
+                        </div> -->
+                        <a href="javascript:;" class="btn btn-default" style="font-size:14px;color:dodgerblue;">
+                            <span class="extend">
+                                总分润: <span id="total">0</span>usdt&nbsp;兑入分润: <span id="duiru">0</span>usdt&nbsp;兑出分润: <span id="duichu">0</span>usdt&nbsp;
+                            </span>
+                        </a>    
 
                         
                     </div>

@@ -82,7 +82,7 @@ class Supply extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id','bianhao','title','money','freeze_money','usdt','freeze_usdt','access_key','access_secret','ip','createtime','status']);
+                $row->visible(['id','bianhao','title','money','freeze_money','usdt','freeze_usdt','access_key','access_secret','duichu','duiru','createtime','status']);
                 
             }
 

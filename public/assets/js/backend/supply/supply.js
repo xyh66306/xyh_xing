@@ -35,7 +35,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'freeze_usdt', title: __('Freeze Usdt')},
                         {field: 'access_key', title: __('Access_key')},
                         {field: 'access_secret', title: __('Access_secret')},
-                        {field: 'ip', title: __('Ip'), operate: 'LIKE'},
+                        {field: 'duichu', title: __('Duichu')},
+                        {field: 'duiru', title: __('Duiru')},
+                        // {field: 'ip', title: __('Ip'), operate: 'LIKE'},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.status},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}

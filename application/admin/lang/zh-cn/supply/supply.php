@@ -9,6 +9,8 @@ return [
     'Usdt'          => '账户数量',
     'Freeze Usdt'   => '冻结数量',
     'Ip'            => 'ip地址',
+    'Duichu'        => '兑出',
+    'Duiru'         => '兑入',
     'Createtime'    => '创建时间',
     'Updatetime'    => '更新时间',
     'Status'        => '状态'

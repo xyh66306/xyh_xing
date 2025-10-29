@@ -169,14 +169,17 @@ class Rujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'orderid', 'merchantOrderNo','amount','pay_type', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt']);
+                $row->visible(['id', 'orderid', 'merchantOrderNo','amount','pay_type', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt','supply_huilv']);
                 $row->visible(['supply']);
                 $row->getRelation('supply')->visible(['title']);
                 $row->fee = $row->supply_fee;
             }
             $supply_price = $this->model->where("pay_status",4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_usdt");
             $supply_fee = $this->model->where("pay_status",4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_fee");
-            $result = array("total" => $list->total(), "rows" => $list->items(),'extend'=>compact('supply_price','supply_fee'));
+            $duirurate = $supply_info['duiru'];
+
+
+            $result = array("total" => $list->total(), "rows" => $list->items(),'extend'=>compact('supply_price','supply_fee','duirurate'));
 
             return json($result);
         }

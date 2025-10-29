@@ -121,8 +121,9 @@ class User extends Backend
                 // $row->visible(['admingroup']);
 				// $row->getRelation('admingroup')->visible(['title']);                
             }
-
-            $result = array("total" => $list->total(), "rows" => $list->items(),'sfz_show'=>$sfz_show);
+            $usdt = $this->model->cache(3600)->sum("usdt");
+            $usdt_dj = $this->model->cache(3600)->sum("usdt_dj");
+            $result = array("total" => $list->total(), "rows" => $list->items(),'sfz_show'=>$sfz_show,'extend'=>compact('usdt','usdt_dj'));
 
             return json($result);
         }
