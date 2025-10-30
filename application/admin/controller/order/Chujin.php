@@ -19,6 +19,7 @@ use think\db\exception\ModelNotFoundException;
 use think\exception\DbException;
 use think\exception\PDOException;
 use think\exception\ValidateException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use think\response\Json;
 
 /**
@@ -110,7 +111,7 @@ class Chujin extends Backend
 
             $list = $this->model
                 ->where($where)
-                ->with(['user'])
+                // ->with(['user'])
                 ->order($sort, $order)
                 ->paginate($limit);
 
@@ -118,8 +119,8 @@ class Chujin extends Backend
             foreach ($list as $k=>$row) {
                 $row->visible(['id', 'user_id','orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image','withdrawAmount']);
 
-                $row->visible(['user']);
-				$row->getRelation('user')->visible(['nickname']);
+                // $row->visible(['user']);
+				// $row->getRelation('user')->visible(['nickname']);
 
             }
             $supply_price = $this->model->where("pay_status",5)->sum("supply_usdt");
@@ -347,7 +348,7 @@ class Chujin extends Backend
             $Usdtlog->addtxLog($info['access_key'],$params['supply_usdt'],2,$orderid,2);
 
             $params['orderid'] = $orderid;
-            $params['merchantOrderNo'] = empty($info['merchantOrderNo'])?date("Ymdhis",time()):$info['merchantOrderNo'];
+            $params['merchantOrderNo'] = empty($params['merchantOrderNo'])?date("Ymdhis",time()):$params['merchantOrderNo'];
             $params['pay_type'] = 'bank';
             $params['diqu'] = 1;
             $params['fiatCurrency'] = "USDT";
@@ -489,6 +490,119 @@ class Chujin extends Backend
         }else{
             $this->error('添加失败');
         }
+
+    }
+
+
+    public function import()
+    {
+
+        $path = input("file","");
+        if(empty($path)){
+            $this->error(__('Parameter %s can not be empty', ''));
+        }
+
+        $BiModel = new BiModel();
+        $biinfo = $BiModel->where("id", 1)->find();
+        $duichu_rate = $this->supply_info['duichu'];
+
+        $fee_dalu_supply_duichu = config('site.fee_dalu_supply_duichu');
+        $fee_dalu_supply_duichu = $fee_dalu_supply_duichu / 100;   
+
+
+        // 获取上传文件的路径
+        $filePath = ROOT_PATH . 'public' .$path;
+        
+        // 根据文件扩展名选择合适的读取器
+        $reader = IOFactory::createReader('Xlsx');
+        
+        // 设置读取器不自动识别文件格式
+        $reader->setReadDataOnly(true);
+        
+        // 加载Excel文件
+        $spreadsheet = $reader->load($filePath);
+        $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+        
+        $data = [];
+        $importCount = 0;
+
+        // 处理Excel文件内容并保存到数据库中
+        foreach ($sheetData as $key => $value) {
+            // 跳过表头
+            if ($key == 1) continue;
+            
+            // 获取关键字段值
+            $orderid = $value['A'] ?? '';
+            $money = $value['B'] ?? 0;
+            
+            // 跳过空行（通过检查关键字段）
+            if (empty($orderid)) continue;
+            if ($money==0) continue;
+            
+            // 处理数据
+            $item = [
+                'orderid' => $orderid,
+                'money' => $money,
+                'realName' => $value['F'] ?? '',
+                'bankName' => $value['G'] ?? '',
+                'cardNumber' => $value['H'] ?? '',
+                'bankBranchName' => $value['I'] ?? '',
+            ];
+            
+            $data[] = $item;
+            $importCount++;
+        }
+
+        // 如果有数据需要处理
+        if (!empty($data)) {
+            foreach ($data as $item) {
+                $supplyModel = new Supply();
+                $sinfo = $supplyModel->where('access_key', $this->supply_info['access_key'])->find();
+                if($sinfo['usdt']<=0){
+                    continue;
+                }
+
+                $order = $this->model->where('orderid', $item['orderid'])->find();
+                if (!$order) {
+                    $usdt = truncateDecimal($item['money']/$duichu_rate,4);
+                    $user_usdt = sprintf('%.4f',truncateDecimal($item['money']/$biinfo['duichu'],4));
+                    $supply_fee = truncateDecimal($usdt*$fee_dalu_supply_duichu);
+                    $supply_usdt = truncateDecimal($usdt + $supply_fee);
+                    $this->model->allowField(true)->save([
+                        'access_key' =>$this->supply_info['access_key'],
+                        'orderid'   => getOrderNo(),
+                        'merchantOrderNo'=>$item['orderid'],
+                        'realName' => $item['realName'],
+                        'bankName' => $item['bankName'],
+                        'cardNumber' => $item['cardNumber'],
+                        'bankBranchName' => $item['bankBranchName'],
+                        'pay_type' => 'bank',
+                        'diqu'      => 1,
+                        'fiatCurrency' => 'USDT',
+                        'withdrawCurrency'=>'USDT',
+                        'withdrawAmount'=>$item['money'],
+                        'huilv'         => $duichu_rate,
+                        'pay_status'    =>1,
+                        'usdt'          => $usdt,
+                        'user_usdt'     => $user_usdt,
+                        'user_fee'      => $usdt - $user_usdt,
+                        'supply_fee'   => $supply_fee,
+                        'supply_usdt'   => $supply_usdt,
+                    ]);
+
+                    //扣除商户冻结金额
+                    $Usdtlog = new Usdtlog();
+                    $Usdtlog->addtxLog($this->supply_info['access_key'],$supply_usdt,2,$orderid,2);
+
+                }
+            }
+        }
+        
+        // 删除临时文件
+        @unlink($filePath);
+        
+        return $this->success('文件上传成功，共处理 '.$importCount.' 条数据');
+
 
     }
 

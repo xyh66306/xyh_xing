@@ -355,4 +355,8 @@ class Details extends Api
     }
   
 
+
+
+
+
 }
