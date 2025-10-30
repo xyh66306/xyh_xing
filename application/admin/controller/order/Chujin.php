@@ -111,7 +111,7 @@ class Chujin extends Backend
 
             $list = $this->model
                 ->where($where)
-                // ->with(['user'])
+                ->with(['user'])
                 ->order($sort, $order)
                 ->paginate($limit);
 
@@ -119,8 +119,8 @@ class Chujin extends Backend
             foreach ($list as $k=>$row) {
                 $row->visible(['id', 'user_id','orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image','withdrawAmount']);
 
-                // $row->visible(['user']);
-				// $row->getRelation('user')->visible(['nickname']);
+                $row->visible(['user']);
+				$row->getRelation('user')->visible(['nickname']);
 
             }
             $supply_price = $this->model->where("pay_status",5)->sum("supply_usdt");

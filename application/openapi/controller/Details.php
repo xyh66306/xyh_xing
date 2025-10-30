@@ -273,7 +273,7 @@ class Details extends Api
                 'rate'  => $value['rate'],
                 'money' => $money,
                 'type' => 1,
-                'source' => 2,
+                'source' => 1,
                 'level' => $key+1,
                 'status' => 2,
                 'chaoshi' => 1,
