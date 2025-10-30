@@ -71,7 +71,7 @@
     }
 
     var usdt = document.getElementById('usdt');
-    var fee_rate = 0.005;
+    var fee_rate = 0.01;
     usdt.addEventListener('blur', function () {
         var fee = (parseFloat(usdt.value) * parseFloat(fee_rate)).toFixed(4)
         document.getElementById('fee').value = fee;

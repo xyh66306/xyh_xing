@@ -122,10 +122,10 @@ class Chujin extends Backend
 				$row->getRelation('user')->visible(['nickname']);
 
             }
-            $supply_price = $this->model->where("pay_status",5)->cache(3600)->sum("supply_usdt");
-            $user_price = $this->model->where("pay_status",5)->cache(3600)->sum("user_usdt");
-            $user_fee = $this->model->where("pay_status",5)->cache(3600)->sum("user_fee");
-            $supply_fee = $this->model->where("pay_status",5)->cache(3600)->sum("supply_fee");
+            $supply_price = $this->model->where("pay_status",5)->sum("supply_usdt");
+            $user_price = $this->model->where("pay_status",5)->sum("user_usdt");
+            $user_fee = $this->model->where("pay_status",5)->sum("user_fee");
+            $supply_fee = $this->model->where("pay_status",5)->sum("supply_fee");
 
             $company_price =  $user_fee + $supply_fee;
 

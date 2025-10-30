@@ -6,3 +6,47 @@
 [ 2025-10-29T18:51:38+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/rujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%7D&op=%7B%7D&_=1761734960926
 [运行时间：0.057476s] [吞吐率：17.40req/s] [内存消耗：4,588.45kb] [文件加载：91]
 [ error ] [0]致命错误: Cannot use object of type Closure as array[E:\wwwroot\2025\git\xyh_xing\application\admin\controller\order\Rujin.php:126]
+---------------------------------------------------------------
+[ 2025-10-29T19:00:29+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/chujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%22pay_status%22%3A%225%22%7D&op=%7B%22pay_status%22%3A%22%3D%22%7D&_=1761735557880
+[运行时间：0.063547s] [吞吐率：15.74req/s] [内存消耗：4,582.13kb] [文件加载：93]
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'pay_status' in where clause is ambiguous[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\db\Connection.php:385]
+---------------------------------------------------------------
+[ 2025-10-29T19:00:38+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/chujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%22pay_status%22%3A%225%22%7D&op=%7B%22pay_status%22%3A%22%3D%22%7D&_=1761735557881
+[运行时间：0.062436s] [吞吐率：16.02req/s] [内存消耗：4,582.13kb] [文件加载：93]
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'pay_status' in where clause is ambiguous[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\db\Connection.php:385]
+---------------------------------------------------------------
+[ 2025-10-29T19:02:53+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/chujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%22pay_status%22%3A%225%22%7D&op=%7B%22pay_status%22%3A%22%3D%22%7D&_=1761735557883
+[运行时间：0.078920s] [吞吐率：12.67req/s] [内存消耗：4,582.13kb] [文件加载：93]
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'pay_status' in where clause is ambiguous[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\db\Connection.php:385]
+---------------------------------------------------------------
+[ 2025-10-29T19:06:20+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/chujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%22pay_status%22%3A%225%22%7D&op=%7B%22pay_status%22%3A%22%3D%22%7D&_=1761735557884
+[运行时间：0.066228s] [吞吐率：15.10req/s] [内存消耗：4,583.73kb] [文件加载：93]
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'pay_status' in where clause is ambiguous[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\db\Connection.php:385]
+---------------------------------------------------------------
+[ 2025-10-29T19:07:03+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/chujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%22pay_status%22%3A%225%22%7D&op=%7B%22pay_status%22%3A%22%3D%22%7D&_=1761735557885
+[运行时间：0.071753s] [吞吐率：13.94req/s] [内存消耗：4,578.01kb] [文件加载：93]
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'pay_status' in where clause is ambiguous[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\db\Connection.php:385]
+---------------------------------------------------------------
+[ 2025-10-29T19:08:10+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/chujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%22pay_status%22%3A%225%22%7D&op=%7B%22pay_status%22%3A%22%3D%22%7D&_=1761735557886
+[运行时间：0.073359s] [吞吐率：13.63req/s] [内存消耗：4,582.13kb] [文件加载：93]
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'pay_status' in where clause is ambiguous[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\db\Connection.php:385]
+---------------------------------------------------------------
+[ 2025-10-29T19:10:20+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/chujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%22pay_status%22%3A%225%22%7D&op=%7B%22pay_status%22%3A%22%3D%22%7D&_=1761735557887
+[运行时间：0.065740s] [吞吐率：15.21req/s] [内存消耗：4,582.13kb] [文件加载：93]
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'pay_status' in where clause is ambiguous[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\db\Connection.php:385]
+---------------------------------------------------------------
+[ 2025-10-29T19:10:25+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/chujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%22pay_status%22%3A%225%22%7D&op=%7B%22pay_status%22%3A%22%3D%22%7D&_=1761735557888
+[运行时间：0.094358s] [吞吐率：10.60req/s] [内存消耗：4,582.13kb] [文件加载：93]
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'pay_status' in where clause is ambiguous[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\db\Connection.php:385]
+---------------------------------------------------------------
+[ 2025-10-29T19:11:06+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/chujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%22pay_status%22%3A%225%22%7D&op=%7B%22pay_status%22%3A%22%3D%22%7D&_=1761735557891
+[运行时间：0.053079s] [吞吐率：18.84req/s] [内存消耗：4,582.13kb] [文件加载：93]
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'pay_status' in where clause is ambiguous[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\db\Connection.php:385]
+---------------------------------------------------------------
+[ 2025-10-29T19:19:46+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/chujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%22pay_status%22%3A%225%22%7D&op=%7B%22pay_status%22%3A%22%3D%22%7D&_=1761735557892
+[运行时间：0.056296s] [吞吐率：17.76req/s] [内存消耗：4,582.13kb] [文件加载：93]
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'pay_status' in where clause is ambiguous[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\db\Connection.php:385]
+---------------------------------------------------------------
+[ 2025-10-29T19:20:07+08:00 ] 127.0.0.1 GET localhost/kyc2024.php/order/chujin/index?addtabs=1&sort=id&order=desc&offset=0&limit=10&filter=%7B%22pay_status%22%3A%225%22%7D&op=%7B%22pay_status%22%3A%22%3D%22%7D&_=1761735557896
+[运行时间：0.072923s] [吞吐率：13.71req/s] [内存消耗：4,582.13kb] [文件加载：93]
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'pay_status' in where clause is ambiguous[E:\wwwroot\2025\git\xyh_xing\thinkphp\library\think\db\Connection.php:385]

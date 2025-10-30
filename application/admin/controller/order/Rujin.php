@@ -122,12 +122,10 @@ class Rujin extends Backend
                 $row->getRelation('supply')->visible(['title']);
                 $row->fee = $row->supply_fee;
             }
-
-
-            $supply_price = $this->model->where($where)->sum("supply_usdt");
-            $user_price = $this->model->where($where)->sum("user_usdt");
-            $user_fee = $this->model->where($where)->sum("user_fee");
-            $supply_fee = $this->model->where($where)->sum("supply_fee");
+            $supply_price = $this->model->where("pay_status",4)->sum("supply_usdt");
+            $user_price = $this->model->where("pay_status",4)->sum("user_usdt");
+            $user_fee = $this->model->where("pay_status",4)->sum("user_fee");
+            $supply_fee = $this->model->where("pay_status",4)->sum("supply_fee");
             $company_price =  $user_fee + $supply_fee;
 
 
