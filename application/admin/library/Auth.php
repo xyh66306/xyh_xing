@@ -105,11 +105,11 @@ class Auth extends \fast\Auth
             if ($key != $this->getKeeploginKey($admin, $keeptime, $expiretime)) {
                 return false;
             }
-            $ip = request()->ip();
+            // $ip = request()->ip();
             //IP有变动
-            if ($admin->loginip != $ip) {
-                return false;
-            }
+            // if ($admin->loginip != $ip) {
+            //     return false;
+            // }
             Session::set("admin", $admin->toArray());
             Session::set("admin.safecode", $this->getEncryptSafecode($admin));
             //刷新自动登录的时效
@@ -245,12 +245,12 @@ class Auth extends \fast\Auth
             }
         }
         //判断管理员IP是否变动
-        if (Config::get('fastadmin.loginip_check')) {
-            if (!isset($admin['loginip']) || $admin['loginip'] != request()->ip()) {
-                $this->logout();
-                return false;
-            }
-        }
+        // if (Config::get('fastadmin.loginip_check')) {
+        //     if (!isset($admin['loginip']) || $admin['loginip'] != request()->ip()) {
+        //         $this->logout();
+        //         return false;
+        //     }
+        // }
         $this->logined = true;
         return true;
     }
