@@ -222,7 +222,6 @@ class Chujin extends Api
                 $this->error('上传失败');
             }
         } catch (\Exception $e) {
-            echo $e->getMessage();
             Db::rollback();
             $this->error($e->getMessage());
         }
@@ -333,14 +332,6 @@ class Chujin extends Api
         $userModel  = new UserModel();
 
         $uinfo = $userModel->where("id", $user_id)->find();
-        $invite = $uinfo['invite'];
-
-        $userRebate = new UserRebate();
-
-        $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$invite,'churu'=>'duichu','type'=>'bank'])->find();
-        if(!$rateInfo){
-            return true;
-        }
 
         $supplyModel = new Supply();
         $supply_info = $supplyModel->where('access_key',$access_key)->find();

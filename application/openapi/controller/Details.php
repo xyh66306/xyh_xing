@@ -225,7 +225,7 @@ class Details extends Api
         $userInfo = $userModel->where(['id'=>$info['user_id']])->find();
 
         $this->sendEmsNotice($userInfo['email']);
-        $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['usdt']);
+        $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt']);
         $this->sendNotice($userInfo,$info);
         $this->success('下单成功，等待确认');
     }    
@@ -251,14 +251,6 @@ class Details extends Api
         $userModel  = new UserModel();
 
         $uinfo = $userModel->where("id", $user_id)->find();
-        $invite = $uinfo['invite'];
-
-        $userRebate = new UserRebate();
-
-        $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$invite,'churu'=>'duiru','type'=>'bank'])->find();
-        if(!$rateInfo){
-            return true;
-        }
 
         $rateLst =  $this->getrate($uinfo);
 
