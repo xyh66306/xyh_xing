@@ -342,7 +342,7 @@ class Chujin extends Api
             return true;
         }
 
-        $rateLst =  $this->getrate($uinfo);
+        $rateLst =  $this->getrate2($uinfo);
 
         $result = [];
         foreach ($rateLst as $key => $value) { 
@@ -419,6 +419,39 @@ class Chujin extends Api
         }
         return $result;
     }
+
+
+
+        /**
+     * 包含自身
+     */
+    public function getrate2($uinfo){
+
+        $sparent_str = str_replace("A", "", $uinfo['sparent']);
+        $sparent_arr = explode(",", $sparent_str);
+
+        $result = [];
+        $max = 0;
+        // $user_id = $uinfo['id'];
+
+        foreach ($sparent_arr as $key => $value) { 
+            $res = [];
+            $userRebate = new UserRebate();
+            $rateInfo = $userRebate->where(['user_id' => $value,'churu'=>'duiru','type'=>'bank'])->find();
+
+            if(!$rateInfo || $rateInfo['rate']<=0){
+                continue;
+            }
+            $res['user_id'] = $value;
+            $res['rate'] = $rateInfo['rate'] -$max;
+            if($rateInfo['rate']>0){
+                $max = $rateInfo['rate'];
+            }
+            $result[] = $res;
+            
+        }
+        return $result;
+    }    
 
 
 
