@@ -1,5 +1,5 @@
 {
-    "name" : "OTC",
+    "name" : "KYC",
     "appid" : "__UNI__7620F0C",
     "description" : "",
     "versionName" : "1.1.1",
@@ -116,8 +116,8 @@
         "devServer" : {
             "https" : false
         },
-		  "usingComponents": {
-			"u-table": "/uview-ui/components/u-table/u-table"
-		  }		
+        "usingComponents" : {
+            "u-table" : "/uview-ui/components/u-table/u-table"
+        }
     }
 }

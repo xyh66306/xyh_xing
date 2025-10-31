@@ -39,6 +39,7 @@ class Details extends Api
 
     protected $access_key = "";
     protected $secret = "";
+    protected $supplyInfo = [];
 
     public function __construct(Request $request)
     {
@@ -55,6 +56,7 @@ class Details extends Api
         if(empty($info)){
             $this->error('商户不存在');
         }
+        $this->supplyInfo = $info;
         $this->access_key = $info['access_key'];
         $this->secret = $info['access_secret'];
     }
@@ -241,6 +243,10 @@ class Details extends Api
 			return;
 		}
 
+        if($this->supplyInfo['duiru_fanyong']==0){
+            return;
+        }
+
         $Commission = new Commission();
         $userModel  = new UserModel();
 
@@ -254,7 +260,7 @@ class Details extends Api
             return true;
         }
 
-        $rateLst =  $this->getrate2($uinfo);
+        $rateLst =  $this->getrate($uinfo);
 
         $result = [];
         foreach ($rateLst as $key => $value) { 
@@ -302,65 +308,31 @@ class Details extends Api
     }
 
 
-    public function ceshi(){
+    // public function ceshi(){
 
-        $user_id = "168035";
-        $userModel  = new UserModel();
-        $uinfo = $userModel->where("id", $user_id)->find();
-        $invite = $uinfo['invite'];
+    //     $user_id = "168035";
+    //     $userModel  = new UserModel();
+    //     $uinfo = $userModel->where("id", $user_id)->find();
+    //     $invite = $uinfo['invite'];
         
-        $rateLst =  $this->getrate2($uinfo);
+    //     $rateLst =  $this->getrate($uinfo);
 
-        dump($rateLst);
+    //     dump($rateLst);
 
-    }
+    // }
+
 
 
     /**
-     * 不含自身
+     * 包含自身
      */
     public function getrate($uinfo){
 
         $sparent_str = str_replace("A", "", $uinfo['sparent']);
         $sparent_arr = explode(",", $sparent_str);
-        $sparent_arr = array_diff($sparent_arr, [$uinfo['id']]); //删除自身
 
         $result = [];
         $max = 0;
-        $user_id = $uinfo['id'];
-
-        foreach ($sparent_arr as $key => $value) { 
-            $res = [];
-            $userRebate = new UserRebate();
-            $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$value,'churu'=>'duiru','type'=>'bank'])->find();
-
-            $user_id = $value;
-            if(!$rateInfo || $rateInfo['rate']<=0){
-                continue;
-            }
-            $res['user_id'] = $value;
-            $res['rate'] = $rateInfo['rate'] -$max;
-            if($rateInfo['rate']>0){
-                $max = $rateInfo['rate'];
-            }
-            $result[] = $res;
-            
-        }
-        return $result;
-    }
-
-    /**
-     * 包含自身
-     */
-    public function getrate2($uinfo){
-
-        $sparent_str = str_replace("A", "", $uinfo['sparent']);
-        $sparent_arr = explode(",", $sparent_str);
-
-        $result = [];
-        $max = 0;
-        // $user_id = $uinfo['id'];
-
         foreach ($sparent_arr as $key => $value) { 
             $res = [];
             $userRebate = new UserRebate();
@@ -377,6 +349,9 @@ class Details extends Api
             $result[] = $res;
             
         }
+        $res['user_id'] = 168022;
+        $res['rate'] = $this->supplyInfo['duiru_fanyong'] -$max;
+        $result[] = $res;
         return $result;
     }    
 

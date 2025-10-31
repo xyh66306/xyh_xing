@@ -680,7 +680,7 @@ class User extends Api
             ]);
         }
 
-        $this->updatePayStatus($this->auth->id);
+        $this->updatePayStatus($this->auth->id,$name);
         if($ret){
   
             $this->success("添加成功");
@@ -691,7 +691,7 @@ class User extends Api
     }
 
 
-    public function updatePayStatus($user_id){
+    public function updatePayStatus($user_id,$name){
 
         $userBankcard = new UserBankcard();
         $bankcount = $userBankcard::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->count();
@@ -709,13 +709,15 @@ class User extends Api
                 "pay_status"=>'normal',
                 'min_cny'=>$min_cny,
                 'max_cny'=>$max_cny,
+                'username'=>$name,
             ],["id"=>$user_id]);
         } else {
             $userModel = new UserModel();
             $userModel->update([
-                "pay_status"=>'normal',
+                "pay_status"=>'hidden',
                 'min_cny'=>$min_cny,
-                'max_cny'=>$max_cny,                
+                'max_cny'=>$max_cny,     
+                'username'=>$name,           
             ],["id"=>$user_id]);
         }  
 

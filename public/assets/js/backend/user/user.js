@@ -28,7 +28,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: "ID"},
-                        {field: 'nickname', title: __('Nickname'), operate: 'LIKE'},
+                        {field: 'username', title: __('Username')},
+                        // {field: 'nickname', title: __('Nickname'), operate: 'LIKE'},
                         {field: 'email', title: __('Email'), operate: 'LIKE'},
                         {field: 'usdt', title: __('Usdt'), operate:'BETWEEN'},
                         {field: 'usdt_dj', title: __('Usdt_dj'), operate:'BETWEEN'},
@@ -45,8 +46,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Status normal'),"hidden":__('Status hidden'),"check":__('Status check')}, formatter: Table.api.formatter.status},
                         {field: 'sfz_status', title: __('Sfz_status'), searchList: {"0":__('Sfz_status 0'),"1":__('Sfz_status 1'),"2":__('Sfz_status 2')}, formatter: Table.api.formatter.status},
                         {field: 'pay_status', title: __('Pay_status'), searchList: {"0":__('Pay_status 0'),"1":__('Pay_status 1'),"2":__('Pay_status 2')}, formatter: Table.api.formatter.status},
-                        {field: 'agent.nickname', title: __('admingroup')},
-                         {field: 'invite.nickname',title: __('Invite') },
+                        {field: 'agent.username', title: __('admingroup')},
+                        {field: 'invite.username',title: __('Invite') },
                         {field: 'dq_status_text', title: __('Region')},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]

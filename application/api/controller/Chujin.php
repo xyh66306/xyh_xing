@@ -155,7 +155,7 @@ class Chujin extends Api
 
         Db::startTrans();
         try{ 
-            $res =  $chujinModel->update(['pay_status'=>2,'user_id'=>$this->auth->id,'updatetime'=>time()],['id'=>$orderInfo['id']]);
+            $res =  $chujinModel->update(['pay_status'=>2,'payername'=>$this->auth->username,'user_id'=>$this->auth->id,'updatetime'=>time()],['id'=>$orderInfo['id']]);
             if($res){
                 Db::commit();
             }
@@ -213,7 +213,7 @@ class Chujin extends Api
             //添加用户金额
             $res3 =  $userModel->usdt($info['user_usdt'],$this->auth->id,7,1);
 
-            $this->commission($this->auth->id,$orderId,$info['merchantOrderNo'],$info['user_usdt']);
+            $this->commission($this->auth->id,$orderId,$info['access_key'],$info['merchantOrderNo'],$info['user_usdt']);
 
             if($res && $res2 && $res3){
                 Db::commit();                
@@ -322,7 +322,7 @@ class Chujin extends Api
     /***
      * 分佣
      */
-    public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
+    public function commission($user_id,$fy_orderid,$access_key,$p4b_orderid,$number)
     {
 		$fanyong = config("site.fanyong");
 		
@@ -342,7 +342,13 @@ class Chujin extends Api
             return true;
         }
 
-        $rateLst =  $this->getrate2($uinfo);
+        $supplyModel = new Supply();
+        $supply_info = $supplyModel->where('access_key',$access_key)->find();
+        if($supply_info['duichu_fanyong']==0){
+            return;
+        }
+
+        $rateLst =  $this->getrate($uinfo,$supply_info['duichu_fanyong']);
 
         $result = [];
         foreach ($rateLst as $key => $value) { 
@@ -390,54 +396,22 @@ class Chujin extends Api
     }
 
 
-    public function getrate($uinfo){
 
-        $sparent_str = str_replace("A", "", $uinfo['sparent']);
-        $sparent_arr = explode(",", $sparent_str);
-        $sparent_arr = array_diff($sparent_arr, [$uinfo['id']]); //删除自身
-
-        $result = [];
-        $max = 0;
-        $user_id = $uinfo['id'];
-
-        foreach ($sparent_arr as $key => $value) { 
-            $res = [];
-            $userRebate = new UserRebate();
-            $rateInfo = $userRebate->where(['user_id' => $user_id,'pid'=>$value,'churu'=>'duichu','type'=>'bank'])->find();
-
-            $user_id = $value;
-            if(!$rateInfo || $rateInfo['rate']<=0){
-                continue;
-            }
-            $res['user_id'] = $value;
-            $res['rate'] = $rateInfo['rate'] -$max;
-            if($rateInfo['rate']>0){
-                $max = $rateInfo['rate'];
-            }
-            $result[] = $res;
-            
-        }
-        return $result;
-    }
-
-
-
-        /**
+    /**
      * 包含自身
      */
-    public function getrate2($uinfo){
+    public function getrate($uinfo,$duichu_fanyong){
 
         $sparent_str = str_replace("A", "", $uinfo['sparent']);
         $sparent_arr = explode(",", $sparent_str);
 
         $result = [];
         $max = 0;
-        // $user_id = $uinfo['id'];
 
         foreach ($sparent_arr as $key => $value) { 
             $res = [];
             $userRebate = new UserRebate();
-            $rateInfo = $userRebate->where(['user_id' => $value,'churu'=>'duiru','type'=>'bank'])->find();
+            $rateInfo = $userRebate->where(['user_id' => $value,'churu'=>'duichu','type'=>'bank'])->find();
 
             if(!$rateInfo || $rateInfo['rate']<=0){
                 continue;
@@ -450,6 +424,9 @@ class Chujin extends Api
             $result[] = $res;
             
         }
+        $res['user_id'] = 168022;
+        $res['rate'] = $duichu_fanyong -$max;
+        $result[] = $res;        
         return $result;
     }    
 

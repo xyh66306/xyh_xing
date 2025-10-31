@@ -109,20 +109,20 @@ class User extends Backend
             }
 
             foreach ($list as $row) {
-                $row->visible(['id','bianhao','nickname','email','usdt','usdt_dj','sfz_fimage','sfz_bimage','sfz_pimage','createtime','status','sfz_status','diqu','pay_status','agent_group_id','invite','agent_group_id']);
+                $row->visible(['id','bianhao','username','nickname','email','usdt','usdt_dj','sfz_fimage','sfz_bimage','sfz_pimage','createtime','status','sfz_status','diqu','pay_status','agent_group_id','invite','agent_group_id']);
                 $row->visible(['group']);
 				$row->getRelation('group')->visible(['name']);
 
                 $row->visible(['invite']);
-				$row->getRelation('invite')->visible(['nickname']);       
+				$row->getRelation('invite')->visible(['username']);       
                 
                 $row->visible(['agent']);
-				$row->getRelation('agent')->visible(['nickname']);                     
+				$row->getRelation('agent')->visible(['username']);                     
                 // $row->visible(['admingroup']);
 				// $row->getRelation('admingroup')->visible(['title']);                
             }
-            $usdt = $this->model->cache(3600)->sum("usdt");
-            $usdt_dj = $this->model->cache(3600)->sum("usdt_dj");
+            $usdt = $this->model->cache(60)->sum("usdt");
+            $usdt_dj = $this->model->cache(60)->sum("usdt_dj");
             $result = array("total" => $list->total(), "rows" => $list->items(),'sfz_show'=>$sfz_show,'extend'=>compact('usdt','usdt_dj'));
 
             return json($result);
