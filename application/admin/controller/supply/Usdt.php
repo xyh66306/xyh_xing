@@ -7,6 +7,7 @@ use app\admin\model\supply\Supply;
 use app\admin\model\supply\Usdtlog;
 use app\admin\model\supply\Recharge;
 use app\common\model\company\Profit as companyProfit;
+use app\admin\model\company\Account;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
@@ -205,6 +206,9 @@ class Usdt extends Backend
 
                $companyProfit1 = new companyProfit();
                $companyProfit1->addLog($row['usdt'],$row['fee'],4,3,1,$row['id']);
+
+               $AccountModel = new Account();
+               $AccountModel->addLog($row['usdt'],4,3,2,$row['id']);
 
             }
             $result = $row->allowField(true)->save($params);

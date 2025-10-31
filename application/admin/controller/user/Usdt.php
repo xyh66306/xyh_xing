@@ -5,6 +5,7 @@ namespace app\admin\controller\user;
 use app\common\controller\Backend;
 use app\admin\model\user\usdt\Log as UsdtLog;
 use app\common\model\company\Profit;
+use app\admin\model\company\Account;
 use think\Db;
 use think\db\exception\BindParamException;
 use think\db\exception\DataNotFoundException;
@@ -118,6 +119,10 @@ class Usdt extends Backend
                 //公司资产盈利
                 $profitModel = new Profit();
                 $profitModel->addLog($row['num'],$row['fee'],6,1,1,$row['bianhao']);
+
+                $AccountModel = new Account();
+                $AccountModel->addLog($row['num'],6,1,1,$row['bianhao']);
+
             }
 
             //是否采用模型验证

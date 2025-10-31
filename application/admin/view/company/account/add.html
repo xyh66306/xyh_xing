@@ -1,0 +1,63 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Type')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-type" class="form-control" name="row[type]" type="number" value="1">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('User_type')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-user_type" class="form-control selectpicker" name="row[user_type]">
+                {foreach name="userTypeList" item="vo"}
+                    <option value="{$key}" {in name="key" value="1"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Flow_type')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-flow_type" class="form-control selectpicker" name="row[flow_type]">
+                {foreach name="flowTypeList" item="vo"}
+                    <option value="{$key}" {in name="key" value="2"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-usdt" data-rule="required" class="form-control" step="0.0001" name="row[usdt]" type="number" value="0.0000">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Before')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-before" data-rule="required" class="form-control" step="0.0001" name="row[before]" type="number" value="0.0000">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('After')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-after" data-rule="required" class="form-control" step="0.0001" name="row[after]" type="number" value="0.0000">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Source_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-source_id" data-rule="required" data-source="source/index" class="form-control selectpage" name="row[source_id]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>

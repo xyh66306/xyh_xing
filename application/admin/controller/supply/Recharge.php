@@ -5,6 +5,7 @@ namespace app\admin\controller\supply;
 use app\common\controller\Backend;
 use app\admin\model\supply\Supply;
 use app\admin\model\supply\Usdtlog;
+use app\admin\model\company\Account;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
@@ -194,6 +195,9 @@ class Recharge extends Backend
             if($params['pay_status']==3){
                 $Usdtlog = new Usdtlog();
                 $Usdtlog->addLog($row['supply_id'], $row['usdt'], 2, 1, '充值');
+
+                $AccountModel = new Account();
+                $AccountModel->addLog($row['usdt'],7,3,1,$row['id']);
             }
 
             //是否采用模型验证
