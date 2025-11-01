@@ -318,7 +318,7 @@ class Rujin extends Backend
                         }
 
                         $companyProfit3 = new companyProfit();
-                        $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['orderid']); 
+                        $res5 = $companyProfit3->addLog($row['user_usdt'],$comSum,10,2,2,$row['orderid']); 
                         $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
                     }                
 

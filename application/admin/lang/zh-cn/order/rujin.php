@@ -47,7 +47,7 @@ return [
     'Diqu 3'         => '海外',
     'Callback'       => '回调',
     'User Fee'       => '承兑商手续费',
-    'Supply Fee'     => '手续费(USDT)',
+    'Supply Fee'     => '商户汇率',
     'Bi_Type'         => '币种',   
     'Bi_Type 1'       => 'USDT',
     'Bi_Type 2'       => 'BTC',
@@ -55,7 +55,7 @@ return [
     'Payername'       => '付款人',
     'Supply title'    => '商户',
     'Supply Usdt'    => '商户到账数量',
-    'User Usdt'      => '承兑商充值数量',
+    'User Usdt'      => '承兑商结算数量',
     'Act Usdt'      => '结算数量(USDT)',
     'Order Usdt'    => '订单数量(USDT)',
 ];

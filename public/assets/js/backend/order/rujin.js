@@ -41,12 +41,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         // {field: 'bank_account', title: __('Bank_account'), operate: 'LIKE'},
                         // {field: 'bank_zhihang', title: __('Bank_zhihang'), operate: 'LIKE'},
                         {field: 'huilv', title: __('Huilv')},
-                        {field: 'usdt',  title: __('Act Usdt')},
-                        // {field: 'user_usdt',  title: __('User Usdt')},
+                        // {field: 'usdt',  title: __('Act Usdt')},
+                        {field: 'user_usdt',  title: __('User Usdt')},
                         // {field: 'user_fee',  title: __('User Fee')},
                         {field: 'supply_usdt',  title: __('Supply Usdt')},
-                        {field: 'supply_fee',  title: __('Supply Fee')},                        
-                        {field: 'fee',  title: __('Fee')},
+                        // {field: 'supply_fee',  title: __('Supply Fee')},                        
                         {field: 'bi_type', title: __('Bi_Type')},
                         {field: 'order_status',  title: "超时", searchList: {"1":"否","2":"是"}},
                         {field: 'payername', title: __('Payername')},
@@ -65,16 +64,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             table.on('load-success.bs.table',function (e,data){
                 console.log(Config.isBoothView);
                 if (Config.isBoothView){
-                    table.bootstrapTable('hideColumn', 'user_fee');
-                    table.bootstrapTable('hideColumn', 'supply_fee');
-                    table.bootstrapTable('hideColumn', 'username');
+                    // table.bootstrapTable('hideColumn', 'user_fee');
+                    // table.bootstrapTable('hideColumn', 'supply_fee');
+                    // table.bootstrapTable('hideColumn', 'username');
                     table.bootstrapTable('hideColumn', 'supply.title');
-                    table.bootstrapTable('hideColumn', 'user_usdt');
-                    table.bootstrapTable('hideColumn', 'user_fee');
+                    // table.bootstrapTable('hideColumn', 'user_usdt');
+                    // table.bootstrapTable('hideColumn', 'user_fee');
                     table.bootstrapTable('hideColumn', 'diqu');
                 } else {
-                    table.bootstrapTable('hideColumn', 'fee');
+                    // table.bootstrapTable('hideColumn', 'fee');
                 }
+                table.bootstrapTable('hideColumn', 'diqu');
 
                 $("#supply_price").text(data.extend.supply_price);
                 $("#company_price").text(data.extend.company_price);
