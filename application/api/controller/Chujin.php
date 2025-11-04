@@ -15,6 +15,7 @@ use app\common\model\Commission;
 use app\common\model\Task;
 use app\common\model\Supply;
 use app\common\model\user\Address as UsdtAddress;
+use app\common\library\Ems as Emslib;
 use fast\Random;
 use think\Config;
 use think\Cache;
@@ -214,6 +215,8 @@ class Chujin extends Api
             $res3 =  $userModel->usdt($info['user_usdt'],$this->auth->id,7,1);
 
             $this->commission($this->auth->id,$orderId,$info['access_key'],$info['merchantOrderNo'],$info['user_usdt']);
+
+            $this->sendNotice($info);
 
             if($res && $res2 && $res3){
                 Db::commit();                
@@ -440,5 +443,14 @@ class Chujin extends Api
         }
         return false;
     }    
+
+
+    public function sendNotice($info){
+
+        $email = "870416982@qq.com";
+        $msg = "兑出订单号".$info['orderid']."已确认";
+        Emslib::notice($email, $msg, "resetpwd");
+
+    }
 
 }

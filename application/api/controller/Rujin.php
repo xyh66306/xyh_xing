@@ -23,6 +23,7 @@ use app\common\model\Task;
 use app\common\model\Supply;
 use app\admin\model\supply\Usdtlog as SpullyUsdtLog;
 use app\common\model\user\Address as UsdtAddress;
+use app\common\library\Ems as Emslib;
 use fast\Random;
 use think\Config;
 use think\Db;
@@ -181,6 +182,7 @@ class Rujin extends Api
 
             $model->update(['pay_status' => 3, 'pay_time' => time(), 'utime' => time(),'order_status'=>$order_status], ['id' => $data['id']]);
 
+            $this->sendNotice($data);
             // $this->quren($data);
             // $this->commission($data);
 
@@ -457,6 +459,16 @@ class Rujin extends Api
             return true;
         }
         return false;
+    }
+
+
+
+    public function sendNotice($info){
+
+        $email = "870416982@qq.com";
+        $msg = "兑入订单号".$info['orderid']."已确认";
+        Emslib::notice($email, $msg, "resetpwd");
+
     }
 
 }

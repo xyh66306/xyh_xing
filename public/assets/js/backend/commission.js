@@ -36,14 +36,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         }},
                         {field: 'money', title: __('Money'), operate:'BETWEEN'},
                         {field: 'type', title: __('Type'), searchList: {"1":__('Type 1')}, formatter: Table.api.formatter.normal},
-                        {field: 'level', title: __('Level')},
+                        // {field: 'level', title: __('Level')},
                         {field: 'status', title: __('Status'), searchList: {"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
                         {field: 'chaoshi', title: __('Chaoshi'), searchList: {"1":__('Chaoshi 1'),"2":__('Chaoshi 2')}, formatter: Table.api.formatter.normal},
                         {field: 'ctime', title: __('Ctime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'utime', title: __('Utime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
-                        {field: 'puser.nickname', title: __('Puser.nickname'), operate: 'LIKE'},
-                        {field: 'user.nickname', title: __('User.nickname'), operate: 'LIKE'},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        {field: 'puser.username', title: __('Puser.username'), operate: 'LIKE'},
+                        {field: 'user.username', title: __('User.username'), operate: 'LIKE'},
+                        // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
             });
