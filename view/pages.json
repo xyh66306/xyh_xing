@@ -28,6 +28,13 @@
 			}
 		},
 		{
+			"path": "pages/user/share",
+			"style": {
+				"navigationBarTitleText": "分享",
+				"enablePullDownRefresh": false
+			}
+		},		
+		{
 			"path": "pages/userrebate/setting",
 			"style": {
 				"navigationBarTitleText": "返佣设置",

@@ -1,10 +1,5 @@
 <template>
 	<view class="page">
-<!-- 
-		<view class="invite u-border" v-if="open_team" @click="showInvite">
-			<u-icon name="gift" color="primary" size="24"></u-icon>
-			<view style="margin-left: 20rpx;">邀请好友</view>
-		</view> -->
 		<template v-if="open_company">
 			<view class="head">
 				<view class="user">
@@ -89,15 +84,15 @@
 		<view class="logout">
 			<u-button type="error" shape="circle" @click="logout">退出登录</u-button>
 		</view>
+		<!-- #ifdef H5 -->
 		<u-popup :show="show" @close="closeInvite" mode="center" :round="10">
 			<view class="box">
 				<view style="margin-bottom: 30rpx;">扫一扫二维码，注册新用户</view>
-				<!-- <u-image :src="invite.qr" width="200" height="200"></u-image> -->
-				<yy-qrcode :text="invite.url" />
+				<!-- <yy-qrcode :text="invite.url" /> -->
 				<u-button type="primary" plain style="margin-top: 30rpx;" @click="copyUrl">复制分享链接</u-button>
 			</view>
 		</u-popup>
-	
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -122,10 +117,7 @@
 			this.getInvite();
 		},
 		onShow() {
-			// this.user = uni.getStorageSync('user') || {};
-			// this.open_team  = true
-			// this.open_team = uni.getStorageSync('open_team') ? true : false;
-			this.open_company = uni.getStorageSync('user_group')==2 ? true : false;
+			// this.open_company = uni.getStorageSync('user_group')==2 ? true : false;
 			this.getUserInfo();
 		},
 		methods: {
@@ -155,8 +147,6 @@
 					clearTimeout(this.timer);
 				}
 				
-				console.log(this.times);
-				
 				this.times++;
 				if (this.times >= 5) {
 					this.open_team = !this.open_team;
@@ -170,8 +160,14 @@
 				}, 1000);
 			},
 			showInvite() {
-				
+				// #ifdef H5
 				this.show = true;
+				// #endif
+				// #ifdef APP
+				uni.navigateTo({
+					url:"/pages/user/share"
+				})
+				// #endif
 			},
 			closeInvite() {
 				this.show = false;
@@ -180,7 +176,6 @@
 				uni.$u.http.post('/api/index/getInvite').then(res => {
 					if(res.code == 1) {
 						this.invite = res.data;
-						console.log(res.data.url)
 					}
 				})
 			},

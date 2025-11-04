@@ -63,32 +63,41 @@ class Demo extends Frontend
         // $mobile = "18919660526";
         // $event = "resetpwd";
         // $code = rand(1111,9999);
-        // $ret = Smslib::notice($mobile, $code, $event);
+        // $ret = Smslib::notice($mobile, $code, $event);57595
 
-        // $orderid = "57595";
+        // $orderid = "57597";
         // $rujinModel = new Rujin();
         // $info = $rujinModel->where(['orderid'=>$orderid])->find();
         // $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt']);
-
+        
         $orderid = "20251030101926";
 
 
-        $rujinModel = new Rujin();
-        $info = $rujinModel->where(['orderid'=>$orderid])->find();        
+        // $rujinModel = new Rujin();
+        // $info = $rujinModel->where(['orderid'=>$orderid])->find();   
+        
+        
+        $chujinModel = new Chujin();
+        $info = $chujinModel->where('merchantOrderNo',$orderid)->find();
+        
+        if(!$info){
+            
+            return;
+        }
         $commissionModel = new Commission();
         $comlist = $commissionModel->where("p4b_orderid",$orderid)->select();
         $comSum  = $commissionModel->where("p4b_orderid",$orderid)->sum('money');
         if($comSum>0){
             
-            foreach ($comlist as $vo) {
-                $userModel = new User();
-                $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$orderid);
-            }
+            // foreach ($comlist as $vo) {
+            //     $userModel = new User();
+            //     $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$orderid);
+            // }
 
             $companyProfit3 = new companyProfit();
             $res5 = $companyProfit3->addLog($info['user_usdt'],$comSum,10,2,2,$orderid); 
             $commissionModel->update(['status'=>1,'chaoshi'=>1],['p4b_orderid'=>$orderid]);
-        }          
+        }  
 
 
     }

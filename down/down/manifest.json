@@ -1,9 +1,9 @@
 {
-    "name" : "KYC",
-    "appid" : "__UNI__7620F0C",
+    "name" : "down",
+    "appid" : "__UNI__08A221F",
     "description" : "",
     "versionName" : "1.0.0",
-    "versionCode" : 100,
+    "versionCode" : "100",
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -11,9 +11,9 @@
         "nvueStyleCompiler" : "uni-app",
         "compilerVersion" : 3,
         "splashscreen" : {
-            "alwaysShowBeforeRender" : false,
+            "alwaysShowBeforeRender" : true,
             "waiting" : true,
-            "autoclose" : false,
+            "autoclose" : true,
             "delay" : 0
         },
         /* 模块配置 */
@@ -38,50 +38,12 @@
                     "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
                     "<uses-feature android:name=\"android.hardware.camera\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
-                ],
-                "abiFilters" : [ "armeabi-v7a", "arm64-v8a" ]
+                ]
             },
             /* ios打包配置 */
-            "ios" : {
-                "idfa" : false,
-                "dSYMs" : false
-            },
+            "ios" : {},
             /* SDK配置 */
-            "sdkConfigs" : {
-                "ad" : {}
-            },
-            "icons" : {
-                "android" : {
-                    "hdpi" : "unpackage/res/icons/72x72.png",
-                    "xhdpi" : "unpackage/res/icons/96x96.png",
-                    "xxhdpi" : "unpackage/res/icons/144x144.png",
-                    "xxxhdpi" : "unpackage/res/icons/192x192.png"
-                },
-                "ios" : {
-                    "appstore" : "unpackage/res/icons/1024x1024.png",
-                    "ipad" : {
-                        "app" : "unpackage/res/icons/76x76.png",
-                        "app@2x" : "unpackage/res/icons/152x152.png",
-                        "notification" : "unpackage/res/icons/20x20.png",
-                        "notification@2x" : "unpackage/res/icons/40x40.png",
-                        "proapp@2x" : "unpackage/res/icons/167x167.png",
-                        "settings" : "unpackage/res/icons/29x29.png",
-                        "settings@2x" : "unpackage/res/icons/58x58.png",
-                        "spotlight" : "unpackage/res/icons/40x40.png",
-                        "spotlight@2x" : "unpackage/res/icons/80x80.png"
-                    },
-                    "iphone" : {
-                        "app@2x" : "unpackage/res/icons/120x120.png",
-                        "app@3x" : "unpackage/res/icons/180x180.png",
-                        "notification@2x" : "unpackage/res/icons/40x40.png",
-                        "notification@3x" : "unpackage/res/icons/60x60.png",
-                        "settings@2x" : "unpackage/res/icons/58x58.png",
-                        "settings@3x" : "unpackage/res/icons/87x87.png",
-                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
-                        "spotlight@3x" : "unpackage/res/icons/120x120.png"
-                    }
-                }
-            }
+            "sdkConfigs" : {}
         }
     },
     /* 快应用特有相关 */
@@ -107,17 +69,11 @@
         "enable" : false
     },
     "vueVersion" : "2",
-    "fallbackLocale" : "zh-Hans",
     "h5" : {
+        "title" : "下载",
         "router" : {
-            "mode" : "hash",
-            "base" : "/otc/"
-        },
-        "devServer" : {
-            "https" : false
-        },
-        "usingComponents" : {
-            "u-table" : "/uview-ui/components/u-table/u-table"
+            "mode" : "history",
+            "base" : "/down/"
         }
     }
 }

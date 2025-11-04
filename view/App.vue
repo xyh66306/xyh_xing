@@ -12,23 +12,12 @@
 						url: '/pages/login/login'
 					})
 				}
-				this.getMenu(1);
-			} else {
-				await uni.$u.http.post('/api/user/getUserinfo').then((res) => {
-					if(res.code == 1) {
-						uni.setStorageSync('user', res.data);
-						if(res.data.group_id==2){
-							this.getMenu(2);
-						} else {
-							this.getMenu(1);
-						}
-					}
-				})
 			}
 			// #ifdef APP
 			setTimeout(() => {
 				plus.navigator.closeSplashscreen();
 			}, 500);
+			this.checkVersion()
 			// #endif
 		},
 		onShow: function() {
@@ -38,34 +27,52 @@
 			// console.log('App Hide')
 		},
 		methods: {
-			getMenu(group){
-				uni.setStorageSync('user_group', group);
+			// #ifdef APP-PLUS || APP-PLUS-NVUE
+			// app更新检测
+			checkVersion() {
+				// 获取应用版本号
+				let version = plus.runtime.version;
+
+				//检测当前平台，如果是安卓则启动安卓更新
+				uni.getSystemInfo({
+					success: res => {
+						this.updateHandler(res.platform, version);
+					}
+				})
 			},
-			// uploadFile(url) {
-			// 	// #ifdef APP
-			// 	const host = 'http://103.97.176.57';
-			// 	// #endif
-			// 	// #ifndef APP
-			// 	const host = location.origin;
-			// 	// #endif
-			// 	return new Promise((resolve, reject) => {
-			// 		let a = uni.uploadFile({
-			// 			url: host + '/api/common/upload',
-			// 			filePath: url,
-			// 			name: 'file',
-			// 			formData: {},
-			// 			success: (res) => {
-			// 				console.log(res);
-			// 				if(res.statusCode == 200) {
-			// 					let data = JSON.parse(res.data);
-			// 					resolve(data)
-			// 				}else{
-			// 					reject({});
-			// 				}
-			// 			}
-			// 		});
-			// 	})
-			// }
+			// 更新操作
+			updateHandler(platform, version) {
+				let data = {
+					id:1,
+					platform: platform,
+					version: version
+				}
+				let _this = this;
+				uni.$u.http.post('/api/down/index',data).then(res => {
+					if(res.code == 1) {
+						const info = res.data;
+						if (info.newversion !== '' && info.newversion !== version) {
+							let message = "细节更新"
+							if(info.content){
+								message = info.content
+							}
+							uni.showModal({
+								//提醒用户更新
+								title: '更新提示',
+								content: message,
+								success: res => {
+									if (res.confirm) {
+										window.location.href = "http://down.wobeis.com/wap/#/?id=4";
+									}
+								}
+							})
+						}
+						// this.invite = res.data;
+					}
+				})
+				
+			}
+			// #endif
 		}
 	}
 </script>

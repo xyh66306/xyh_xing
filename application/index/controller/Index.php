@@ -178,10 +178,6 @@ class Index extends Frontend
         ";        
         echo $response;
 
-
-        // $Supply = new Supply();
-        // $list = $Supply->where("status",1)->select();
-
     }
 
 
