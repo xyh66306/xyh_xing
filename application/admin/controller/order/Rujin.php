@@ -122,10 +122,10 @@ class Rujin extends Backend
                 $row->getRelation('supply')->visible(['title']);
                 $row->fee = $row->supply_fee;
             }
-            $supply_price = $this->model->where("pay_status",4)->sum("supply_usdt");
-            $user_price = $this->model->where("pay_status",4)->sum("user_usdt");
-            $user_fee = $this->model->where("pay_status",4)->sum("user_fee");
-            $supply_fee = $this->model->where("pay_status",4)->sum("supply_fee");
+            $supply_price = $this->model->where($where)->sum("supply_usdt");
+            $user_price = $this->model->where($where)->sum("user_usdt");
+            $user_fee = $this->model->where($where)->sum("user_fee");
+            $supply_fee = $this->model->where($where)->sum("supply_fee");
             $company_price =  $user_fee + $supply_fee;
 
 
@@ -318,7 +318,7 @@ class Rujin extends Backend
                         }
 
                         $companyProfit3 = new companyProfit();
-                        $res5 = $companyProfit3->addLog($row['user_usdt'],$comSum,10,2,2,$row['orderid']); 
+                        $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['orderid']); 
                         $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
                     }                
 

@@ -111,22 +111,18 @@ class Chujin extends Backend
 
             $list = $this->model
                 ->where($where)
-                ->with(['user'])
                 ->order($sort, $order)
                 ->paginate($limit);
 
 
             foreach ($list as $k=>$row) {
-                $row->visible(['id', 'user_id','orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image','withdrawAmount']);
-
-                $row->visible(['user']);
-				$row->getRelation('user')->visible(['nickname']);
+                $row->visible(['id','payername','user_id','orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image','withdrawAmount']);
 
             }
-            $supply_price = $this->model->where("pay_status",5)->sum("supply_usdt");
-            $user_price = $this->model->where("pay_status",5)->sum("user_usdt");
-            $user_fee = $this->model->where("pay_status",5)->sum("user_fee");
-            $supply_fee = $this->model->where("pay_status",5)->sum("supply_fee");
+            $supply_price = $this->model->where($where)->sum("supply_usdt");
+            $user_price = $this->model->where($where)->sum("user_usdt");
+            $user_fee = $this->model->where($where)->sum("user_fee");
+            $supply_fee = $this->model->where($where)->sum("supply_fee");
 
             $company_price =  $user_fee + $supply_fee;
 
