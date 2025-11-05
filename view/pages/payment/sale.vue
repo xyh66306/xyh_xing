@@ -17,7 +17,7 @@
 			</view>		
 			<view class="u-info">交易数量</view>
 			<view class="flex u-border-bottom">
-				<view>{{details.usdt}}</view>
+				<view>{{details.user_usdt}}</view>
 			</view>													
 			<template v-if="details.pay_type=='bank'">
 				<view class="u-info">付款账户</view>
