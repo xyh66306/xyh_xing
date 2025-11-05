@@ -103,6 +103,7 @@ class Index extends Frontend
                     <td>今日累计金额(cny)</td>
                     <th>今日承兑商结算数量(usdt)</th>
                     <th>今日商户结算数量(usdt)</th>
+                    <th>今日公司利润(usdt)</th>
                     <th>今日代理利润(usdt)</th>
                 </tr>
                 <tr>
@@ -117,6 +118,7 @@ class Index extends Frontend
                     <td>{$total_today_money}</td>
                     <td>{$user_today_price}</td>
                     <td>{$supply_today_price}</td>
+                    <td>{$company_today_price}</td>
                     <td>{$fanyong_taday_total}</td>
                 </tr>              
             </table>
@@ -131,7 +133,7 @@ class Index extends Frontend
         $cj_supply_fee = $chujinModel->where("pay_status",5)->sum("supply_fee");
         $cj_total = $chujinModel->where("pay_status",5)->count("id");
         // $cj_company_price =  $cj_user_fee + $cj_supply_fee;
-        $cj_fanyong_total = $Commission->where(['source'=>2,'chaoshi'=>1,'status'=>1])->whereTime('ctime', 'today')->sum("money");
+        $cj_fanyong_total = $Commission->where(['source'=>2,'chaoshi'=>1,'status'=>1])->sum("money");
         $cj_company_price =  $cj_user_fee + $cj_supply_fee - $cj_fanyong_total;
 
 
@@ -164,6 +166,7 @@ class Index extends Frontend
                     <th>今日商户提现金额（cny）</th>
                     <th>今日承兑商结算数量（usdt）</th>
                     <th>今日商户结算数量（usdt）</th>
+                    <th>今日公司利润(usdt)</th>
                     <th>今日代理利润（usdt）</th>
                 </tr>
                 <tr>
@@ -178,6 +181,7 @@ class Index extends Frontend
                     <td>{$cj_supply_today_money}/{$cj_supply_today_money2}</td>
                     <td>{$cj_user_today_price}</td>
                     <td>{$cj_supply_today_price}</td>
+                    <td>{$cj_company_today_price}</td>
                     <td>{$cj_taday_fanyong_total}</td>
                 </tr>              
             </table>
