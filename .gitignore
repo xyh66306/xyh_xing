@@ -1,5 +1,8 @@
 # 忽略目录下的所有文件
-/view/unpackage/*
+/view/unpackage/cache/*
+/view/unpackage/debug/*
+/view/unpackage/dist/*
+/view/unpackage/release/*
 /thinkphp/*
 /payorder/unpackage/*
 /application/database.php

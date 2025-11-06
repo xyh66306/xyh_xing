@@ -138,7 +138,7 @@ class Cash extends Api
             if($rj_user_id && $rj_user_id>0){
                 $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
             } else {
-                $userInfo = $userModel->where($where)->where('usdt',">",0)->where('id','<>','168017')->order($order)->find();
+                $userInfo = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->find();
             }
 
 
@@ -253,7 +253,7 @@ class Cash extends Api
 
 
         if($res){
-            $this->sendNotice();
+            // $this->sendNotice();
             return $this->success('success',request()->domain().'/cash/#/?orderid='.$params['orderid'].'&access_key='.$this->access_key);
         }else{
             return $this->error('fail');

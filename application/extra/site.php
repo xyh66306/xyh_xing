@@ -30,7 +30,7 @@ return array (
   'mail_type' => '1',
   'mail_smtp_host' => 'smtp.163.com',
   'mail_smtp_port' => '465',
-  'mail_smtp_user' => 'KYC',
+  'mail_smtp_user' => 'XH',
   'mail_smtp_pass' => 'GSdrf5cu3UYtrZhd',
   'mail_verify_type' => '2',
   'mail_from' => '19266496351@163.com',

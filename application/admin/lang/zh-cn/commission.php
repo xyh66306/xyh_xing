@@ -21,6 +21,6 @@ return [
     'Chaoshi 2'     => '是',
     'Ctime'         => '创建时间',
     'Utime'         => '审核时间',
-    'User.nickname' => '返佣对象昵称',
-    'Puser.nickname' => '返佣上级昵称'
+    'User.username' => '返佣对象姓名',
+    'Puser.username' => '返佣上级姓名'
 ];

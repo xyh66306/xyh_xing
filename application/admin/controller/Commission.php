@@ -82,8 +82,8 @@ class Commission extends Backend
 
             foreach ($list as $row) {
                 
-              $row->getRelation('puser')->visible(['nickname']);
-                $row->getRelation('user')->visible(['nickname']);
+              $row->getRelation('puser')->visible(['username']);
+                $row->getRelation('user')->visible(['username']);
             }
 
             $total = $this->model->where("status",1)->cache(3600)->sum("money");
