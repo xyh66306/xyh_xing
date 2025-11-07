@@ -35,7 +35,7 @@ class Buy extends Frontend
         $data = $params;
         $data['access_secret'] = $access_secret;
         $data['signature'] = $sign;
-        $data['randomStr'] = 
+        // $data['randomStr'] = 
 
         $data['business_id'] = '2000520';
         $data['bi_type'] = 'TWD';
@@ -63,7 +63,7 @@ class Buy extends Frontend
 
     public function cash()
     { 
-        $url = "https://bingocn.wobeis.com/openapi/cash/index";
+        $url = "http://ceshiotc.wobeis.com/openapi/cash/index";
 
         $randomStr = $this->getRandomStr(32);
 
@@ -90,7 +90,7 @@ class Buy extends Frontend
         $data = $params;
         $data['access_secret'] = $access_secret;
         $data['signature'] = $sign;
-        $data['backurl'] = 'https://bingocn.wobeis.com/index/index/ceshi';
+        $data['backurl'] = 'http://ceshiotc.wobeis.com/index/index/ceshi';
         $data['orderid'] = "casher".date("YmdHis",time());
         $data['amount'] = '3800';
         $data['diqu'] = 1;

@@ -213,6 +213,8 @@ class Details extends Api
                     ]
                 ];
                 $taskModel->addTask($data,"Cash");
+                $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt']);
+
                 Db::commit();
             }
 
@@ -221,12 +223,14 @@ class Details extends Api
             return $this->error($e->getMessage());
         }
         // $this->fenyong($orderid,$info['user_id'],$info['amount'],$pay_type);
-        $userModel = new UserModel();
-        $userInfo = $userModel->where(['id'=>$info['user_id']])->find();
+        // $userModel = new UserModel();
+        // $userInfo = $userModel->where(['id'=>$info['user_id']])->find();
 
-        $this->sendEmsNotice($userInfo['email']);
-        $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt']);
-        $this->sendNotice($userInfo,$info);
+        // $this->sendEmsNotice($userInfo['email']);
+        // $this->sendNotice($userInfo,$info);
+        $jobClass = "app\job\Notice\@fire";
+        \think\Queue::push($jobClass,$info);//加入队列
+
         $this->success('下单成功，等待确认');
     }    
 

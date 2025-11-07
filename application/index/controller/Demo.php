@@ -38,11 +38,18 @@ class Demo extends Frontend
 
 
     public function ceshi(){
-        $list = Db::name("order_chujin")->select();
-        foreach ($list as $item){ 
-            $username = Db::name("user")->where("id",$item["user_id"])->value("username");
-            Db::name("order_chujin")->where("id",$item["id"])->update(["payername"=>$username]);
+
+        $orderid = "casher20251106174125";
+        $rujinModel = new Rujin();
+        $info = $rujinModel->where(['orderid'=>$orderid])->find();
+        if(!$info){
+            return $this->error('订单不存在');
         }
+        $jobClass = "app\job\Notice\@fire";
+        $res =  \think\Queue::push($jobClass,$info);//加入队列
+
+        dump($res);
+
     }
 
 }
