@@ -52,4 +52,45 @@ class Demo extends Frontend
 
     }
 
+
+    public function index()
+    { 
+
+
+        $user_id = "168033";
+    }
+
+
+    /**
+     * 包含自身
+     */
+    public function getrate($uinfo){
+
+        $sparent_str = str_replace("A", "", $uinfo['sparent']);
+        $sparent_arr = explode(",", $sparent_str);
+
+        $result = [];
+        $max = 0;
+        foreach ($sparent_arr as $key => $value) { 
+            $res = [];
+            $userRebate = new UserRebate();
+            $rateInfo = $userRebate->where(['user_id' => $value,'churu'=>'duiru','type'=>'bank'])->find();
+
+            if(!$rateInfo || $rateInfo['rate']<=0){
+                continue;
+            }
+            $res['user_id'] = $value;
+            $res['rate'] = $rateInfo['rate'] -$max;
+            if($rateInfo['rate']>0){
+                $max = $rateInfo['rate'];
+            }
+            $result[] = $res;
+            
+        }
+        $res['user_id'] = 168022;
+        $res['rate'] = $this->supplyInfo['duiru_fanyong'] -$max;
+        $result[] = $res;
+        return $result;
+    }  
+
 }

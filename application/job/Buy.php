@@ -11,6 +11,7 @@ use think\queue\Job;
 use app\common\model\Task;
 use think\Log;
 
+
 class Buy
 {
 
@@ -37,6 +38,8 @@ class Buy
                 $bData['state'] = "2";
                 $bData['updatetime'] = time();
                 $ietaskModle->update($bData, ['id' => $params['task_id']]);
+
+
                 $job->delete(); // 成功后删除任务
             } else {
                 // 增加重试次数检查
@@ -131,4 +134,8 @@ class Buy
             return $data;
         }
     }
+
+
+
+
 }

@@ -114,7 +114,7 @@
 </template>
 
 <script>
-	const base_url = "http://ceshiotc.wobeis.com"
+	const base_url = "https://bingocn.wobeis.com"
 	export default {
 		data() {
 			return {
@@ -161,6 +161,7 @@
 				alipayQRCode: '',
 				yx_time_min:0,
 				yx_time_sec:0,
+				token:'',
 			};
 		},
 		computed: {
@@ -210,6 +211,7 @@
 							that.actNum = data.act_num
 							that.ctime = data.ctime
 							that.payButtonText = '立即支付 ¥' + data.amount;
+							that.token = data.token
 							if (data.bankInfo) {
 								that.bankCard.bankname = data.bankInfo.bank_name
 								that.bankCard.holder = data.bankInfo.username
@@ -398,7 +400,8 @@
 						access_key: that.access_key,
 						orderid: that.orderid,
 						pay_type: that.selectedMethod,
-						pinzheng_image: that.pinzheng
+						pinzheng_image: that.pinzheng,
+						auth_token:that.token,
 					},
 					success(res) {
 						let data = res.data

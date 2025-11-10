@@ -1,18 +1,14 @@
 <?php
-/*
- * @Description: 
- * @Version: 1.0
- * @Autor: Xyh
- * @Date: 2025-08-01 17:22:40
- */
+
 namespace app\job;
 
 use think\queue\Job;
 use app\common\model\Task;
-use think\Log;
+use app\common\model\order\Rujin;
 use app\common\model\User as UserModel;
 use app\common\library\Sms as Smslib;
 use app\common\library\Ems as Emslib;
+use think\Log;
 
 class Notice
 {
@@ -21,25 +17,28 @@ class Notice
     {
         
         try {
-            
-            recordLogs("jobNotice",$params);
 
-            $res1 = $this->sendNotice($params);
-            // $res2 = $this->sendEmsNotice($params['user_id']);
-            $res2 = $this->sendEmsNotice(168005);
-            
+            recordLogs("Notice_data",json_encode($params));
 
-            if ($res1 && $res2) {
-                $job->delete(); // 成功后删除任务
-            } else {
-                if ($job->attempts() >= 3) {
-                    $job->delete();
-                }
+            // 检查参数格式是否正确
+            if (!isset($params['params'])) {
+                $job->delete();
+                return;
             }
+
+            $data['orderid'] = $params['params']['orderid'];
+            $rujinModel = new Rujin();
+            $info = $rujinModel->where(['orderid'=>$data['orderid']])->find();
+
+            $this->sendNotice($info);
+            $this->sendEmsNotice($info['user_id']);            
+
+            $job->delete();
         } catch (\Exception $e) {
             // 异常处理
-            recordLogs("jobNotice",$e->getMessage());
-            $job->delete();
+            if ($job->attempts() >= 1) {
+                $job->delete();
+            }
         }
     }
 
@@ -47,7 +46,6 @@ class Notice
     {
         // ...任务达到最大重试次数后，失败了
     }
-
 
     public function sendNotice($info){
 

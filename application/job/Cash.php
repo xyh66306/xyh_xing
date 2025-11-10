@@ -9,6 +9,10 @@ namespace app\job;
 
 use think\queue\Job;
 use app\common\model\Task;
+use app\common\model\order\Rujin;
+use app\common\model\User as UserModel;
+use app\common\library\Sms as Smslib;
+use app\common\library\Ems as Emslib;
 use think\Log;
 
 class Cash
@@ -36,6 +40,7 @@ class Cash
             $res = $this->postCurl($params['params']['url'], $data,$header);
             
             if ($res == 'success') {
+
                 $bData['state'] = "2";
                 $bData['updatetime'] = time();
                 $ietaskModle->update($bData, ['id' => $params['task_id']]);
@@ -133,4 +138,5 @@ class Cash
             return $data;
         }
     }
+
 }
