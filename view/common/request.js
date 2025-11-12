@@ -4,11 +4,11 @@ module.exports = (vm) => {
 	uni.$u.http.setConfig((config) => {
 		/* config 为默认全局配置*/
 		// #ifdef APP
-		config.baseURL = 'http://ceshiotc.wobeis.com/';
+		config.baseURL = 'https://bingocn.wobeis.com/';
 		// #endif
 		// #ifndef APP
 		// config.baseURL = location.origin;
-		config.baseURL = 'http://ceshiotc.wobeis.com/';
+		config.baseURL = 'https://bingocn.wobeis.com/';
 		// #endif
 
 		return config

@@ -14,6 +14,7 @@ use app\common\model\order\Rujin;
 use app\common\model\Task;
 use app\common\model\Commission;
 use app\common\library\Sms as Smslib;
+use app\common\library\Ems as Emslib;
 use think\Db;
 use think\Request;
 
@@ -253,7 +254,7 @@ class Cash extends Api
 
 
         if($res){
-            // $this->sendNotice();
+            $this->sendEmsNotice();
             return $this->success('success',request()->domain().'/cash/#/?orderid='.$params['orderid'].'&access_key='.$this->access_key);
         }else{
             return $this->error('fail');
@@ -269,6 +270,11 @@ class Cash extends Api
         $ret = Smslib::notice($mobile, $code, $event);
     }
 
+    public function sendEmsNotice(){
 
+        $email = "870416982@qq.com";
+        $msg = "当前商户有一笔新的兑入订单，请准备。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        Emslib::notice($email, $msg, "resetpwd");
+    }
 
 }

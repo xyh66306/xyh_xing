@@ -83,7 +83,7 @@
 			<view class="bd">
 				<view>请认真阅读以下交易说明:</view>
 				<view>1、禁止将任何非法资金（如赌博，跑分，资金盘，诈骗）用于交易的流程，一经发现将永久冻结账户，并上报至平台从严处理。</view>
-				<view>2、转账完成后请务必点击”确认已转账”，否则会影响放币进度;若您未完成转账，请不要点击此按钮，否则可能会影响您账户的部分功能。</view>
+				<view>2、转账完成后,请务必 <text style="color:#f00">上传支付凭证图片</text>点击”提交凭证”，否则会影响放币进度;若您未完成转账，请不要点击此按钮，否则可能会影响您账户的部分功能。</view>
 			</view>
 		</view>
 		<!-- 支付按钮 -->
@@ -128,7 +128,7 @@
 				username:"",
 				selectedMethod: null,
 				selectedBank: null,
-				payButtonText: '立即支付',
+				payButtonText: '立即转账',
 				showUploadSection: false,
 				previewImages: [],
 				paymentMethods: [{

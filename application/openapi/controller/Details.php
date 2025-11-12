@@ -148,7 +148,7 @@ class Details extends Api
         }
         if (!$this->checkOrderToken($orderid, $authtoken)) {
             $this->error('参数错误');
-        }        
+        }           
 
         $pay_type_arr = ['bank','alipay','wxpay'];
         if(!in_array($pay_type,$pay_type_arr)){
@@ -217,8 +217,6 @@ class Details extends Api
                     ]
                 ];
                 $taskModel->addTask($data,"Cash");
-                $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt']);
-
                 Db::commit();
             }
 
@@ -226,20 +224,13 @@ class Details extends Api
             Db::rollback();
             return $this->error($e->getMessage());
         }
-        // $userModel = new UserModel();
-        // $userInfo = $userModel->where(['id'=>$info['user_id']])->find();
+        // $this->fenyong($orderid,$info['user_id'],$info['amount'],$pay_type);
+        $userModel = new UserModel();
+        $userInfo = $userModel->where(['id'=>$info['user_id']])->find();
 
-        // $this->sendEmsNotice($userInfo['email']);
-        // $this->sendNotice($userInfo,$info);
-
-        $data = [
-            'params' => [
-                'orderid'=> $orderid
-            ]
-        ];        
-        $jobClass = "app\job\Notice\@fire";
-        \think\Queue::push($jobClass,$info);//加入队列
-
+        $this->sendEmsNotice($userInfo['email']);
+        $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt']);
+        $this->sendNotice($userInfo,$info);
         $this->success('下单成功，等待确认');
     }    
 
@@ -360,25 +351,6 @@ class Details extends Api
         return $result;
     }    
 
-    //结合orderid 生成一个一次性令牌
-    public function getOrderToken($order_id)
-    { 
-        $token = md5($order_id . time() . uniqid());
-        Cache::set('order_token_' . $order_id, $token, 300); // 5分钟有效期
-        return $token;        
-    }
-    public function checkOrderToken($order_id, $token)
-    {
-        $cache_token = Cache::get('order_token_' . $order_id);
-        if ($cache_token == $token) {
-            // 验证成功 删除Token
-            Cache::rm('order_token_' . $order_id);
-            return true;
-        }
-        return false;
-    }    
-
-
 
     public function sendNotice($userInfo,$info){
 
@@ -403,7 +375,23 @@ class Details extends Api
   
 
 
-
+    //结合orderid 生成一个一次性令牌
+    public function getOrderToken($order_id)
+    { 
+        $token = md5($order_id . time() . uniqid());
+        Cache::set('order_token_' . $order_id, $token, 300); // 5分钟有效期
+        return $token;        
+    }
+    public function checkOrderToken($order_id, $token)
+    {
+        $cache_token = Cache::get('order_token_' . $order_id);
+        if ($cache_token == $token) {
+            // 验证成功 删除Token
+            Cache::rm('order_token_' . $order_id);
+            return true;
+        }
+        return false;
+    }    
 
 
 }

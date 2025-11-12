@@ -34,7 +34,7 @@ use think\Cache;
 class Rujin extends Api
 {
 
-    protected $noNeedRight = ['index', 'detail', 'commission','payorder', 'getOrderLst'];
+    protected $noNeedRight = ['index', 'detail', 'commission','payorder', 'getOrderLst','nopayorder'];
     /**
      * 发起者
      * 订单兑入
@@ -129,7 +129,44 @@ class Rujin extends Api
         $this->success('', $data);
     }
 
+    public function nopayorder(){
 
+        $orderid = input("orderid", '');
+        $authtoken = input("auth_token", '');
+        if (!$orderid) {
+            $this->error('参数错误');
+        }
+        if (!$authtoken) {
+            $this->error('参数错误');
+        }
+        if (!$this->checkOrderToken($orderid, $authtoken)) {
+            $this->error('验证令牌过期，请刷新页面');
+        }
+        $model = new RujinModel();
+        $data = $model->where("orderid", $orderid)->find();
+        if (!$data) {
+            $this->error('数据不存在');
+        }
+        if($data['pay_status']==3){
+            $this->error('已支付，无法取消，请联系客服');
+        }    
+        if($data['pay_status']==5){
+            $this->error('已取消，请勿重复操作');
+        } 
+        
+        Db::startTrans();
+        try {
+            $model->update(['pay_status' => 5, 'pay_time' => time(), 'utime' => time()], ['id' => $data['id']]);
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            $this->error('操作失败' . $e->getMessage());
+        }
+        
+        $this->success('操作成功');
+    }
 
     /***
      * 订单支付
@@ -146,7 +183,7 @@ class Rujin extends Api
             $this->error('参数错误');
         }
         if (!$this->checkOrderToken($orderid, $authtoken)) {
-            $this->error('参数错误');
+            $this->error('验证令牌过期，请刷新页面');
         }
         
         $model = new RujinModel();
@@ -188,16 +225,6 @@ class Rujin extends Api
 
             // 通知订单完成
             $taskModel = new Task();
-            // $data = [
-            //     'name' => 'sell',
-            //     'message' => '',
-            //     'params' => [
-            //         'url'  => $data['sell_callback'],
-            //         'orderid' => $orderid,
-            //         'pay_status' => 3
-            //     ]
-            // ];
-
             $supplyModel = new Supply();
             $info = $supplyModel->where('access_key', $data['pintai_id'])->find();
 

@@ -71,6 +71,7 @@
 
 		<template v-if="details.pay_status<=2">
 			<view class="btnlst">
+				<u-button type="primary" :plain="true" @click="cancel()" style="width:45%">订单申诉</u-button>
 				<u-button type="primary" @click="submit()" style="width:45%">订单确认</u-button>
 			</view>
 		</template>	
@@ -116,8 +117,7 @@
 			  this.show = false
 			},	
 			cancel(){
-				let that = this;
-				
+				let that = this;				
 				uni.showModal({
 					title: '取消支付订单！',
 					icon: 'none',
@@ -129,8 +129,9 @@
 					confirmColor: '#007AFF', // 确认按钮颜色（默认#3CC51F）
 					success: function(res) {
 						if (res.confirm) {
-							uni.$u.http.post('/api/cash/nopayorder', {
-								orderid:that.orderid
+							uni.$u.http.post('/api/rujin/nopayorder', {
+								orderid:that.orderid,
+								auth_token:that.details.authtoken
 							}).then(res => {
 								if (res.code == 1) {
 									that.getPayDetails();
