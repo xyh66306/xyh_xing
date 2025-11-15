@@ -7,3 +7,4 @@
 /payorder/unpackage/*
 /application/database.php
 /runtime/*
+/runtime/cache/*
