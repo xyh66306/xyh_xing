@@ -30,20 +30,30 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'fy_orderid', title: __('Fy_orderid'), operate: 'LIKE'},
                         {field: 'p4b_orderid', title: __('P4b_orderid'), operate: 'LIKE'},
                         {field: 'number', title: __('Number'), operate:'BETWEEN'},
-                        // {field: 'rate', title: __('Rate'), operate:'BETWEEN'},
-                        {field: 'rate', title: __('Rate'), operate: 'BETWEEN', formatter: function (value, row, index) {
-                            return value + ' %';
+                        {field: 'source', title: __('Source'),searchList: {"1":"兑入","2":"兑出"},formatter:function(value, row, index){
+                            return {
+                                1: '兑入',
+                                2: '兑出'
+                            }[row.source];
                         }},
+                        {field: 'remarks', title: __('Remarks'), operate: 'BETWEEN'},
                         {field: 'money', title: __('Money'), operate:'BETWEEN'},
                         {field: 'type', title: __('Type'), searchList: {"1":__('Type 1')}, formatter: Table.api.formatter.normal},
                         // {field: 'level', title: __('Level')},
                         {field: 'status', title: __('Status'), searchList: {"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
                         {field: 'chaoshi', title: __('Chaoshi'), searchList: {"1":__('Chaoshi 1'),"2":__('Chaoshi 2')}, formatter: Table.api.formatter.normal},
+                        {field: 'order_status', title: __('Order Status'),searchList: {"1":"其他","2":"已完成","3":"已取消"},formatter:function(value, row, index){
+                            return {
+                                1: '其他',
+                                2: '已完成',
+                                3: '已取消'
+                            }[row.order_status];
+                        }},
                         {field: 'ctime', title: __('Ctime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'utime', title: __('Utime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'puser.username', title: __('Puser.username'), operate: 'LIKE'},
                         {field: 'user.username', title: __('User.username'), operate: 'LIKE'},
-                        // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
             });
@@ -51,8 +61,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             table.on('load-success.bs.table',function (e,data){
                 
                 $("#total").text(data.extend.total);
-                $("#duiru").text(data.extend.duiru);
-                $("#duichu").text(data.extend.duichu);
 
             });            
             // 为表格绑定事件

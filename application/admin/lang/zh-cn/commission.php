@@ -7,7 +7,7 @@ return [
     'P4b_orderid'   => '关联P4B订单号',
     'Number'        => '订单数量',
     'Rate'          => '返佣比例',
-    'Money'         => '返佣数量',
+    'Money'         => '返佣数量usdt',
     'Type'          => '返佣类型',
     'Type 1'        => '常规',
     'Level'         => '层级',
@@ -22,5 +22,8 @@ return [
     'Ctime'         => '创建时间',
     'Utime'         => '审核时间',
     'User.username' => '返佣对象姓名',
-    'Puser.username' => '返佣上级姓名'
+    'Puser.username' => '返佣上级姓名',
+    'Source'        => '来源',
+    'Order Status'  => '订单状态',
+    'Remarks'       => '计算公式',
 ];

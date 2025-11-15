@@ -3,6 +3,16 @@
 namespace app\admin\controller;
 
 use app\common\controller\Backend;
+use app\common\model\User as UserModel;
+use think\Db;
+use Exception;
+use think\db\exception\BindParamException;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
+use think\exception\DbException;
+use think\exception\PDOException;
+use think\exception\ValidateException;
+use think\response\Json;
 
 /**
  * 返佣订单
@@ -86,15 +96,77 @@ class Commission extends Backend
                 $row->getRelation('user')->visible(['username']);
             }
 
-            $total = $this->model->where("status",1)->cache(3600)->sum("money");
-            $duiru = $this->model->where("status",1)->where("source",1)->cache(3600)->sum("money");
-            $duichu = $this->model->where("status",1)->where("source",2)->cache(3600)->sum("money");
-
-            $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('total','duiru','duichu'));
+            $total = $this->model->with(['user','puser'])->where($where)->sum("money");
+            $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('total'));
 
             return json($result);
         }
         return $this->view->fetch();
     }
+
+
+    /**
+     * 编辑
+     *
+     * @param $ids
+     * @return string
+     * @throws DbException
+     * @throws \think\Exception
+     */
+    public function edit($ids = null)
+    {
+        $row = $this->model->get($ids);
+        if (!$row) {
+            $this->error(__('No Results were found'));
+        }
+        $adminIds = $this->getDataLimitAdminIds();
+        if (is_array($adminIds) && !in_array($row[$this->dataLimitField], $adminIds)) {
+            $this->error(__('You have no permission'));
+        }
+        if (false === $this->request->isPost()) {
+            $this->view->assign('row', $row);
+            return $this->view->fetch();
+        }
+        $params = $this->request->post('row/a');
+        if (empty($params)) {
+            $this->error(__('Parameter %s can not be empty', ''));
+        }
+        $params = $this->preExcludeFields($params);
+        $result = false;
+
+        if($row['chaoshi'] ==2){
+          $this->error('订单已超时，请勿操作！');
+        }
+        if($row['order_status'] !=2){
+          $this->error('订单未完成，请勿操作！');
+        }
+        if($row['status'] ==1){
+          $this->error('订单已分润，请勿操作！');
+        }         
+
+        Db::startTrans();
+        try {
+            //是否采用模型验证
+            if ($this->modelValidate) {
+                $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));
+                $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.edit' : $name) : $this->modelValidate;
+                $row->validateFailException()->validate($validate);
+            }           
+            $userModel = new UserModel();
+            $res = $userModel->usdt($row['money'],$row['p_userid'],5,1,$row['p4b_orderid']);
+            if(!$res){
+              $this->error('分润失败！');
+            }
+            $result = $row->allowField(true)->save($params);
+            Db::commit();
+        } catch (ValidateException|PDOException|Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+        if (false === $result) {
+            $this->error(__('No rows were updated'));
+        }
+        $this->success();
+    }    
 
 }

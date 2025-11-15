@@ -214,7 +214,8 @@ class Chujin extends Api
             //添加用户金额
             $res3 =  $userModel->usdt($info['user_usdt'],$this->auth->id,7,1);
 
-            $this->commission($this->auth->id,$orderId,$info['access_key'],$info['merchantOrderNo'],$info['user_usdt']);
+            $fenyong = truncateDecimal($info['user_fee'] + $info['supply_fee']);
+            $this->commission($this->auth->id,$orderId,$info['access_key'],$info['merchantOrderNo'],$info['user_usdt'],$fenyong);
 
             $this->sendNotice($info);
 
@@ -324,7 +325,7 @@ class Chujin extends Api
     /***
      * 分佣
      */
-    public function commission($user_id,$fy_orderid,$access_key,$p4b_orderid,$number)
+    public function commission($user_id,$fy_orderid,$access_key,$p4b_orderid,$number,$total)
     {
 		$fanyong = config("site.fanyong");
 		
@@ -345,12 +346,14 @@ class Chujin extends Api
         $rateLst =  $this->getrate($uinfo,$supply_info['duichu_fanyong']);
 
         $result = [];
+        $team_total = 0;
         foreach ($rateLst as $key => $value) { 
 
             $money = truncateDecimal($number * $value['rate'] / 100);
             if($money<=0){
                 continue;
             }
+            $team_total += $money;
 
             $rebateData = [
                 'user_id' =>$user_id,
@@ -365,12 +368,36 @@ class Chujin extends Api
                 'level' => $key+1,
                 'status' => 2,
                 'chaoshi' => 1,
+                'remarks'=> $number."*".$value['rate'],
+                'order_status'=>1,
                 'ctime' => time(),
                 'utime' => time(),
             ];
 
             $result[] = $rebateData;
         }
+
+
+        $diff = $total - $team_total;
+        $rebateData = [
+            'user_id' =>$user_id,
+            'p_userid' => 168022,
+            'fy_orderid' => $fy_orderid,
+            'p4b_orderid' => $p4b_orderid,
+            'number' => $number,
+            'rate'  => 0,
+            'money' => $diff,
+            'type' => 1,
+            'source' => 2,
+            'level' => 0,
+            'status' => 2,
+            'chaoshi' => 1,
+            'remarks'=>$total."-".$team_total,
+            'order_status'=>1,
+            'ctime' => time(),
+            'utime' => time(),
+        ];
+        $result[] = $rebateData;     
 
         if(count($result)==0){
             return true;    
@@ -394,7 +421,7 @@ class Chujin extends Api
     /**
      * 包含自身
      */
-    public function getrate($uinfo,$duichu_fanyong){
+    public function getrate($uinfo){
 
         $sparent_str = str_replace("A", "", $uinfo['sparent']);
         $sparent_arr = explode(",", $sparent_str);
@@ -417,10 +444,7 @@ class Chujin extends Api
             }
             $result[] = $res;
             
-        }
-        $res['user_id'] = 168022;
-        $res['rate'] = $duichu_fanyong -$max;
-        $result[] = $res;        
+        }      
         return $result;
     }    
 

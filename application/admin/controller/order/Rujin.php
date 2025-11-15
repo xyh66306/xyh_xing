@@ -305,28 +305,30 @@ class Rujin extends Backend
                 //添加代理商佣金
                 $commissionModel = new Commission();
                 if($row['order_status']==2){
-                    $commissionModel->update(['status'=>1,'chaoshi'=>2],['fy_orderid'=>$row['merchantOrderNo']]);
+                    $commissionModel->update(['chaoshi'=>2,'order_status'=>2],['fy_orderid'=>$row['merchantOrderNo']]);
                 } else {
 
-                    $comlist = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->select();
-                    $comSum  = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->sum('money');
-                    if($comSum>0){
+                     $commissionModel->update(['chaoshi'=>1,'order_status'=>2],['fy_orderid'=>$row['merchantOrderNo']]);
+                    // 佣金发放
+                    // $comlist = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->select();
+                    // $comSum  = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->sum('money');
+                    // if($comSum>0){
                         
-                        foreach ($comlist as $vo) {
-                            $userModel = new UserModel();
-                            $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$row['orderid']);
-                        }
+                    //     foreach ($comlist as $vo) {
+                    //         $userModel = new UserModel();
+                    //         $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$row['orderid']);
+                    //     }
 
-                        $companyProfit3 = new companyProfit();
-                        $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['orderid']); 
-                        $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
-                    }                
+                    //     $companyProfit3 = new companyProfit();
+                    //     $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['orderid']); 
+                    //     $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
+                    // }                
 
                 }
 
             }
 
-            //追回订单
+            //订单取消,追回订单佣金
             if ($params['pay_status'] == 5 && $row['pay_status']==4) {
                 //减少商户USDT
                 $SpullyUsdtLog = new SpullyUsdtLog();
@@ -357,10 +359,15 @@ class Rujin extends Backend
 
                         $companyProfit3 = new companyProfit();
                         $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,1,$row['orderid']); 
-                        $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
+                        $commissionModel->update(['status'=>2,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
                     }   
                 }
             }  
+            //订单取消，佣金状态取消
+            if ($params['pay_status'] == 5) {
+                $commissionModel = new Commission();
+                $commissionModel->update(['status'=>2,'order_status'=>3],['fy_orderid'=>$row['merchantOrderNo']]);
+            }               
 
             //是否采用模型验证
             if ($this->modelValidate) {

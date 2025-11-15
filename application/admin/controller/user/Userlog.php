@@ -1,6 +1,6 @@
 <?php
 
-namespace app\admin\controller\user\usdt;
+namespace app\admin\controller\user;
 
 use app\common\controller\Backend;
 
@@ -9,19 +9,19 @@ use app\common\controller\Backend;
  *
  * @icon fa fa-circle-o
  */
-class Log extends Backend
+class Userlog extends Backend
 {
 
     /**
-     * Log模型对象
-     * @var \app\admin\model\user\usdt\Log
+     * Userlog模型对象
+     * @var \app\admin\model\user\Userlog
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\user\usdt\Log;
+        $this->model = new \app\admin\model\user\Userlog;
         $this->view->assign("typeList", $this->model->getTypeList());
         $this->view->assign("flowTypeList", $this->model->getFlowTypeList());
     }
@@ -40,21 +40,6 @@ class Log extends Backend
      */
     public function index()
     {
-
-        $diqu = '';
-       $group_ids = $this->auth->getGroupIds($this->auth->id);
-
-
-       if($group_ids[0]==3 || $group_ids[0]==7){
-         $diqu =1;
-       } elseif($group_ids[0]==5 || $group_ids[0]==8){
-         $diqu =2;
-       } elseif($group_ids[0]==6 || $group_ids[0]==9){
-         $diqu =3;
-       }
-
-       dump($diqu);
-
         //当前是否为关联查询
         $this->relationSearch = true;
         //设置过滤方法
@@ -67,16 +52,15 @@ class Log extends Backend
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
 
             $list = $this->model
-                    // ->with(['user'])
+                    ->with(['user'])
                     ->where($where)
                     ->order($sort, $order)
                     ->paginate($limit);
 
-            // foreach ($list as $row) {
-            //     $row->visible(['id','type','flow_type','usdt','before','after','memo','beizhu','createtime']);
-            //     // $row->visible(['user']);
-			// 	// $row->getRelation('user')->visible(['nickname']);
-            // }
+            foreach ($list as $row) {
+                
+                $row->getRelation('user')->visible(['username']);
+            }
 
             $result = array("total" => $list->total(), "rows" => $list->items());
 

@@ -21,6 +21,7 @@ use think\exception\PDOException;
 use think\exception\ValidateException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use think\response\Json;
+use app\common\library\Ems as Emslib;
 
 /**
  * 订单出金管理
@@ -124,7 +125,7 @@ class Chujin extends Backend
             $user_fee = $this->model->where($where)->sum("user_fee");
             $supply_fee = $this->model->where($where)->sum("supply_fee");
 
-            $company_price =  $user_fee + $supply_fee;
+            $company_price =  truncateDecimal($user_fee + $supply_fee);
 
             $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('supply_price','user_price','company_price'));
 
@@ -206,19 +207,19 @@ class Chujin extends Backend
 
                 //添加代理商佣金
                 $commissionModel = new Commission();
+                $commissionModel->update(['order_status'=>2],['fy_orderid'=>$row['orderid']]);
+                // $comlist = $commissionModel->where("fy_orderid",$row['orderid'])->select();
+                // $comSum  = $commissionModel->where("fy_orderid",$row['orderid'])->sum('money');
+                // if($comSum>0){
+                //     foreach ($comlist as $vo) {
+                //         $userModel = new UserModel();
+                //         $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$row['orderid']);
+                //     }
 
-                $comlist = $commissionModel->where("fy_orderid",$row['orderid'])->select();
-                $comSum  = $commissionModel->where("fy_orderid",$row['orderid'])->sum('money');
-                if($comSum>0){
-                    foreach ($comlist as $vo) {
-                        $userModel = new UserModel();
-                        $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$row['orderid']);
-                    }
-
-                    $companyProfit3 = new companyProfit();
-                    $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['orderid']); 
-                    $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['orderid']]);
-                }
+                //     $companyProfit3 = new companyProfit();
+                //     $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['orderid']); 
+                //     $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['orderid']]);
+                // }
  
             }
             //取消商户订单
@@ -226,6 +227,9 @@ class Chujin extends Backend
                  //添加商户冻结金额
                 $Usdtlog = new Usdtlog();
                 $Usdtlog->quxiaotxLog($row['access_key'],$row['supply_usdt'],1,$row['orderid'],2);
+
+                $commissionModel = new Commission();
+                $commissionModel->update(['status'=>2,'order_status'=>3],['fy_orderid'=>$row['orderid']]);                
             }
 
 
@@ -352,6 +356,7 @@ class Chujin extends Backend
             $params['pay_status'] = 1;
             // $params['user_fee'] = '7.26';
             //7.2兑出汇率用户
+            $this->sendNotice();
 
             $BiModel = new BiModel();
             $biinfo = $BiModel->where("id", 1)->find();
@@ -629,11 +634,11 @@ class Chujin extends Backend
 
     public function sendNotice(){
 
-        $mobile = "18919660526";
-        $event = "resetpwd";
-        $code = rand(7777,9999);
-        $ret = Smslib::notice($mobile, $code, $event);
-    }
+        $email = "870416982@qq.com";
+        $msg = "您好，商户已分配4笔订单兑出订单，麻烦请处理，谢谢。温馨提醒交易员需麻烦确认好金额才打款，不要多付/重复打款，避免不必要的损失";
+        Emslib::notice($email, $msg, "resetpwd");
+
+    }    
 
 
 }

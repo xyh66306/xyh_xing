@@ -201,6 +201,8 @@ class Details extends Api
 
 
             $res = $rujinModel->update($data,['id'=>$info['id']]);
+            $fenyong = truncateDecimal($info['user_fee'] + $info['supply_fee']);
+            $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt'],$fenyong);
             if($res){
 
                 //通知买方待审核
@@ -224,12 +226,9 @@ class Details extends Api
             Db::rollback();
             return $this->error($e->getMessage());
         }
-        // $this->fenyong($orderid,$info['user_id'],$info['amount'],$pay_type);
         $userModel = new UserModel();
         $userInfo = $userModel->where(['id'=>$info['user_id']])->find();
-
-        $this->sendEmsNotice($userInfo['email']);
-        $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt']);
+        $this->sendEmsNotice($userInfo['email'],$info);
         $this->sendNotice($userInfo,$info);
         $this->success('下单成功，等待确认');
     }    
@@ -239,7 +238,7 @@ class Details extends Api
     /***
      * 分佣
      */
-    public function commission($user_id,$fy_orderid,$p4b_orderid,$number)
+    public function commission($user_id,$fy_orderid,$p4b_orderid,$number,$total)
     {
 		$fanyong = config("site.fanyong");
 		
@@ -259,13 +258,14 @@ class Details extends Api
         $rateLst =  $this->getrate($uinfo);
 
         $result = [];
+        $team_total = 0;
         foreach ($rateLst as $key => $value) { 
 
             $money = truncateDecimal($number * $value['rate'] / 100);
             if($money<=0){
                 continue;
             }
-
+            $team_total += $money;
             $rebateData = [
                 'user_id' =>$user_id,
                 'p_userid' => $value['user_id'],
@@ -279,12 +279,34 @@ class Details extends Api
                 'level' => $key+1,
                 'status' => 2,
                 'chaoshi' => 1,
+                'order_status'=>1,
+                'remarks'=> $number."*".$value['rate'],
                 'ctime' => time(),
                 'utime' => time(),
             ];
 
             $result[] = $rebateData;
         }
+        $diff = $total - $team_total;
+        $rebateData = [
+            'user_id' =>$user_id,
+            'p_userid' => 168022,
+            'fy_orderid' => $fy_orderid,
+            'p4b_orderid' => $p4b_orderid,
+            'number' => $number,
+            'rate'  => 0,
+            'money' => $diff,
+            'type' => 1,
+            'source' => 1,
+            'level' => 0,
+            'status' => 2,
+            'chaoshi' => 1,
+            'order_status'=>1,
+            'remarks'=>$total."-".$team_total,
+            'ctime' => time(),
+            'utime' => time(),
+        ];
+        $result[] = $rebateData;
 
         if(count($result)==0){
             return true;    
@@ -302,20 +324,6 @@ class Details extends Api
         }
         return true;
     }
-
-
-    // public function ceshi(){
-
-    //     $user_id = "168035";
-    //     $userModel  = new UserModel();
-    //     $uinfo = $userModel->where("id", $user_id)->find();
-    //     $invite = $uinfo['invite'];
-        
-    //     $rateLst =  $this->getrate($uinfo);
-
-    //     dump($rateLst);
-
-    // }
 
 
 
@@ -345,9 +353,6 @@ class Details extends Api
             $result[] = $res;
             
         }
-        $res['user_id'] = 168022;
-        $res['rate'] = $this->supplyInfo['duiru_fanyong'] -$max;
-        $result[] = $res;
         return $result;
     }    
 
@@ -360,16 +365,16 @@ class Details extends Api
         $ret = Smslib::notice($mobile, $code, $event);
 
         $email = "870416982@qq.com";
-        $msg = "用户ID".$userInfo['id']."当前有一笔新的兑出订单".$info['orderid']."，金额：".$info['amount']."您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        // $msg = "用户ID".$userInfo['id']."当前有一笔新的兑出订单".$info['orderid']."，金额：".$info['amount']."您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        $msg = $userInfo['id']."您好，订单号".$info['orderid'].",请查看是否收到款，麻烦尽快确认。温馨提醒一定务必核实姓名，金额，订单号是否吻合，避免不必要的损失";
         Emslib::notice($email, $msg, "resetpwd");
 
     }
 
 
-    public function sendEmsNotice($email){
+    public function sendEmsNotice($email,$info){
 
-        // $email = "870416982@qq.com";
-        $msg = "当前有一笔新的兑出订单，您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        $msg = "您好，订单号".$info['orderid'].",请查看是否收到款，麻烦尽快确认。温馨提醒一定务必核实姓名，金额，订单号是否吻合，避免不必要的损失";
         Emslib::notice($email, $msg, "resetpwd");
     }
   
@@ -379,7 +384,7 @@ class Details extends Api
     public function getOrderToken($order_id)
     { 
         $token = md5($order_id . time() . uniqid());
-        Cache::set('order_token_' . $order_id, $token, 300); // 5分钟有效期
+        Cache::set('order_token_' . $order_id, $token, 60*30); // 15分钟有效期
         return $token;        
     }
     public function checkOrderToken($order_id, $token)

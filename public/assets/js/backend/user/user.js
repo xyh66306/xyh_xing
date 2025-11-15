@@ -31,7 +31,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'username', title: __('Username')},
                         // {field: 'nickname', title: __('Nickname'), operate: 'LIKE'},
                         {field: 'email', title: __('Email'), operate: 'LIKE'},
-                        {field: 'usdt', title: __('Usdt'), operate:'BETWEEN'},
+                        // {field: 'usdt', title: __('Usdt'), operate:'BETWEEN'},
+                        {field: 'usdt', title: __('Usdt'), operate:'BETWEEN', 
+                        formatter: function (value, row, index) {
+                            var url = Backend.api.fixurl('user/userlog?user_id=' + row.id + '&ref=addtabs');
+                            return '<a href="' + url + '" target="_blank">' + value + '</a>';
+                        }},                        
                         {field: 'usdt_dj', title: __('Usdt_dj'), operate:'BETWEEN'},
                         {field: 'sfz_fimage', title: __('Sfz_fimage'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image,
 

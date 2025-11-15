@@ -63,7 +63,7 @@ class Buy extends Frontend
 
     public function cash()
     { 
-        $url = "https://ceshiotc.wobeis.com/openapi/cash/index";
+        $url = "http://localhost/openapi/cash/index";
 
         $randomStr = $this->getRandomStr(32);
 
@@ -96,7 +96,6 @@ class Buy extends Frontend
         $data['diqu'] = 1;
         $data['payername'] = '李四';
 
-        var_dump($data);
         $res = $this->postCurl($url,$data,$header);
 
         var_dump($res);
