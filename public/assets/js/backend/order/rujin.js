@@ -36,7 +36,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 						{field: 'id', title: "ID"},
                         {field: 'orderid', title: __('Orderid'), operate: 'LIKE'},
                         {field: 'amount', title: __('Amount'), operate:'BETWEEN'},
-                        {field: 'username', title: __('Username'), operate: 'LIKE'},
+                        {field: 'username', title: __('Username'), operate: 'LIKE',
+                                formatter: function (value, row, index) {
+                                    return row.user_id + ' - ' + value;
+                                }
+                        },
                         // {field: 'bank_name', title: __('Bank_name'), operate: 'LIKE'},
                         // {field: 'bank_account', title: __('Bank_account'), operate: 'LIKE'},
                         // {field: 'bank_zhihang', title: __('Bank_zhihang'), operate: 'LIKE'},

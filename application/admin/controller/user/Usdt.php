@@ -71,8 +71,8 @@ class Usdt extends Backend
                 
                 $row->getRelation('user')->visible(['nickname']);
             }
-
-            $result = array("total" => $list->total(), "rows" => $list->items());
+            $total_num = $this->model->with(['user'])->where($where)->sum("num");
+            $result = array("total" => $list->total(), "rows" => $list->items(),'total_num'=>$total_num);
 
             return json($result);
         }
