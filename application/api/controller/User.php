@@ -222,7 +222,7 @@ class User extends Api
     }
 
     /**
-     * 更新会员信息
+     * 更新会员身份证信息
      */
     public function updatesfz()
     {
@@ -250,6 +250,20 @@ class User extends Api
         }
     }
 
+    public function updateInfo()
+    {
+        $nickname = $this->request->post('nickname');
+        $username = $this->request->post('username');
+        $mobile = $this->request->post('mobile');
+        $email = $this->request->post('email');
+
+        $ret = $this->auth->update_info($this->auth->id,$nickname, $username,$mobile,$email);
+        if ($ret) {
+            $this->success("已更新");
+        } else {
+            $this->error($this->auth->getError());
+        }
+    }
 
     /**
      * 退出登录

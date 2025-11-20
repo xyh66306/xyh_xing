@@ -78,6 +78,7 @@
 				<u-cell title="身份认证" isLink url="/pages/auth/auth" :value="user.sfz_status==1?'已认证' : user.sfz_status==2?'待审核':'未认证'"></u-cell>
 				<u-cell title="谷歌认证" isLink url="/pages/google/google"
 					:value="user.google_secret ? '已认证' : '未认证'"></u-cell>
+				<u-cell title="系统设置" isLink url="/pages/user/info"></u-cell>
 			</u-cell-group>
 		</view>
 		</template>

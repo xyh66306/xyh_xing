@@ -625,4 +625,23 @@ class Auth
         return true;
     }
 
+    public function update_info($user_id,$nickname,$username,$mobile,$email)
+    {
+        
+        $user = User::get($user_id);
+        if (!$user) {
+            return false;
+        }
+        Db::startTrans();
+        try {
+            User::update(['nickname'=>$nickname,'username'=>$username,'mobile'=>$mobile,'email'=>$email],['id'=>$user_id]);          
+            Db::commit();
+        } catch (Exception $e) {
+            Db::rollback();
+            $this->setError($e->getMessage());
+            return false;
+        }
+        return true;
+    }       
+
 }

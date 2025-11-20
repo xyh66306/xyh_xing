@@ -29,7 +29,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {checkbox: true},
                         {field: 'id', title: "ID"},
                         {field: 'username', title: __('Username')},
-                        // {field: 'nickname', title: __('Nickname'), operate: 'LIKE'},
+                        {field: 'mobile', title: __('Mobile'), operate: 'LIKE'},
                         {field: 'email', title: __('Email'), operate: 'LIKE'},
                         // {field: 'usdt', title: __('Usdt'), operate:'BETWEEN'},
                         {field: 'usdt', title: __('Usdt'), operate:'BETWEEN', 

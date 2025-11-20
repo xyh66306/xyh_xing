@@ -109,7 +109,7 @@ class User extends Backend
             }
 
             foreach ($list as $row) {
-                $row->visible(['id','bianhao','username','nickname','email','usdt','usdt_dj','sfz_fimage','sfz_bimage','sfz_pimage','createtime','status','sfz_status','diqu','pay_status','agent_group_id','invite','agent_group_id']);
+                $row->visible(['id','bianhao','username','nickname','mobile','email','usdt','usdt_dj','sfz_fimage','sfz_bimage','sfz_pimage','createtime','status','sfz_status','diqu','pay_status','agent_group_id','invite','agent_group_id']);
                 $row->visible(['group']);
 				$row->getRelation('group')->visible(['name']);
 

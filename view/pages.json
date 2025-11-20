@@ -285,7 +285,15 @@
 				"navigationBarTitleText" : "推荐列表",
 				"enablePullDownRefresh" : false
 			}
-		}
+		},
+		{
+			"path" : "pages/user/info",
+			"style" : 
+			{
+				"navigationBarTitleText" : "个人信息",
+				"enablePullDownRefresh" : false
+			}
+		}		
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
