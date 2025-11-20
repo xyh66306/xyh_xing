@@ -120,13 +120,14 @@
 				showAddWxpay:true,
 				showAddBankpay:true,
 				statusarr:['开启','关闭'],
+				isLongPress: false
 			}
 		},
 		onLoad() {
 			this.getEwmLst();
 			this.getBankLst();
 		},
-		methods: {
+		methods: {					
 			getEwmLst(){
 				let that = this
 				uni.$u.http.post('/api/user/getpayLst').then(res => {
@@ -167,7 +168,7 @@
 					})
 				} else {
 					uni.navigateTo({
-						url: '/pages/card/bank'
+						url: '/pages/card/addbank'
 					})
 				}
 			},
@@ -184,7 +185,7 @@
 			},
 			handleBankClick(item) {
 				uni.navigateTo({
-					url: '/pages/card/bank?id='+item.id
+					url: '/pages/card/editbank?id='+item.id
 				})
 			},
 			close() {

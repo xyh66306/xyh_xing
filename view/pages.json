@@ -112,12 +112,19 @@
 			}
 		},
 		{
-			"path": "pages/card/bank",
+			"path": "pages/card/addbank",
 			"style": {
 				"navigationBarTitleText": "添加银行卡",
 				"enablePullDownRefresh": false
 			}
-		},				
+		},	
+		{
+			"path": "pages/card/editbank",
+			"style": {
+				"navigationBarTitleText": "编辑银行卡",
+				"enablePullDownRefresh": false
+			}
+		},					
 		{
 			"path": "pages/moneylog/moneylog",
 			"style": {

@@ -59,7 +59,12 @@
 				</view>
 			</view>	
 		</view>
-		<u-button type="primary" @click="submit" :disabled="disabled" shape="circle">确认提交</u-button>
+		<view class="footer">
+			<view class="left" @click="delect">立即删除</view>
+			<view class="right" @click="submit">确认提交</view>
+			<!-- <u-button type="primary" @click="delect" :plain="true">立即删除</u-button>
+			<u-button type="primary"  :disabled="disabled">确认提交</u-button> -->
+		</view>
 	</view>
 </template>
 
@@ -85,7 +90,7 @@
 					  name: '禁用',
 					  value:'hidden',
 					  disabled: false
-					}
+					}					
 				],
 				radiovalue1: 'normal',	
 				disabled:false,
@@ -133,6 +138,34 @@
 					}
 				})	
 			},
+			delect() {
+				if (!this.id) {
+					return uni.$u.toast("无效的银行卡信息");
+				}				
+				uni.showModal({
+					title: '确认删除',
+					content: '确定要删除这张银行卡吗？',
+					success: (res) => {
+						if (res.confirm) {
+							uni.$u.http.post('/api/user/delbankcard', {
+								id: this.id
+							}).then(res => {
+								if (res.code == 1) {
+									uni.showToast({
+										title: '删除成功',
+										icon: 'success'
+									});
+									setTimeout(() => {
+										uni.navigateBack();
+									}, 1000);
+								} else {
+									uni.$u.toast(res.msg);
+								}
+							});
+						}
+					}
+				});
+			},
 			submit(){
 				if(!this.name){
 					return uni.$u.toast("请输入姓名");
@@ -165,7 +198,7 @@
 				}).then(res => {
 					if(res.code == 1) {
 						uni.showModal({
-							content: '绑定成功',
+							content: '修改成功',
 							showCancel: false,
 							success: () => {
 								uni.navigateBack();
@@ -230,5 +263,29 @@ page {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+
+.footer {
+	display: flex;
+	position: fixed;
+	bottom: 0rpx;
+	left: 0rpx;
+	width:100%;
+	height:90rpx;
+	box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.1);
+	.left {
+		flex:0 0 50%;
+		background-color: #fff;
+		text-align: center;
+		line-height:90rpx;
+		color:#333;
+	}
+	.right {
+		background: #1677ff;
+		flex:0 0 50%;
+		text-align: center;
+		line-height:90rpx;
+		color:#fff;
+	}
 }
 </style>

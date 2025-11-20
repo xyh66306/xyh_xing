@@ -583,7 +583,7 @@ class User extends Api
             ]);
         }        
 
-        $this->updatePayStatus($this->auth->id);
+        $this->updatePayStatus($this->auth->id,$name);
         if($ret){
             $this->success("添加成功");
         }else{
@@ -688,6 +688,32 @@ class User extends Api
             $this->error("添加失败");
         }
         
+    }
+
+
+    /**
+     * 
+     * 删除银行卡
+     * @return void
+     */
+    public function delbankcard(){
+
+        $id = $this->request->post("id",'');
+
+        $userBankcard = new UserBankcard();
+        $info = $userBankcard->where("id",$id)->find();
+        if(!$info){
+            $this->error("数据不存在");
+        }
+        if($this->auth->id != $info['user_id']){
+            $this->error("数据不存在");
+        }
+        $ret = $userBankcard->where("id",$id)->delete();
+        if($ret){
+            $this->success("删除成功");
+        }else{
+            $this->error("删除失败");
+        }
     }
 
 
