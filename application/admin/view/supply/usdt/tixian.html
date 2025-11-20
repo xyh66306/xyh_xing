@@ -83,7 +83,9 @@
         const type = document.getElementById('type').value;
         const usdt = document.getElementById('usdt').value;
         const hash = document.getElementById('hash').value;
-        const fee = document.getElementById('hash').fee;
+        const fee = document.getElementById('fee').value;
+
+        console.log(fee);
 
         if (!type) {
             alert('请选择通道类型');
@@ -97,6 +99,11 @@
             alert('请输入哈希值');
             return;
         }
+        if (!fee) {
+            alert('请输入手续费');
+            return;
+        }
+
         transferData.type = type;
         transferData.usdt = usdt;
         transferData.hash = hash;

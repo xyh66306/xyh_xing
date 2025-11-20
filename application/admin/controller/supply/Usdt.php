@@ -201,7 +201,7 @@ class Usdt extends Backend
             }
             if ($params['pay_status'] == 3) {
                 $Usdtlog = new Usdtlog();
-                $usdt = $params['usdt'] + $row['fee'];
+                $usdt = $params['usdt'];
                 $Usdtlog->authtxLog($row['supply_id'], $usdt,'提现审核');
 
                $companyProfit1 = new companyProfit();
