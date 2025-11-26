@@ -635,7 +635,7 @@ class Chujin extends Backend
     public function sendNotice(){
 
         $email = "870416982@qq.com";
-        $msg = "您好，商户已分配4笔订单兑出订单，麻烦请处理，谢谢。温馨提醒交易员需麻烦确认好金额才打款，不要多付/重复打款，避免不必要的损失";
+        $msg = "您好，商户已分配1笔订单兑出订单，麻烦请处理，谢谢。温馨提醒交易员需麻烦确认好金额才打款，不要多付/重复打款，避免不必要的损失";
         Emslib::notice($email, $msg, "resetpwd");
 
     }    

@@ -124,8 +124,12 @@
 			}
 		},
 		onLoad() {
+
+		},
+		onShow(){
+			this.close();
 			this.getEwmLst();
-			this.getBankLst();
+			this.getBankLst();			
 		},
 		methods: {					
 			getEwmLst(){

@@ -26,7 +26,7 @@
 					<input type="text" v-model="bank_zhmc" class="input" placeholder="请输入银行支行名称"  placeholder-class="placeholder"/>
 				</view>
 			</view>
-			<view class="item">
+<!-- 			<view class="item">
 				<view class="left">最低收款：</view>	
 				<view class="right">
 					<input type="number" v-model="min_cny" class="input" placeholder="请输入最低收款金额"  placeholder-class="placeholder"/>
@@ -37,7 +37,7 @@
 				<view class="right">
 					<input type="number" v-model="max_cny" class="input" placeholder="请输入最高收款金额"  placeholder-class="placeholder"/>
 				</view>
-			</view>					
+			</view>	 -->				
 			<view class="item">
 				<view class="left">状态：</view>	
 				<view class="right item-center">
@@ -146,12 +146,12 @@
 				if(!this.bank_zhmc){
 					return uni.$u.toast("请输入支行名称");
 				}	
-				if(this.max_cny<this.min_cny){
-					return uni.$u.toast("最低金额必须小于最大金额");
-				}
-				if(this.max_cny<1000){
-					return uni.$u.toast("最大金额必须大于1000");
-				}				
+				// if(this.max_cny<this.min_cny){
+				// 	return uni.$u.toast("最低金额必须小于最大金额");
+				// }
+				// if(this.max_cny<1000){
+				// 	return uni.$u.toast("最大金额必须大于1000");
+				// }				
 				uni.$u.http.post('/api/user/addbankcard', {
 					id:this.id,
 					name: this.name,
@@ -160,8 +160,8 @@
 					bank_nums: this.bank_nums,
 					bank_zhmc:this.bank_zhmc,
 					status:this.radiovalue1,
-					min_cny:this.min_cny,
-					max_cny:this.max_cny,
+					// min_cny:this.min_cny,
+					// max_cny:this.max_cny,
 				}).then(res => {
 					if(res.code == 1) {
 						uni.showModal({
