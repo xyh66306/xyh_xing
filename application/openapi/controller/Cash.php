@@ -109,6 +109,7 @@ class Cash extends Api
         }           
 
         $userModel = new UserModel();
+        $rujinModel = new Rujin();
 
 
         $where = [];
@@ -135,15 +136,34 @@ class Cash extends Api
             $where['pay_status'] = "normal";
             $order = 'pay_sort desc,id desc';
 
-            $rj_user_id = config('site.rj_user_id');
-            if($rj_user_id && $rj_user_id>0){
+
+            $ulist = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->column('id');
+
+            $count = count($ulist);
+            if($count<=1){
+                return;
+            }
+
+            $limit = $count-1;
+            $rjLst = $rujinModel->where("pay_status",">=","1")->order("id desc")->limit($limit)->column('user_id');
+            $diff = array_diff($ulist,$rjLst);
+
+            if (!empty($diff)) {
+                $randomIndex = array_rand($diff);
+                $rj_user_id = $diff[$randomIndex];
                 $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
             } else {
-                $userInfo = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->find();
+                $rj_user_id = config('site.rj_user_id');
+                if($rj_user_id && $rj_user_id>0){
+                    $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+                } else {
+                    $userInfo = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->find();
+                }
             }
 
 
         }
+
 
         $supplyModel = new Supply();
         $supplyinfo = $supplyModel->where('access_key',$this->access_key)->find();
@@ -152,14 +172,19 @@ class Cash extends Api
           return  $this->error('收银员不存在');
         }
         $UserBankcard = new UserBankcard();
-        $count = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->where("max_cny",'>=',$params['amount'])->count();
+        $uBankLstIds = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->column('id');
 
-
-        if($count==0){
+        if(count($uBankLstIds)==0){
            return $this->error('收款账户不存在');
         }
-        $bankInfo = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->where("max_cny",'>=',$params['amount'])->order('sort desc,id desc')->find();
-        $rujinModel = new Rujin();
+        if(count($uBankLstIds)>1){
+            $randomBankIndex = array_rand($uBankLstIds);
+            $ubankid = $uBankLstIds[$randomBankIndex];
+            $bankInfo = $UserBankcard->where("id",$ubankid)->order('sort desc,id desc')->find();
+        } else {
+            $bankInfo = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->order('sort desc,id desc')->find();
+        }
+
         $rjInfo = $rujinModel->where(['orderid'=>$params['orderid']])->find();
         if($rjInfo){ 
             return $this->error('订单编号已存在');
