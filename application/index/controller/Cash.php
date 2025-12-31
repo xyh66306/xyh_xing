@@ -1,6 +1,6 @@
 <?php
 
-namespace app\index\controller;
+namespace app\openapi\controller;
 
 use app\common\controller\Api;
 use app\common\model\Supply;
@@ -13,6 +13,8 @@ use app\common\model\UserRebate;
 use app\common\model\order\Rujin;
 use app\common\model\Task;
 use app\common\model\Commission;
+use app\common\library\Sms as Smslib;
+use app\common\library\Ems as Emslib;
 use think\Db;
 use think\Request;
 
@@ -23,10 +25,54 @@ use think\Request;
 class Cash extends Api
 {
 
+    use Send;
     protected $noNeedRight = ['index'];
     protected $noNeedLogin = ['index'];
 
     protected $access_key = "";
+    public function __construct(Request $request)
+    {
+
+
+        parent::__construct(); // 确保调用父类构造函数
+
+        $this->request = $request;
+        $header = $this->request->header();
+
+        // 使用 input() 方法获取请求参数
+        if(empty($header['accesskey'])) {
+            $this->error('accesskey错误');
+        }
+        if(empty($header['gmtrequest'])) {
+            $this->error('请求时间错误');
+        }
+
+        if(empty($header['randomstr'])  && $header['randomstr'] != '32' ) {
+            $this->error('获取随机字符串错误');
+        }     
+        $time = time();
+        if($header['gmtrequest']+600<=$time){
+            $this->error('时间过期');
+        }
+
+        $supplyModel = new Supply();
+        $info = $supplyModel->where('access_key',$header['accesskey'])->find();
+
+        $this->access_key = $header['accesskey'];
+
+        if(empty($info)){
+            $this->error('商户不存在');
+        }
+
+        $params = [
+            'accesskey'    => $header['accesskey'],
+            'gmtrequest'    => $header['gmtrequest'],
+            'randomstr'     => $header['randomstr'],
+            'signature'     => $header['signature'],
+        ];
+        #先鉴权
+        $this->Authentication($params, $info['access_secret']);
+    }
 
 
     /**
@@ -34,15 +80,13 @@ class Cash extends Api
      */
     public function index()
     { 
-
-
         $params = [
-            'orderid'    => date("YmsHis").rand(1000,9999),
-            'amount'    => 43560,
-            'payername'=> "测试",
-            'diqu'    => 1,
-            'backurl' => 'https://bingocn.wobeis.com/index/index/ceshi',
-            'yx_time' => 900, // 900秒
+            'orderid'    => $this->request->param('orderid',''),
+            'amount'    => $this->request->param('amount',''),
+            'payername'=> $this->request->param('payername',''),
+            'diqu'    => $this->request->param('diqu',1),
+            'backurl' => $this->request->param('backurl',''),
+            'yx_time' => $this->request->param('yx_time',60*20), // 900秒
         ];
         if(empty($params['orderid'])) {
             $this->error('订单号错误');
@@ -55,56 +99,109 @@ class Cash extends Api
         }        
         if(empty($params['payername'])) {
             $this->error('付款人姓名不能为空');
-        }         
+            return;
+        } 
+        if($params['amount']<3500) {
+            $this->error('不能小于最低金额3500');
+            return;
+        }     
+        
+        if($params['amount']>=200000) {
+            $this->error('不能大于最低金额20万');
+            return;
+        }   
+        
+        echo 3244243;
 
         $userModel = new UserModel();
+        $rujinModel = new Rujin();
 
 
         $where = [];
         $order = 'pay_sort desc,id desc';
-        $ispay = config('site.ispay');
-
-        // if($ispay && $ispay != '1'){
-        //     $this->error('系统维护中');
-        // }
-        $access_key = "1250803358";
-
-        $where['diqu'] = $params['diqu'];
-        $where['status'] = "normal";
-        $where['sfz_status'] = 1;
-        $where['pay_status'] = "normal";
-        $order = 'pay_sort desc,id desc';
-
-        $rj_user_id = config('site.rj_user_id');
-        if($rj_user_id && $rj_user_id>0){
+        if($this->access_key == '1250730111'){
+            // 测试账户
+            // $rj_user_id = config('site.rj_user_id');
+            
+            $rj_user_id = 168017;
             $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
-        } else {
-            $userInfo = $userModel->where($where)->where('id','<>','168017')->where("min_cny",'>=',0)->where("max_cny",'>=',$params['amount'])->order($order)->find();
+
+
+        } else{
+
+            $ispay = config('site.ispay');
+
+            if($ispay && $ispay != '1'){
+                $this->error('系统维护中');
+            }
+
+            $where['diqu'] = $params['diqu'];
+            $where['status'] = "normal";
+            $where['sfz_status'] = 1;
+            $where['pay_status'] = "normal";
+            $order = 'pay_sort desc,id desc';
+
+
+            // $ulist = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->column('id');
+            $userInfo = [];
+            // if($params['amount']<=7500){
+            //     $where['id'] = "168017";
+            //     $userInfo = $userModel->where($where)->where('usdt',">",100)->find();
+            // }
+
+            dump($userInfo);
+
+            if(!$userInfo){
+                $ulist = $userModel->where($where)->where('usdt',">",100)->cache(3600)->order($order)->column('id');
+
+                $count = count($ulist);
+                if($count<=1){
+                    return;
+                }
+
+                $limit = $count-1;
+                $rjLst = $rujinModel->where("pay_status",">=","1")->order("id desc")->limit($limit)->column('user_id');
+                $diff = array_diff($ulist,$rjLst);
+
+                if (!empty($diff)) {
+                    $randomIndex = array_rand($diff);
+                    $rj_user_id = $diff[$randomIndex];
+                    $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+                } else {
+                    $rj_user_id = config('site.rj_user_id');
+                    if($rj_user_id && $rj_user_id>0){
+                        $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+                    } else {
+                        // $userInfo = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->find();
+                        $userInfo = $userModel->where($where)->where('usdt',">",100)->order($order)->find();
+                    }
+                }  
+            }
+
+
         }
+
+
+        $supplyModel = new Supply();
+        $supplyinfo = $supplyModel->where('access_key',$this->access_key)->find();
+
         if(!$userInfo) {           
           return  $this->error('收银员不存在');
         }
-
-        $supplyModel = new Supply();
-        $supplyinfo = $supplyModel->where('access_key',$access_key)->find();
-
-
         $UserBankcard = new UserBankcard();
-        $count = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->where("min_cny",'>=',0)->where("max_cny",'>=',$params['amount'])->count();
-
+        $count = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->count();
 
         if($count==0){
            return $this->error('收款账户不存在');
         }
-        $bankInfo = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->where("min_cny",'>=',0)->where("max_cny",'>=',$params['amount'])->order('sort desc,id desc')->find();
-        $rujinModel = new Rujin();
+        $bankInfo = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->order('sort desc,id desc')->find();
         $rjInfo = $rujinModel->where(['orderid'=>$params['orderid']])->find();
         if($rjInfo){ 
             return $this->error('订单编号已存在');
         }
 
-        // Db::startTrans();
-        // try{ 
+        Db::startTrans();
+        try{ 
 
             $BiModel = new BiModel();
             $info = $BiModel->where(['default'=>1,'status'=>1])->find();
@@ -147,6 +244,7 @@ class Cash extends Api
                 'bi_type'  => 'USDT',
                 'usdt'=>$usdt,
                 'huilv'=>$info['duiru'],
+				'supply_huilv'=>$supplyinfo['duiru'],
                 'supply_fee'=>$supply_fee,
                 'supply_usdt'=>$supply_usdt,
                 'user_usdt'=>$user_usdt,
@@ -160,33 +258,58 @@ class Cash extends Api
                 'utime' => $time,
             ];
 
-            dump($data);
-            return;
+
 
             $res = $rujinModel->insert($data);
             
-            $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setInc('sort',1);
-            $UserBankcard->update(['sort'=>1],['id'=>$bankInfo['id']]);
+            $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setDec('sort',1);
+            // $UserBankcard->update(['sort'=>100],['id'=>$bankInfo['id']]);
+
+            $banklist =  $UserBankcard->where('user_id',$bankInfo['user_id'])->where("sort","<","100")->select();
+            if($banklist){
+                foreach ($banklist as $key => $value) {
+                    $UserBankcard->update(['sort'=>999],['id'=>$value['id']]);
+                }
+            }
+            $count = $userModel->where("pay_status","normal")->count();
+            $userModel->where('id', $userInfo['id'])->setDec('pay_sort',$count);
+
+            $userlist =  $userModel->where("pay_status","normal")->where('id','<>', $userInfo['id'])->where("pay_sort","<","100")->select();
+            if($userlist){
+                foreach ($userlist as $key => $value) {
+                    $userModel->update(['pay_sort'=>$value['pay_sort']+200],['id'=>$value['id']]);
+                }
+            }
+            Db::commit();
+
+        } catch(\Exception $e) {
+            Db::rollback();
+            return $this->error($e->getMessage());
+        }
 
 
-            $userModel->where('id','<>', $userInfo['id'])->setInc('pay_sort',1);
-            $userModel->update(['pay_sort'=>1],['id'=>$userInfo['id']]);
-        //     Db::commit();
-
-        // } catch(\Exception $e) {
-        //     Db::rollback();
-        //     return $this->error($e->getMessage());
-        // }
-
-
-        // if($res){
-        //     return $this->success('success',request()->domain().'/cash/#/?orderid='.$params['orderid'].'&access_key='.$this->access_key);
-        // }else{
-        //     return $this->error('fail');
-        // }
+        if($res){
+            $this->sendEmsNotice();
+            return $this->success('success',request()->domain().'/cash/#/?orderid='.$params['orderid'].'&access_key='.$this->access_key);
+        }else{
+            return $this->error('fail');
+        }
 
     }
 
+    public function sendNotice(){
 
+        $mobile = "18919660526";
+        $event = "resetpwd";
+        $code = rand(1111,2222);
+        $ret = Smslib::notice($mobile, $code, $event);
+    }
+
+    public function sendEmsNotice(){
+
+        $email = "870416982@qq.com";
+        $msg = "当前商户有一笔新的兑入订单，请准备。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        Emslib::notice($email, $msg, "resetpwd");
+    }
 
 }

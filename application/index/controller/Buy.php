@@ -68,22 +68,22 @@ class Buy extends Frontend
         $randomStr = $this->getRandomStr(32);
 
         $header = [
-            'accesskey' => '1250730111',
+            'accesskey' => '1250803358',
             'randomstr' => $randomStr,
             'gmtrequest' => time(),
         ];
-        $access_secret = '5a12f50988688f1d1b5951e7e2493c74';
+        $access_secret = '4dc96ddbcc1190b66b478e2b98887bad';
         $sign = $this->makeSign($header, $access_secret);
         $header['signature'] = $sign;
 
 
 
         $params = [
-            'access_key' => '1250730111',   
+            'access_key' => '1250803358',   
             'randomStr' => $randomStr,         
             'gmtRequest'=> time(),
         ];
-        $access_secret = '5a12f50988688f1d1b5951e7e2493c74';
+        $access_secret = '4dc96ddbcc1190b66b478e2b98887bad';
         $sign = $this->makeSign($params,$access_secret);
 
 
@@ -92,9 +92,11 @@ class Buy extends Frontend
         $data['signature'] = $sign;
         $data['backurl'] = 'https://ceshiotc.wobeis.com/index/index/ceshi';
         $data['orderid'] = "casher".date("YmdHis",time());
-        $data['amount'] = '3800';
+        $data['amount'] = '6000';
         $data['diqu'] = 1;
         $data['payername'] = '李四';
+
+        dump($data);
 
         $res = $this->postCurl($url,$data,$header);
 

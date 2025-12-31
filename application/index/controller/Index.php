@@ -4,6 +4,7 @@ namespace app\index\controller;
 
 use app\common\controller\Frontend;
 use app\common\model\Task;
+use app\common\model\User as UserModel;
 use think\Queue;
 use think\Db;
 use app\common\model\Supply;
@@ -28,27 +29,35 @@ class Index extends Frontend
     public function ceshi()
     {
 
+        $where['diqu'] = 1;
+        $where['status'] = "normal";
+        $where['sfz_status'] = 1;
+        $where['pay_status'] = "normal";
+        $order = 'pay_sort desc,id desc';
+        $userModel = new UserModel();
+        $ulist = $userModel->where($where)->where('usdt',">",100)->order($order)->column('id');
 
-        $supplyModel = new Supply();
-        $info = $supplyModel->where('access_key', "1250803358")->find();
+        dump($ulist);
+        // $supplyModel = new Supply();
+        // $info = $supplyModel->where('access_key', "1250803358")->find();
 
-        $orderid = "56068";    
-        $url = "https://asiacnbo.com/pay/back/XinHuoPay";
-        $taskModel = new Task();
-        $data = [
-            'access_key'    => $info['access_key'],
-            'access_secret' => $info['access_secret'],
-            'name' => 'cash',
-            'message' => '',
-            'params' => [
-                'orderid' =>  $orderid,
-                'url'  =>$url,
-                'pay_status' => 3
-            ]
-        ];            
+        // $orderid = "56068";    
+        // $url = "https://asiacnbo.com/pay/back/XinHuoPay";
+        // $taskModel = new Task();
+        // $data = [
+        //     'access_key'    => $info['access_key'],
+        //     'access_secret' => $info['access_secret'],
+        //     'name' => 'cash',
+        //     'message' => '',
+        //     'params' => [
+        //         'orderid' =>  $orderid,
+        //         'url'  =>$url,
+        //         'pay_status' => 3
+        //     ]
+        // ];            
 
-        dump($data);
-        $taskModel->addTask($data, "Sell");
+        // dump($data);
+        // $taskModel->addTask($data, "Sell");
         // return $this->view->fetch();
 
         // $data['orderid'] = "o202508011824004289";

@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use app\common\controller\Backend;
 use app\common\model\User as UserModel;
+use app\common\model\company\Profit;
 use think\Db;
 use Exception;
 use think\db\exception\BindParamException;
@@ -134,9 +135,9 @@ class Commission extends Backend
         $params = $this->preExcludeFields($params);
         $result = false;
 
-        if($row['chaoshi'] ==2){
-          $this->error('订单已超时，请勿操作！');
-        }
+        // if($row['chaoshi'] ==2){
+        //   $this->error('订单已超时，请勿操作！');
+        // }
         if($row['order_status'] !=2){
           $this->error('订单未完成，请勿操作！');
         }
@@ -151,9 +152,23 @@ class Commission extends Backend
                 $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                 $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.edit' : $name) : $this->modelValidate;
                 $row->validateFailException()->validate($validate);
-            }           
-            $userModel = new UserModel();
-            $res = $userModel->usdt($row['money'],$row['p_userid'],5,1,$row['p4b_orderid']);
+            }
+            $type =0;
+            if($row['source']==1){
+              $type =9;
+            } elseif($row['source']==2){
+              $type =10;
+            }            
+            if($row['chaoshi'] ==1){           
+              $userModel = new UserModel();
+              $res = $userModel->usdt($row['money'],$row['p_userid'],5,1,$row['p4b_orderid']);
+
+              $profitModel = new Profit();
+              $res = $profitModel->addLog($row['number'],$row['money'],$type,1,2,$row['p4b_orderid']);    
+            } else {
+              $profitModel = new Profit();
+              $res = $profitModel->addLog($row['number'],$row['money'],$type,1,1,$row['p4b_orderid']);    
+            }        
             if(!$res){
               $this->error('分润失败！');
             }

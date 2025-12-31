@@ -4,7 +4,7 @@
 			<view class="item"  v-for="(item,index) in lst" :key="index">
 				<view class="row">
 					<view class="name">{{item.orderid || ''}}</view>
-					<view class="cny">{{item.usdt}}</view>
+					<view class="cny">{{item.user_usdt}}</view>
 				</view>
 				<view class="row u-info">
 					<view class="time">

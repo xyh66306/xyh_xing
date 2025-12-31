@@ -137,28 +137,38 @@ class Cash extends Api
             $order = 'pay_sort desc,id desc';
 
 
-            $ulist = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->column('id');
+            // $ulist = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->column('id');
+            $userInfo = [];
+            // if($params['amount']<=7500){
+            //     $where['id'] = "168017";
+            //     $userInfo = $userModel->where($where)->where('usdt',">",100)->find();
+            // }
 
-            $count = count($ulist);
-            if($count<=1){
-                return;
-            }
+            if(!$userInfo){
+                $ulist = $userModel->where($where)->where('usdt',">",100)->cache(3600)->order($order)->column('id');
 
-            $limit = $count-1;
-            $rjLst = $rujinModel->where("pay_status",">=","1")->order("id desc")->limit($limit)->column('user_id');
-            $diff = array_diff($ulist,$rjLst);
+                $count = count($ulist);
+                if($count<=1){
+                    return;
+                }
 
-            if (!empty($diff)) {
-                $randomIndex = array_rand($diff);
-                $rj_user_id = $diff[$randomIndex];
-                $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
-            } else {
-                $rj_user_id = config('site.rj_user_id');
-                if($rj_user_id && $rj_user_id>0){
+                $limit = $count-1;
+                $rjLst = $rujinModel->where("pay_status",">=","1")->order("id desc")->limit($limit)->column('user_id');
+                $diff = array_diff($ulist,$rjLst);
+
+                if (!empty($diff)) {
+                    $randomIndex = array_rand($diff);
+                    $rj_user_id = $diff[$randomIndex];
                     $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
                 } else {
-                    $userInfo = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->find();
-                }
+                    $rj_user_id = config('site.rj_user_id');
+                    if($rj_user_id && $rj_user_id>0){
+                        $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+                    } else {
+                        // $userInfo = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->find();
+                        $userInfo = $userModel->where($where)->where('usdt',">",100)->order($order)->find();
+                    }
+                }  
             }
 
 
@@ -172,19 +182,12 @@ class Cash extends Api
           return  $this->error('收银员不存在');
         }
         $UserBankcard = new UserBankcard();
-        $uBankLstIds = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->column('id');
+        $count = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->count();
 
-        if(count($uBankLstIds)==0){
+        if($count==0){
            return $this->error('收款账户不存在');
         }
-        if(count($uBankLstIds)>1){
-            $randomBankIndex = array_rand($uBankLstIds);
-            $ubankid = $uBankLstIds[$randomBankIndex];
-            $bankInfo = $UserBankcard->where("id",$ubankid)->order('sort desc,id desc')->find();
-        } else {
-            $bankInfo = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->order('sort desc,id desc')->find();
-        }
-
+        $bankInfo = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->order('sort desc,id desc')->find();
         $rjInfo = $rujinModel->where(['orderid'=>$params['orderid']])->find();
         if($rjInfo){ 
             return $this->error('订单编号已存在');
