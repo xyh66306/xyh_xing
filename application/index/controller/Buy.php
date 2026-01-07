@@ -35,7 +35,7 @@ class Buy extends Frontend
         $data = $params;
         $data['access_secret'] = $access_secret;
         $data['signature'] = $sign;
-        // $data['randomStr'] = 
+        $data['randomStr'] = 
 
         $data['business_id'] = '2000520';
         $data['bi_type'] = 'TWD';
@@ -63,41 +63,42 @@ class Buy extends Frontend
 
     public function cash()
     { 
-        $url = "http://localhost/openapi/cash/index";
+        $url = "https://bingocn.wobeis.com/openapi/cash/index";
 
         $randomStr = $this->getRandomStr(32);
+        
+        // $randomStr = "87986fe0c0de401da57f1f5987a66f05";
 
         $header = [
-            'accesskey' => '1250803358',
+            'accesskey' => '1251201271',
             'randomstr' => $randomStr,
             'gmtrequest' => time(),
         ];
-        $access_secret = '4dc96ddbcc1190b66b478e2b98887bad';
+        $access_secret = '04e53093edba7b32528af3949483051a';
         $sign = $this->makeSign($header, $access_secret);
         $header['signature'] = $sign;
 
 
 
         $params = [
-            'access_key' => '1250803358',   
+            'access_key' => '1251201271',   
             'randomStr' => $randomStr,         
             'gmtRequest'=> time(),
         ];
-        $access_secret = '4dc96ddbcc1190b66b478e2b98887bad';
+        $access_secret = '04e53093edba7b32528af3949483051a';
         $sign = $this->makeSign($params,$access_secret);
 
 
         $data = $params;
         $data['access_secret'] = $access_secret;
         $data['signature'] = $sign;
-        $data['backurl'] = 'https://ceshiotc.wobeis.com/index/index/ceshi';
+        $data['backurl'] = 'https://bingocn.wobeis.com/index/index/ceshi';
         $data['orderid'] = "casher".date("YmdHis",time());
-        $data['amount'] = '6000';
+        $data['amount'] = '3800';
         $data['diqu'] = 1;
         $data['payername'] = '李四';
 
-        dump($data);
-
+        // var_dump($data);
         $res = $this->postCurl($url,$data,$header);
 
         var_dump($res);
@@ -110,7 +111,7 @@ class Buy extends Frontend
     {
 
         if(empty($params) || !is_array($params)) {
-             $this->error('签名错误');
+             $this->error('签名错误11');
         }
 
         foreach($params as $key => $v) {
@@ -120,7 +121,7 @@ class Buy extends Frontend
         }
         $ascii_str = $this->ascii($params);
         if($ascii_str == false) {
-            $this->error('签名错误');
+            $this->error('签名错误22');
         }
 
         $stringSignTemp = $ascii_str."&key=".$secret;

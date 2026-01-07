@@ -114,7 +114,7 @@
 </template>
 
 <script>
-	const base_url = "http://localhost"
+	const base_url = "https://bingocn.wobeis.com"
 	export default {
 		data() {
 			return {

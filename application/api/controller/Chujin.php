@@ -182,25 +182,42 @@ class Chujin extends Api
         if(!$orderId || !$pinzheng_image) {
             $this->error('参数错误');
         }
-
+        // 创建操作唯一标识
+        $operation_key = "uploadPzImg_{$this->auth->id}_{$orderId}_" . time();
+        // 检查是否正在执行相同操作
+        if (Cache::get($operation_key)) {
+            $this->error('请勿重复提交');
+        }
+        
+        // 设置操作锁，有效期30秒
+        Cache::set($operation_key, 1, 30);
+        
         $chujinModel = new ChujinModel();
 
         $info = $chujinModel->where('orderid',$orderId)->find();
         if(!$info){
             $this->error('订单不存在');
         }
+
+        // 验证订单是否属于当前抢单用户
+        if($info['user_id'] != $this->auth->id) {
+            $this->error('无权操作此订单');
+        }
+
         if($info['user_usdt']<=0){
             $this->error('订单金额不足');
         }
         if (!$this->checkOrderToken($orderId, $authtoken)) {
-            $this->error('参数错误');
+            $this->error('令牌验证失败');
         }
-        if($info['pay_status']==3){
-             $this->error('已上传，请勿重复上传');
+        if($info['pay_status']!=2){
+             $this->error('状态错误!请联系客服');
         }
+
 
         Db::startTrans();
         try{ 
+            // 更新订单状态
             $data = [
                 'pay_ewm_image'=>$pinzheng_image,
                 'pay_status' =>3,
@@ -214,13 +231,12 @@ class Chujin extends Api
             //添加用户金额
             $res3 =  $userModel->usdt($info['user_usdt'],$this->auth->id,7,1);
 
-            $fenyong = truncateDecimal($info['user_fee'] + $info['supply_fee']);
-            $this->commission($this->auth->id,$orderId,$info['access_key'],$info['merchantOrderNo'],$info['user_usdt'],$fenyong);
-
-            $this->sendNotice($info);
-
             if($res && $res2 && $res3){
-                Db::commit();                
+                Db::commit();           
+                $fenyong = truncateDecimal($info['user_fee'] + $info['supply_fee']);
+                $this->commission($this->auth->id,$orderId,$info['access_key'],$info['merchantOrderNo'],$info['user_usdt'],$fenyong);
+
+                $this->sendNotice($info);               
             } else {
                 Db::rollback();
                 $this->error('上传失败');
@@ -229,6 +245,8 @@ class Chujin extends Api
             Db::rollback();
             $this->error($e->getMessage());
         }
+        // 操作完成后删除操作锁
+        Cache::rm($operation_key); 
         $this->success('上传成功');
 
     } 

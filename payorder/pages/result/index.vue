@@ -16,23 +16,23 @@
 						</view>
 					</view>
 				</view>
-				<view class="result-body-detail">
+<!-- 				<view class="result-body-detail">
 					<view class="body-detail-btm">
 						<view class="">
 							下单时间：{{ paymentInfo.pay_time }}
 						</view>
 						<view class="">
-							支付金额：{{ paymentInfo.usdt }} USDT
+							支付金额：{{ paymentInfo.amount }} CNY
 						</view>
 					</view>
-				</view>
+				</view> -->
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-const base_url = "http://localhost"
+const base_url = "https://bingocn.wobeis.com"
 export default {
 	data() {
 		return {

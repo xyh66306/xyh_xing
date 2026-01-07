@@ -28,11 +28,7 @@
 				<view class="copy">
 					<u-button type="primary" size="mini" plain @click="copy(details.withdrawAmount)">复制</u-button>
 				</view>
-			</view>	
-			<view class="u-info">汇率</view>
-			<view class="flex u-border-bottom">
-				<view>{{biData.duichu || '7.20' }}</view>
-			</view>											
+			</view>										
 			<template v-if="details.pay_type=='bank'">
 				<view class="u-info">付款账户</view>
 				<view class="flex u-border-bottom">

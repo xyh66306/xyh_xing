@@ -114,6 +114,7 @@ class User extends Model
      */
     public static function score($score, $user_id, $memo)
     {
+        
         Db::startTrans();
         try {
             $user = self::lock(true)->find($user_id);
@@ -140,6 +141,20 @@ class User extends Model
      */
     public static function usdt($usdt, $user_id,$type,$flow_type, $memo='',$beizhu='')
     {
+        $bianhao = md5("usdt_dj_{$user_id}_{$usdt}_" . time());
+        // 检查是否已存在相同操作
+        $existing = Db::name('user_usdt_log')
+            ->where('user_id', $user_id)
+            ->where('usdt', $usdt)
+            ->where('type', $type)
+            ->where('create_time', '>', time() - 60) // 1分钟内检查
+            ->find();
+        
+        if ($existing) {
+            return false; // 防止重复操作
+        }
+
+
         Db::startTrans();
         try {
             $user = self::lock(true)->find($user_id);
@@ -151,8 +166,7 @@ class User extends Model
                     $after = function_exists('bcsub') ? bcsub($user->usdt, $usdt, 4) : $user->usdt - $usdt;
                 }
                 //更新会员信息
-                $user->save(['usdt' => $after]);
-                $bianhao = getOrderNo();
+                $user->save(['usdt' => $after]);                
                 //写入日志
                 UsdtLog::create(['user_id' => $user_id,'bianhao'=>$bianhao, 'usdt' => $usdt, 'before' => $before, 'after' => $after,'type'=>$type,'flow_type'=>$flow_type, 'memo' => $memo,'beizhu'=>$beizhu]);
             }
@@ -166,6 +180,20 @@ class User extends Model
 
     public static function usdt_dj($usdt, $user_id,$type,$flow_type, $memo='',$beizhu='')
     {
+
+        $bianhao = md5("usdt_dj_{$user_id}_{$usdt}_" . time());
+        // 检查是否已存在相同操作
+        $existing = Db::name('user_usdtdj_log')
+            ->where('user_id', $user_id)
+            ->where('usdt', $usdt)
+            ->where('type', $type)
+            ->where('create_time', '>', time() - 60) // 1分钟内检查
+            ->find();
+        
+        if ($existing) {
+            return false; // 防止重复操作
+        }
+
         Db::startTrans();
         try {
             $user = self::lock(true)->find($user_id);
@@ -178,9 +206,19 @@ class User extends Model
                 }
                 //更新会员信息
                 $user->save(['usdt_dj' => $after]);
-                //写入日志
-                // $bianhao = getOrderNo();
-                // UsdtLog::create(['user_id' => $user_id,'bianhao'=>$bianhao, 'usdt' => $usdt, 'before' => $before, 'after' => $after,'type'=>$type,'flow_type'=>$flow_type, 'memo' => $memo,'beizhu'=>$beizhu]);
+
+                Db::name('user_usdtdj_log')->insert([
+                    'bianhao' => $bianhao,
+                    'user_id' => $user_id,
+                    'type' => $type,
+                    'flow_type' => $flow_type,
+                    'usdt' => $usdt,
+                    'before' => $before,
+                    'after' => $after,
+                    'memo' => $memo,
+                    'beizhu' => $beizhu,
+                    'createtime'=>time()
+                ]);
             }
             Db::commit();
             return true;

@@ -201,7 +201,9 @@ class Cash extends Api
 
             $usdt = truncateDecimal($params['amount'] / $supplyinfo['duiru']);     //CNY 转 USDT(接收的cny/商户兑入7.26)
             if($params['diqu']==1){
-                $fee_dalu_supply_duiru =  config('site.fee_dalu_supply_duiru');
+                // $fee_dalu_supply_duiru =  config('site.fee_dalu_supply_duiru');
+
+                $fee_dalu_supply_duiru = $supplyinfo['duiru_rate']; 
 
                 $supply_fee = truncateDecimal($usdt * $fee_dalu_supply_duiru/100);
                 $supply_usdt = $usdt - $supply_fee;

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{$site.name|htmlentities}</title>
+    <link rel="shortcut icon" href="__CDN__/assets/img/favicon.ico"/>
+    <link href="__CDN__/assets/css/index.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="mainbody">
+    <div class="container">
+        <h3>{$today}</h3>
+        <div class="user">
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>服务商pay4</td>
+                    <td>服务商pay2fa</td>
+                    <td>用户usdt</td>
+                    <td>用户冻结usdt</td>
+                    <td>1队</td>
+                    <td>2队</td>
+                    <td>spark</td>
+                    <td>1队今日返佣</td>
+                    <td>2队今日返佣</td>
+                    <td>spark今日返佣</td>                    
+                </tr>
+                <tr>
+                    <td>{$supply[0]}</td>
+                    <td>{$supply[1]}</td>
+                    <td>{$userTotalUsdt}</td>
+                    <td>{$userTotalUsdtdJ}</td>
+                    <td>{$oneteam}</td>
+                    <td>{$twoteam}</td>
+                    <td>{$spark}</td>
+                    <td>{$fanyong_taday_total_1d}</td>
+                    <td>{$fanyong_taday_total_2d}</td>
+                    <td>{$fanyong_taday_total_spark}</td>                    
+                </tr>
+            </table>
+        </div>
+        <div class="company">
+             <h3>公司资产统计</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>2025公司资产利润</td>
+                    <td>2026公司资产</td>
+                    <td>累计</td>
+                </tr>
+                <tr>
+                    <td>3039.1797</td>
+                    <td>{$company_usdt}</td>
+                    <td>{$company_usdt_all}</td>
+                </tr>
+            </table>
+        </div>     
+        <div class="order mt20">
+            <h3>入金统计</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>累计数量(个)</td>
+                    <td>累计金额（cny）</td>
+                    <th>商户累计结算数量(usdt)</th>
+                    <th>承兑商累计结算数量(usdt)</th>
+                    <th>手续费+汇率差 利润</th>
+                    <td>今日订单数量(个)</td>
+                    <td>今日累计金额(cny)</td>
+                    <th>今日承兑商结算数量(usdt)</th>
+                    <th>今日商户结算数量(usdt)</th>
+                    <th>今日公司利润(usdt)</th>
+                    <th>今日代理利润(usdt)</th>                    
+                </tr>
+                <tr>
+                    <td>{$total}</td>
+                    <td>{$total_money}</td>
+                    <td>{$supply_usdt}</td>
+                    <td>{$user_usdt}</td>
+                    <td>{$user_fee} + {$supply_fee} = {$company_price}</td>
+                    <td>{$today_total}/{$today_total2}</td>
+                    <td>{$total_today_money}</td>
+                    <td>{$user_today_price}</td>
+                    <td>{$supply_today_price}</td>
+                    <td>{$company_today_price}</td>
+                    <td>{$fanyong_daili_taday_total}</td>                    
+                </tr>
+            </table>
+        </div>     
+        <div class="order mt20">
+            <h3>出金统计</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>累计数量(个)</td>
+                    <td>累计金额（cny）</td>
+                    <th>商户累计结算数量(usdt)</th>
+                    <th>承兑商累计结算数量(usdt)</th>
+                    <th>手续费+汇率差 利润</th>
+                    <td>今日订单数量(个)</td>
+                    <td>今日累计金额(cny)</td>
+                    <th>今日承兑商结算数量(usdt)</th>
+                    <th>今日商户结算数量(usdt)</th>
+                    <th>今日公司利润(usdt)</th>
+                    <th>今日代理利润(usdt)</th>                    
+                </tr>
+                <tr>
+                    <td>{$cj_total}</td>
+                    <td>{$cj_supply_money}</td>
+                    <td>{$cj_supply_usdt}</td>
+                    <td>{$cj_user_usdt}</td>
+                    <td>{$cj_user_fee} + {$cj_supply_fee} = {$cj_company_price}</td>
+                    <td>{$cj_today_total}/{$cj_today_total2}</td>
+                    <td>{$total_today_money}</td>
+                    <td>{$cj_user_today_price}</td>
+                    <td>{$cj_supply_today_price}</td>
+                    <td>{$cj_company_today_price}</td>
+                    <td>{$cj_taday_daili_fanyong_total}</td>                    
+                </tr>
+            </table>            
+        </div>   
+        <div class="order mt20"> 
+            <h3>充值提现</h3>
+            <table border='1' cellpadding='10' cellspacing='0'> 
+                <tr>
+                    <td>承兑商充值累计笔数</td>
+                    <td>承兑商充值累计数量</td>
+                    <td>服务商提现累计笔数</td>
+                    <td>服务商提现累计数量</td> 
+                    <td>服务商冻结数量</td> 
+                   <td>服务商提现累计手续费</td>                     
+                </tr>
+                <tr>
+                    <td>{$total_user_cz_number}</td>
+                    <td>{$total_user_number}</td>
+                    <td> {$total_supply_cz_number}</td>
+                    <td>{$total_supply_number}</td>
+                    <td>{$total_supply_freeze_usdt}</td>
+                    <td>{$total_supply_cz_fee}</td>
+                </tr>
+            </table>
+        </div> 
+
+
+        <div class="order mt20">
+            <h3>误差计算</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>承兑商充值</td>
+                    <td>承兑商账户余额</td>
+                    <td>服务商提现额度</td>
+                    <td>服务商余额</td>
+                    <td>兑出+兑入利润</td>
+                    <td>误差计算</td>
+                </tr>
+                <tr>
+                    <td>{$total_user_number}</td>
+                    <td>{$userTotalUsdt}</td>
+                    <td>{$total_supply_number}</td>
+                    <td>{$supply[0]} + {$supply[1]} = {$totol_supply_usdt}</td>
+                    <td>{$all_company_price}</td>
+                    <td>{$diff}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="container">
+        <p>Copyright @ {$site.name|htmlentities} {:date('Y',time())} 版权所有 <a href="https://beian.miit.gov.cn" target="_blank">{$site.beian|htmlentities}</a></p>
+    </div>
+</div>
+
+
+<style>
+    .user, .company,.mt20 {
+        margin-top: 20px;
+    }
+
+#mainbody {
+    position: relative;
+    width: 100%;
+    min-height: auto;
+    overflow-y: auto;
+    background: #f1f6fd;
+    color: #474157;
+    height:auto;
+    padding-bottom: 100px;
+}
+</style>
+</body>
+
+</html>
