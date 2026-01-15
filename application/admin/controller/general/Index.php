@@ -26,7 +26,9 @@ class Index extends Backend
         }
 
         $admin_ids_str = "%A" . $admin_id . "A%";
+
         $supply_info = $supplyModel->whereLike("admin_id", $admin_ids_str)->find();
+
         $this->view->assign('supply_info', $supply_info);
         return $this->view->fetch();
     }
