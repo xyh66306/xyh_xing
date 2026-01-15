@@ -208,6 +208,25 @@ class Chujin extends Backend
                 //添加代理商佣金
                 $commissionModel = new Commission();
                 $commissionModel->update(['order_status'=>2],['fy_orderid'=>$row['orderid']]);
+
+
+                $supplyModel = new Supply();
+                $info = $supplyModel->where('access_key', $row['access_key'])->find();
+                if ($info) {
+                    $taskModel = new Task();
+                    $data = [
+                        'access_key'    => $info['access_key'],
+                        'access_secret' => $info['access_secret'],
+                        'name' => 'sell',
+                        'message' => '',
+                        'params' => [
+                            'orderid' => $row['merchantOrderNo'],
+                            'url'  => $row['webhookUrl'],
+                            'pay_status' => 3   //已支付   
+                        ]
+                    ];
+                    $taskModel->addTask($data, "Sell");
+                }
                 // $comlist = $commissionModel->where("fy_orderid",$row['orderid'])->select();
                 // $comSum  = $commissionModel->where("fy_orderid",$row['orderid'])->sum('money');
                 // if($comSum>0){

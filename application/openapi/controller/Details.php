@@ -1,16 +1,4 @@
 <?php
-/*
- * @Description: 
- * @Version: 1.0
- * @Autor: Xyh
- * @Date: 2025-07-30 16:36:36
- */
-/*
- * @Description: 
- * @Version: 1.0
- * @Autor: Xyh
- * @Date: 2025-07-30 16:36:36
- */
 
 namespace app\openapi\controller;
 
@@ -228,7 +216,17 @@ class Details extends Api
         }
         $userModel = new UserModel();
         $userInfo = $userModel->where(['id'=>$info['user_id']])->find();
-        $this->sendEmsNotice($userInfo['email'],$info);
+        if($this->access_key != '1241209564'){
+            $this->sendEmsNotice($userInfo['email'],$info);
+        }
+
+        $pinyinname = \fast\Pinyin::get($info['payername']);
+        $name = $this->access_key."-".$info['amount']."-".$pinyinname;
+        $cacheData = Cache::get($name);
+        if ($cacheData !== false && $cacheData !== null) {
+            Cache::rm($name);
+        }
+
         $this->sendNotice($userInfo,$info);
         $this->success('下单成功，等待确认');
     }    

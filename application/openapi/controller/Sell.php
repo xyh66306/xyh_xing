@@ -5,6 +5,8 @@ namespace app\openapi\controller;
 use app\common\controller\Api;
 use app\common\model\Supply;
 use app\common\model\order\Chujin;
+use app\admin\model\supply\Usdtlog;
+use app\common\model\Bi as BiModel;
 use app\common\model\Task;
 use think\Db;
 use think\Request;
@@ -68,8 +70,19 @@ class Sell extends Api
     }
 
 
+
     /**
-     * 出金接口
+     * 创建出金订单
+     * @param  string $realName           收款人
+     * @param  string $merchantOrderNo    商户订单号
+     * @param  string $cardNumber         银行卡号
+     * @param  string $bankName           银行名称
+     * @param  string $bankBranchName     客户银行分支机构名称
+     * @param  string $pay_type           支付类型: wxpay=微信支付, alipay=支付宝, bank=银行卡, qtpay=其他平台
+     * @param  string $pay_account        收款账号(微信支付宝必填)
+     * @param  string $usdt               提币数量
+     * @param  string $webhookUrl         回调地址
+     * @return json
      */
     public function index()
     { 
@@ -78,48 +91,68 @@ class Sell extends Api
             'cardNumber'        => $this->request->param('cardNumber',''), //银行卡号
             'bankName'          => $this->request->param('bankName',''), //银行名称
             'bankBranchName'    => $this->request->param('bankBranchName',''), //客户银行分支机构名称
-            'withdrawCurrency'  => $this->request->param('withdrawCurrency','CNY'), //提现货币类型（如 MTC/CNY/HKD）
-            'fiatCurrency'      => $this->request->param('fiatCurrency','CNY'),    //法币货币代码（如 CNY/HKD）
-            'withdrawAmount'    => $this->request->param('withdrawAmount',0),   //提现金额
-            'requiresReview'    => $this->request->param('requiresReview',''),   //是否需要审核
-            'merchantOrderNo'   => $this->request->param('merchantOrderNo',''), //商户订单号
+            'pay_type'          => $this->request->param('pay_type',''),
+            'usdt'              => $this->request->param('usdt',''),
+            'merchantOrderNo'   => $this->request->param('orderid',''), //商户订单号
             'webhookUrl'        => $this->request->param('webhookUrl',''),  //回调地址
+            'pay_account'       => $this->request->param('pay_account',''),
         ];
-        recordLogs("sell",$params);
-
 
         if(empty($params['realName'])) {
-            $this->error('真实姓名错误');
+            $this->error('收款人姓名错误');
         }
 
-        if(empty($params['cardNumber'])) {
-            $this->error('银行名称错误');
-        }
-        if(empty($params['bankName'])) {
-            $this->error('银行卡名称错误');
-        }
-        if(empty($params['bankBranchName'])) {
-            $this->error('客户银行分支机构名称');
-        }
 
-        if(empty($params['withdrawCurrency'])) {
-            $this->error('提现货币类型错误');
-        }   
-        if(empty($params['fiatCurrency'])) {
-            $this->error('法币货币代码错误');
-        }
-        if(empty($params['withdrawAmount'])) {
-            $this->error('提现金额错误');
-        }
-        if(empty($params['requiresReview'])) {
-            $this->error('是否需要审核错误');
-        }
+
         if(empty($params['merchantOrderNo'])) {
             $this->error('商户订单号错误');
         }
         if(empty($params['webhookUrl'])) {
             $this->error('回调地址错误');
         }
+
+        $allowedPayTypes = ['wxpay', 'alipay', 'bank', 'qtpay'];
+        if (!in_array($params['pay_type'], $allowedPayTypes)) {
+            $this->error('支付类型错误，支持的类型有：wxpay, alipay, bank, qtpay');
+        }
+
+        if($params['pay_type'] == 'alipay' || $params['pay_type'] == 'wxpay') {
+            if(empty($params['pay_account'])) {
+                $this->error('收款账号错误');
+            }
+        }
+
+        if($params['pay_type'] == 'bank'){
+            if(empty($params['cardNumber'])) {
+                $this->error('银行名称错误');
+            }
+            if(empty($params['bankName'])) {
+                $this->error('银行卡名称错误');
+            }
+            if(empty($params['bankBranchName'])) {
+                $this->error('客户银行分支机构名称');
+            }
+        }
+
+        if(empty($params['usdt']) || $params['usdt'] <= 100) {
+            $this->error('提现金额错误');
+        }
+
+
+
+        $supplyModel = new Supply();
+        $supplyinfo = $supplyModel->where('access_key',$this->access_key)->find();
+        if(!$supplyinfo) {
+            $this->error('商户不存在');
+        }
+        if($supplyinfo['status'] != "normal") {
+            $this->error('商户状态异常');
+        }
+        if($supplyinfo['usdt']<$params['usdt'] ){
+            $this->error('商户余额不足');
+        }
+
+
 
         $chujinModel = new Chujin();
 
@@ -129,6 +162,22 @@ class Sell extends Api
         if($chujinInfo){ 
             return $this->error('商户订单号已存在');
         }
+
+        $withdrawAmount = round($params['usdt'] * $supplyinfo['duichu'],2);
+
+        $BiModel = new BiModel();
+        $biinfo = $BiModel->where("id", 1)->find();
+        $params['user_usdt'] = truncateDecimal($withdrawAmount/$biinfo['duichu'],4);
+        $params['user_fee'] = $params['usdt'] - $params['user_usdt'];
+
+        $fee_dalu_supply_duichu = config('site.fee_dalu_supply_duichu');
+        $fee_dalu_supply_duichu = $fee_dalu_supply_duichu / 100;
+        $params['supply_fee'] = truncateDecimal($params['usdt'] * $fee_dalu_supply_duichu);
+        $params['supply_usdt'] = $params['usdt'] + $params['supply_fee'];
+
+        recordLogs("sell",$params);
+
+
         Db::startTrans();
         try{ 
             $time = time();
@@ -137,28 +186,43 @@ class Sell extends Api
                 'orderid'           => $orderid,
                 'realName'          => $params['realName'],
                 'merchantOrderNo'   => $params['merchantOrderNo'],
-                'cardNumber'        => $params['cardNumber'],
-                'bankName'          => $params['bankName'],
-                'bankBranchName'    => $params['bankBranchName'],
-                'withdrawCurrency'  => $params['withdrawCurrency'],
-                'fiatCurrency'      => $params['fiatCurrency'],
-                'withdrawAmount'    => $params['withdrawAmount'],
-                'requiresReview'    => $params['requiresReview'],
+                'cardNumber'        => $params['cardNumber'] ? $params['cardNumber'] : "",
+                'bankName'          => $params['bankName'] ? $params['bankName'] : "",
+                'bankBranchName'    => $params['bankBranchName'] ? $params['bankBranchName'] : "",
+                'withdrawCurrency'  => "USDT",
+                'fiatCurrency'      => "USDT",
+                'withdrawAmount'    => $withdrawAmount,
+                'requiresReview'    => 2,
                 'webhookUrl'        => $params['webhookUrl'],
-                'pay_type'          => "bank",
+                'pay_type'          => $params['pay_type'],
                 'access_key'        => $this->access_key,
                 'createtime'        => $time,
                 'updatetime'        => $time,
+                'huilv'             =>$supplyinfo['duichu'],
+                'diqu'              => 1,
+                'pay_status'        => 0,
                 'status'            => "normal",
+                'usdt'              => $params['usdt'],
+                'user_usdt'         => $params['user_usdt'],
+                'user_fee'          => $params['user_fee'],
+                'supply_fee'        => $params['supply_fee'],
+                'supply_usdt'        => $params['supply_usdt'],
+                'pay_account'       => $params['pay_account']?$params['pay_account']:"",
+
             ];
             $chujinModel->insert($data);
+
+            //扣除商户冻结金额
+            $Usdtlog = new Usdtlog();
+            $Usdtlog->addtxLog($this->access_key,$params['supply_usdt'],2,$params['merchantOrderNo'],2);
+
             Db::commit();
 
         } catch(\Exception $e) {
             Db::rollback();
             return $this->error($e->getMessage());
         }
-        return $this->success('成功',$orderid);
+        return $this->success('success',$orderid);
 
     }
 

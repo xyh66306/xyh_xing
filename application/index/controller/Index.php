@@ -310,11 +310,30 @@ class Index extends Frontend
         //误差计算
         // 入金利润 + 出金利润 = 分润
         $all_company_price = $company_price + $cj_company_price;
+
+        $commission_all_2026 = $Commission->where(['chaoshi'=>1,'status'=>1])->sum("money");
+        $commission_all_2025 = 691.5565;
+        $commission_all = $commission_all_2025 + $commission_all_2026;
+
+        $company_account_2025 = 3039.1797;
+        $company_account_2026 = Db::name("company")->where("id",1)->value("usdt");
+        $company_account = $company_account_2025 + $company_account_2026;
+
         // 所有分润
-        $diff = $total_user_number - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price -$total_supply_freeze_usdt;
+        $diff = $total_user_number - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price -$total_supply_freeze_usdt + $commission_all;
+
+
+        $fanyData = [
+            'commission_all_2025'        =>$commission_all_2025,
+            'commission_all_2026' => $commission_all_2026,
+            'commission_all' => $commission_all,
+        ];
+        $this->assign($fanyData); 
+
 
         $this->assign('all_company_price',$all_company_price); 
-        $this->assign("diff",$diff); 
+        $this->assign("diff",$diff);
+        $this->assign("company_account",$company_account); 
         return $this->fetch();
 
     }

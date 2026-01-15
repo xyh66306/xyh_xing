@@ -22,40 +22,40 @@ class Sell extends Frontend
 
     public function index()
     {
-        $url = "http://100.24.115.218/client/tracnce";
 
-        $pickupUrl = "http://bingocn.wobeis.com/index/sell/paysuccess";
-        $signType = "md5";
-        $receiveUrl = "http://bingocn.wobeis.com/index/sell/callback";
-        $orderNo = '555666';
-        $customerId = '393';
-        $orderCurrency = "CNY";
-        $orderAmount = 1000;
-        $exchangeRate = 7.13;
-        $md5_key = 'sgFTS4BbMg';
+        $url = "http://localhost/openapi/sell/index";
 
-        $str = $pickupUrl .$receiveUrl. $signType. $orderNo. $orderAmount.$exchangeRate.$orderCurrency.$customerId.$md5_key;
-        $sign = md5( $str);
+        $randomStr = $this->getRandomStr(32);
+
+        $access_key     = "1251201271";
+        $access_secret = '04e53093edba7b32528af3949483051a';
+        
 
 
-        $params = [
-            'receiveUrl' => $receiveUrl,
-            'orderNo' => $orderNo,
-            'customerId'=> $customerId,
-            'orderCurrency'=> $orderCurrency,
-            'orderAmount'  =>$orderAmount,
-            'sign' =>$sign,
-            'signType'=> $signType,
-            'pickupUrl'=> $pickupUrl,
-            'exchangeRate'=>$exchangeRate,
+        $header = [
+            'accesskey' => $access_key,
+            'randomstr' => $randomStr,
+            'gmtrequest' => time(),
         ];
+        $sign = $this->makeSign($header, $access_secret);
+        $header['signature'] = $sign;
 
-        $urls = http_build_query($params);
+        // $data['access_secret'] = $access_secret;
+        // $data['signature'] = $sign;
+        $data['webhookUrl'] = 'https://bingocn.wobeis.com/index/index/ceshi';
+        $data['orderid'] = "casher".date("YmdHis",time());
+        $data['usdt'] = '1463.7784';
+        $data['diqu'] = 1;
+        $data['realName'] = 'lisi';
+        $data['cardNumber'] ="6214830391594115";
+        $data['bankName'] = '中国工商银行';
+        $data['bankBranchName'] = '中山分行营业部';
+        $data['pay_type'] = 'bank';
 
-        echo $url.'?'.$urls;
+        // var_dump($data);
+        $res = $this->postCurl($url,$data,$header);
 
-        // $res = $this->postCurl($url.'?'.$urls,$params,[],"GET");
-        // echo $res;
+        var_dump($res);
     }
 
 
@@ -190,4 +190,29 @@ class Sell extends Frontend
             return $data;
         }
     }
+
+
+
+    /**
+     * 获得随机字符串
+     * @param $len          需要的长度
+     * @param $special      是否需要特殊符号
+     * @return string       返回随机字符串
+     */
+    public function getRandomStr($len, $special = false){
+        $chars = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
+       if($special){
+           $chars = array_merge($chars, ["!", "@", "#", "$", "?", "|", "{", "/", ":", ";", "%", "^", "&", "*", "(", ")", "-", "_", "[", "]", "}", "<", ">", "~", "+", "=", ",", "."]);
+       }
+
+       $charsLen = count($chars) - 1;
+       shuffle($chars);                            //打乱数组顺序
+       $str = '';
+       for($i=0; $i < $len; $i++){
+           $str .= $chars[mt_rand(0, $charsLen)];    //随机取出一位
+       }
+       return $str;
+    }
+
 }

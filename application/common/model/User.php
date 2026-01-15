@@ -114,7 +114,6 @@ class User extends Model
      */
     public static function score($score, $user_id, $memo)
     {
-        
         Db::startTrans();
         try {
             $user = self::lock(true)->find($user_id);
@@ -133,7 +132,7 @@ class User extends Model
         }
     }
 
-    /**
+     /**
      * 变更会员usdt
      * @param int    $money  usdt
      * @param int    $user_id 会员ID
@@ -147,7 +146,7 @@ class User extends Model
             ->where('user_id', $user_id)
             ->where('usdt', $usdt)
             ->where('type', $type)
-            ->where('create_time', '>', time() - 60) // 1分钟内检查
+            ->where('createtime', '>', time() - 60) // 1分钟内检查
             ->find();
         
         if ($existing) {
@@ -187,7 +186,7 @@ class User extends Model
             ->where('user_id', $user_id)
             ->where('usdt', $usdt)
             ->where('type', $type)
-            ->where('create_time', '>', time() - 60) // 1分钟内检查
+            ->where('createtime', '>', time() - 60) // 1分钟内检查
             ->find();
         
         if ($existing) {
@@ -227,7 +226,6 @@ class User extends Model
             Db::rollback();
         }
     }
-
 
     /**
      * 根据积分获取等级

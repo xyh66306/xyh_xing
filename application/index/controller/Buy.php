@@ -63,7 +63,7 @@ class Buy extends Frontend
 
     public function cash()
     { 
-        $url = "https://bingocn.wobeis.com/openapi/cash/index";
+        $url = "http://localhost/openapi/cash/index";
 
         $randomStr = $this->getRandomStr(32);
         

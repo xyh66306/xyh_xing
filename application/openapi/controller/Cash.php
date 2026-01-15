@@ -16,6 +16,7 @@ use app\common\model\Commission;
 use app\common\library\Sms as Smslib;
 use app\common\library\Ems as Emslib;
 use think\Db;
+use think\Cache;
 use think\Request;
 
 
@@ -100,6 +101,11 @@ class Cash extends Api
         if(empty($params['payername'])) {
             $this->error('付款人姓名不能为空');
         } 
+
+        if(preg_match('/^[a-zA-Z0-9\s]+$/', $params['payername'])) {
+            $this->error('付款人姓名只支持中文');
+        }
+
         if($params['amount']<3500) {
             $this->error('不能小于最低金额3500');
         }     
@@ -130,46 +136,54 @@ class Cash extends Api
                 $this->error('系统维护中');
             }
 
-            $where['diqu'] = $params['diqu'];
-            $where['status'] = "normal";
-            $where['sfz_status'] = 1;
-            $where['pay_status'] = "normal";
-            $order = 'pay_sort desc,id desc';
+            $pinyinname = \fast\Pinyin::get($params['payername']);
+            $name = $this->access_key."-".$params['amount']."-".$pinyinname;
+            
+            $cacheData = Cache::get($name);
 
-
-            // $ulist = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->column('id');
             $userInfo = [];
-            // if($params['amount']<=7500){
-            //     $where['id'] = "168017";
-            //     $userInfo = $userModel->where($where)->where('usdt',">",100)->find();
-            // }
+            if($cacheData){
+                $userInfo = $cacheData;
+            }else{
 
-            if(!$userInfo){
-                $ulist = $userModel->where($where)->where('usdt',">",100)->cache(3600)->order($order)->column('id');
+                $where['diqu'] = $params['diqu'];
+                $where['status'] = "normal";
+                $where['sfz_status'] = 1;
+                $where['pay_status'] = "normal";
+                $order = 'pay_sort desc,id desc';
 
-                $count = count($ulist);
-                if($count<=1){
-                    return;
-                }
+                // $ulist = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->column('id');
+                
+                if(!$userInfo){
+                    $ulist = $userModel->where($where)->where('usdt',">",100)->cache(3600)->order($order)->column('id');
 
-                $limit = $count-1;
-                $rjLst = $rujinModel->where("pay_status",">=","1")->order("id desc")->limit($limit)->column('user_id');
-                $diff = array_diff($ulist,$rjLst);
+                    $count = count($ulist);
+                    if($count<=1){
+                        return;
+                    }
 
-                if (!empty($diff)) {
-                    $randomIndex = array_rand($diff);
-                    $rj_user_id = $diff[$randomIndex];
-                    $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
-                } else {
-                    $rj_user_id = config('site.rj_user_id');
-                    if($rj_user_id && $rj_user_id>0){
+                    $limit = $count-1;
+                    $rjLst = $rujinModel->where("pay_status",">=","1")->order("id desc")->limit($limit)->column('user_id');
+                    $diff = array_diff($ulist,$rjLst);
+
+                    if (!empty($diff)) {
+                        $randomIndex = array_rand($diff);
+                        $rj_user_id = $diff[$randomIndex];
                         $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
                     } else {
-                        // $userInfo = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->find();
-                        $userInfo = $userModel->where($where)->where('usdt',">",100)->order($order)->find();
-                    }
-                }  
+                        $rj_user_id = config('site.rj_user_id');
+                        if($rj_user_id && $rj_user_id>0){
+                            $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+                        } else {
+                            // $userInfo = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->find();
+                            $userInfo = $userModel->where($where)->where('usdt',">",100)->order($order)->find();
+                        }
+                    }  
+                }
+                Cache::set($name,$userInfo,60*2);
             }
+
+
 
 
         }
@@ -203,7 +217,7 @@ class Cash extends Api
             if($params['diqu']==1){
                 // $fee_dalu_supply_duiru =  config('site.fee_dalu_supply_duiru');
 
-                $fee_dalu_supply_duiru = $supplyinfo['duiru_rate']; 
+                $fee_dalu_supply_duiru = $supplyinfo['duiru_rate'];
 
                 $supply_fee = truncateDecimal($usdt * $fee_dalu_supply_duiru/100);
                 $supply_usdt = $usdt - $supply_fee;

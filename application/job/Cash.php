@@ -29,6 +29,8 @@ class Cash
                 return;
             }
             
+
+            $data['type']    = "recharge";
             $data['orderid'] = $params['params']['orderid'];
             $data['pay_status'] = $params['params']['pay_status'];
 
