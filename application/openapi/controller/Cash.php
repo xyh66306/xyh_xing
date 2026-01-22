@@ -35,6 +35,23 @@ class Cash extends Api
     {
         parent::__construct(); // 确保调用父类构造函数
 
+
+
+        // 检查当前时间是否在禁止访问时间段内
+        $currentHour = date('H');
+        $currentMinute = date('i');
+
+        $currentTime = $currentHour * 60 + $currentMinute; // 转换为分钟数便于比较
+        
+        $startTime = 22 * 60 + 30; // 22:30 转换为分钟
+        $endTime = 7 * 60 + 30;   // 07:30 转换为分钟
+        
+        // 如果当前时间在晚上10:30之后且在早上7:30之前，则禁止访问
+        if (($currentHour >= 22 && $currentTime >= $startTime) || 
+            ($currentHour < 7 || ($currentHour == 7 && $currentMinute <= 30))) {
+            $this->error('系统维护时间，晚上10:30到早上7:30暂停服务');
+        }        
+
         $this->request = $request;
         $header = $this->request->header();
 
@@ -55,13 +72,12 @@ class Cash extends Api
         }
 
         $supplyModel = new Supply();
-        $info = $supplyModel->where('access_key',$header['accesskey'])->find();
-
-        $this->access_key = $header['accesskey'];
+        $info = $supplyModel->where('access_key',$header['accesskey'])->cache(3600)->find();
 
         if(empty($info)){
             $this->error('商户不存在');
         }
+        $this->access_key = $header['accesskey'];
 
         $params = [
             'accesskey'    => $header['accesskey'],
@@ -110,8 +126,8 @@ class Cash extends Api
             $this->error('不能小于最低金额3500');
         }     
         
-        if($params['amount']>=200000) {
-            $this->error('不能大于最低金额20万');
+        if($params['amount']>=300000) {
+            $this->error('不能大于最低金额30万');
         }           
 
         $userModel = new UserModel();
@@ -183,9 +199,6 @@ class Cash extends Api
                 Cache::set($name,$userInfo,60*2);
             }
 
-
-
-
         }
 
 
@@ -207,11 +220,12 @@ class Cash extends Api
             return $this->error('订单编号已存在');
         }
 
+
         Db::startTrans();
         try{ 
 
             $BiModel = new BiModel();
-            $info = $BiModel->where(['default'=>1,'status'=>1])->find();
+            $info = $BiModel->cache(86400)->where(['default'=>1,'status'=>1])->find();
 
             $usdt = truncateDecimal($params['amount'] / $supplyinfo['duiru']);     //CNY 转 USDT(接收的cny/商户兑入7.26)
             if($params['diqu']==1){
@@ -271,24 +285,6 @@ class Cash extends Api
 
             $res = $rujinModel->insert($data);
             
-            $UserBankcard->where('id', '<>',$bankInfo['id'])->where('user_id',$bankInfo['user_id'])->setDec('sort',1);
-            // $UserBankcard->update(['sort'=>100],['id'=>$bankInfo['id']]);
-
-            $banklist =  $UserBankcard->where('user_id',$bankInfo['user_id'])->where("sort","<","100")->select();
-            if($banklist){
-                foreach ($banklist as $key => $value) {
-                    $UserBankcard->update(['sort'=>999],['id'=>$value['id']]);
-                }
-            }
-            $count = $userModel->where("pay_status","normal")->count();
-            $userModel->where('id', $userInfo['id'])->setDec('pay_sort',$count);
-
-            $userlist =  $userModel->where("pay_status","normal")->where('id','<>', $userInfo['id'])->where("pay_sort","<","100")->select();
-            if($userlist){
-                foreach ($userlist as $key => $value) {
-                    $userModel->update(['pay_sort'=>$value['pay_sort']+200],['id'=>$value['id']]);
-                }
-            }
             Db::commit();
 
         } catch(\Exception $e) {
@@ -298,7 +294,11 @@ class Cash extends Api
 
 
         if($res){
-            $this->sendEmsNotice();
+            // $this->sendEmsNotice();
+            $exportData['type'] = "sendEmsNotice";
+            $jobClass = 'app\job\Notice@fire';
+            \think\Queue::push($jobClass, $exportData);//加入队列
+            
             return $this->success('success',request()->domain().'/cash/#/?orderid='.$params['orderid'].'&access_key='.$this->access_key);
         }else{
             return $this->error('fail');

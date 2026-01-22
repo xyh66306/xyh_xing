@@ -716,5 +716,3 @@ if (!function_exists('truncateDecimal')) {
         return floor($number * $factor) / $factor;
     }
 }
-
-

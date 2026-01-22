@@ -104,39 +104,4 @@ class Profit extends Model
         $companyModel->update(['usdt' => $after], ['id' => 1]);
         return true;
     }
-
-
-
-    public function addLog2($total,$usdt,$type, $user_type,$flow_type,$source_id='',$time='')
-    {
-
-        if($usdt==0){
-            return;
-        }
-        $companyModel = new Company();
-        $company = $companyModel->where('id', 1)->find();
-
-
-        $before = $company['usdt'];
-        if ($flow_type == 2) {
-            $after = $before - $usdt;
-        } else {
-            $after = $before + $usdt;
-        }
-
-        $data = [
-            'type'      => $type,
-            'user_type' => $user_type,
-            'flow_type' => $flow_type,
-            'order_usdt'=>$total,
-            'usdt'      => $usdt,
-            'before'    => $before,
-            'after'     => $after,
-            'source_id' => $source_id,
-            'createtime' => $time,
-        ];
-        $this->save($data);
-        $companyModel->update(['usdt' => $after], ['id' => 1]);
-        return true;
-    }    
 }

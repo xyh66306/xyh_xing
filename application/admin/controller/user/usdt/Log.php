@@ -53,8 +53,6 @@ class Log extends Backend
          $diqu =3;
        }
 
-       dump($diqu);
-
         //当前是否为关联查询
         $this->relationSearch = true;
         //设置过滤方法
@@ -66,17 +64,27 @@ class Log extends Backend
             }
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
 
-            $list = $this->model
-                    // ->with(['user'])
-                    ->where($where)
-                    ->order($sort, $order)
-                    ->paginate($limit);
+            if($diqu){
+                $list = $this->model
+                        ->with(['user'])
+                        ->where($where)
+                        ->where('user.diqu', $diqu)
+                        ->order($sort, $order)
+                        ->paginate($limit);
+            } else {
+                $list = $this->model
+                        ->with(['user'])
+                        ->where($where)
+                        ->order($sort, $order)
+                        ->paginate($limit);
+            }
 
-            // foreach ($list as $row) {
-            //     $row->visible(['id','type','flow_type','usdt','before','after','memo','beizhu','createtime']);
-            //     // $row->visible(['user']);
-			// 	// $row->getRelation('user')->visible(['nickname']);
-            // }
+
+            foreach ($list as $row) {
+                $row->visible(['id','type','flow_type','usdt','before','after','memo','beizhu','createtime']);
+                $row->visible(['user']);
+				$row->getRelation('user')->visible(['nickname']);
+            }
 
             $result = array("total" => $list->total(), "rows" => $list->items());
 

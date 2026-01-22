@@ -142,16 +142,16 @@ class User extends Model
     {
         $bianhao = md5("usdt_dj_{$user_id}_{$usdt}_" . time());
         // 检查是否已存在相同操作
-        $existing = Db::name('user_usdt_log')
-            ->where('user_id', $user_id)
-            ->where('usdt', $usdt)
-            ->where('type', $type)
-            ->where('createtime', '>', time() - 60) // 1分钟内检查
-            ->find();
+        // $existing = Db::name('user_usdt_log')
+        //     ->where('user_id', $user_id)
+        //     ->where('usdt', $usdt)
+        //     ->where('type', $type)
+        //     ->where('createtime', '>', time() - 60) // 1分钟内检查
+        //     ->find();
         
-        if ($existing) {
-            return false; // 防止重复操作
-        }
+        // if ($existing) {
+        //     return false; // 防止重复操作
+        // }
 
 
         Db::startTrans();
@@ -182,16 +182,16 @@ class User extends Model
 
         $bianhao = md5("usdt_dj_{$user_id}_{$usdt}_" . time());
         // 检查是否已存在相同操作
-        $existing = Db::name('user_usdtdj_log')
-            ->where('user_id', $user_id)
-            ->where('usdt', $usdt)
-            ->where('type', $type)
-            ->where('createtime', '>', time() - 60) // 1分钟内检查
-            ->find();
+        // $existing = Db::name('user_usdtdj_log')
+        //     ->where('user_id', $user_id)
+        //     ->where('usdt', $usdt)
+        //     ->where('type', $type)
+        //     ->where('createtime', '>', time() - 60) // 1分钟内检查
+        //     ->find();
         
-        if ($existing) {
-            return false; // 防止重复操作
-        }
+        // if ($existing) {
+        //     return false; // 防止重复操作
+        // }
 
         Db::startTrans();
         try {
@@ -206,18 +206,18 @@ class User extends Model
                 //更新会员信息
                 $user->save(['usdt_dj' => $after]);
 
-                Db::name('user_usdtdj_log')->insert([
-                    'bianhao' => $bianhao,
-                    'user_id' => $user_id,
-                    'type' => $type,
-                    'flow_type' => $flow_type,
-                    'usdt' => $usdt,
-                    'before' => $before,
-                    'after' => $after,
-                    'memo' => $memo,
-                    'beizhu' => $beizhu,
-                    'createtime'=>time()
-                ]);
+                // Db::name('user_usdtdj_log')->insert([
+                //     'bianhao' => $bianhao,
+                //     'user_id' => $user_id,
+                //     'type' => $type,
+                //     'flow_type' => $flow_type,
+                //     'usdt' => $usdt,
+                //     'before' => $before,
+                //     'after' => $after,
+                //     'memo' => $memo,
+                //     'beizhu' => $beizhu,
+                //     'createtime'=>time()
+                // ]);
             }
             Db::commit();
             return true;

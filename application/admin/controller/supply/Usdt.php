@@ -277,6 +277,7 @@ class Usdt extends Backend
         $admin_ids_str = "%A" . $admin_id . "A%";
         $supply_info = $supplyModel->whereLike("admin_id", $admin_ids_str)->find();
 
+        $fee = $post['usdt'] * 0.005;
 
         if (!$supply_info) {
             $this->error("供应商不存在");
@@ -289,9 +290,11 @@ class Usdt extends Backend
 
         Db::startTrans();
         try {
-
+            
+            $post['fee'] = $fee;
             $result = $this->model->save($post);
             $usdtlogModel = new Usdtlog();
+            // $usdt = $fee + $post['usdt'];
             $res =  $usdtlogModel->addtxLog($supply_info['access_key'], $post['usdt'], '2', '提现申请',3);
 
             if (!$res) {

@@ -71,7 +71,7 @@
     }
 
     var usdt = document.getElementById('usdt');
-    var fee_rate = 0.01;
+    var fee_rate = 0.005;
     usdt.addEventListener('blur', function () {
         var fee = (parseFloat(usdt.value) * parseFloat(fee_rate)).toFixed(4)
         document.getElementById('fee').value = fee;
@@ -85,8 +85,6 @@
         const hash = document.getElementById('hash').value;
         const fee = document.getElementById('fee').value;
 
-        console.log(fee);
-
         if (!type) {
             alert('请选择通道类型');
             return;
@@ -99,11 +97,6 @@
             alert('请输入哈希值');
             return;
         }
-        if (!fee) {
-            alert('请输入手续费');
-            return;
-        }
-
         transferData.type = type;
         transferData.usdt = usdt;
         transferData.hash = hash;

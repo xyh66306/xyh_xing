@@ -126,7 +126,7 @@ class Rujin extends Backend
             $user_price = $this->model->where($where)->sum("user_usdt");
             $user_fee = $this->model->where($where)->sum("user_fee");
             $supply_fee = $this->model->where($where)->sum("supply_fee");
-            $company_price =  $user_fee + $supply_fee;
+            $company_price =  truncateDecimal($user_fee + $supply_fee);
 
 
             $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('supply_price','user_price','company_price'));

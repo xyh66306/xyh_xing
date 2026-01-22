@@ -65,19 +65,18 @@ class Buy extends Frontend
     { 
         $url = "http://localhost/openapi/cash/index";
 
-        $randomStr = $this->getRandomStr(32);
+        // $randomStr = $this->getRandomStr(32);
         
-        // $randomStr = "87986fe0c0de401da57f1f5987a66f05";
+        $randomStr = "gp3i4sgy3xu7f4mwc7oavwhim7s2y04n";
 
         $header = [
-            'accesskey' => '1251201271',
+            'accesskey' => '1241209564',
             'randomstr' => $randomStr,
             'gmtrequest' => time(),
         ];
-        $access_secret = '04e53093edba7b32528af3949483051a';
+        $access_secret = '8fb911cb2eed0671cf150ea0e62ebb20';
         $sign = $this->makeSign($header, $access_secret);
         $header['signature'] = $sign;
-
 
 
         $params = [
@@ -85,9 +84,12 @@ class Buy extends Frontend
             'randomStr' => $randomStr,         
             'gmtRequest'=> time(),
         ];
-        $access_secret = '04e53093edba7b32528af3949483051a';
         $sign = $this->makeSign($params,$access_secret);
 
+        dump($params);
+        
+        echo "签名：";
+        dump($sign);
 
         $data = $params;
         $data['access_secret'] = $access_secret;
@@ -125,6 +127,9 @@ class Buy extends Frontend
         }
 
         $stringSignTemp = $ascii_str."&key=".$secret;
+
+        dump($stringSignTemp);
+
         return strtoupper(MD5($stringSignTemp));
         
     }

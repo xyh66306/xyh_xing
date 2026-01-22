@@ -231,7 +231,6 @@ class Chujin extends Api
             //添加用户金额
             $res3 =  $userModel->usdt($info['user_usdt'],$this->auth->id,7,1);
 
-
             if($res && $res2 && $res3){
                 Db::commit();           
                 $fenyong = truncateDecimal($info['user_fee'] + $info['supply_fee']);
@@ -251,6 +250,8 @@ class Chujin extends Api
         $this->success('上传成功');
 
     } 
+
+
 
 
     /**

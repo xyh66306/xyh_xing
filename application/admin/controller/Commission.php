@@ -159,19 +159,20 @@ class Commission extends Backend
             } elseif($row['source']==2){
               $type =10;
             }            
-            if($row['chaoshi'] ==1){           
+            if($row['chaoshi'] ==1){ //未超时          
               $userModel = new UserModel();
               $res = $userModel->usdt($row['money'],$row['p_userid'],5,1,$row['p4b_orderid']);
 
               $profitModel = new Profit();
               $res = $profitModel->addLog($row['number'],$row['money'],$type,1,2,$row['p4b_orderid']);    
+                if(!$res){
+                  $this->error('分润失败！');
+                }
             } else {
-              $profitModel = new Profit();
-              $res = $profitModel->addLog($row['number'],$row['money'],$type,1,1,$row['p4b_orderid']);    
+            //   $profitModel = new Profit();
+            //   $res = $profitModel->addLog($row['number'],$row['money'],$type,1,1,$row['p4b_orderid']);    
             }        
-            if(!$res){
-              $this->error('分润失败！');
-            }
+
             $result = $row->allowField(true)->save($params);
             Db::commit();
         } catch (ValidateException|PDOException|Exception $e) {

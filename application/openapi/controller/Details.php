@@ -217,7 +217,14 @@ class Details extends Api
         $userModel = new UserModel();
         $userInfo = $userModel->where(['id'=>$info['user_id']])->find();
         if($this->access_key != '1241209564'){
-            $this->sendEmsNotice($userInfo['email'],$info);
+            // $this->sendEmsNotice($userInfo['email'],$info);
+            $exportData['type']     = "sendEmsCdsNotice";
+            $exportData['email']    = $userInfo['email'];
+            $exportData['orderid']  = $info['orderid'];
+            $exportData['user_id']    = $info['user_id'];
+            $jobClass = 'app\job\Notice@fire';
+            \think\Queue::push($jobClass, $exportData);//加入队列
+            
         }
 
         $pinyinname = \fast\Pinyin::get($info['payername']);
@@ -227,7 +234,7 @@ class Details extends Api
             Cache::rm($name);
         }
 
-        $this->sendNotice($userInfo,$info);
+        // $this->sendNotice($userInfo,$info);
         $this->success('下单成功，等待确认');
     }    
 

@@ -1,12 +1,4 @@
 <?php
-/*
- * @Author: 提莫队长 =
- * @Date: 2025-10-10 09:14:35
- * @LastEditors: 提莫队长 =
- * @LastEditTime: 2026-01-15 14:50:24
- * @FilePath: \xyh_xing\application\index\controller\Demo.php
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
 
 namespace app\index\controller;
 
@@ -72,6 +64,9 @@ class Demo extends Frontend
 
             // //添加用户金额
             // $res3 =  $userModel->usdt("1471.0972",168038,7,1);
+            
+            $order_id = "DP591480793604296704";
+            $order_info = Db::name("order_rujin")->where("orderid",$order_id)->find();
 
             $pintai_id = "1241209564";
             $supplyModel = new Supply();
@@ -84,12 +79,12 @@ class Demo extends Frontend
                 'name' => 'cash',
                 'message' => '',
                 'params' => [
-                    'orderid' => "DP590662236689948672",
-                    'url'  => "https://spontaneous-trina-cadential.ngrok-free.dev/checkout-callback/starfire",
+                    'orderid' => $order_id,
+                    'url'  => $order_info['callback'],
                     'pay_status' => 3
                 ]
             ];
-            $taskModel->addTask($data, "Cash");            
+            $taskModel->addTask($data, "Cash");             
         
     }
 
