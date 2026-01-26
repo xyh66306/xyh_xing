@@ -36,7 +36,6 @@ class Cash extends Api
         parent::__construct(); // 确保调用父类构造函数
 
 
-
         // 检查当前时间是否在禁止访问时间段内
         $currentHour = date('H');
         $currentMinute = date('i');
@@ -51,6 +50,7 @@ class Cash extends Api
             ($currentHour < 7 || ($currentHour == 7 && $currentMinute <= 30))) {
             $this->error('系统维护时间，晚上10:30到早上7:30暂停服务');
         }        
+
 
         $this->request = $request;
         $header = $this->request->header();
@@ -118,9 +118,23 @@ class Cash extends Api
             $this->error('付款人姓名不能为空');
         } 
 
-        if(preg_match('/^[a-zA-Z0-9\s]+$/', $params['payername'])) {
-            $this->error('付款人姓名只支持中文');
+        // 验证付款人姓名必须包含中文字符，且不能只有英文和数字
+        $payername = $params['payername'];
+        // 检测是否包含非中文字符（但不是全为英文字母和数字）
+        $hasChinese = preg_match('/[\x{4e00}-\x{9fa5}]/u', $payername); // 检测是否有中文
+        $hasEnglishOrNumOnly = preg_match('/^[a-zA-Z0-9\s]+$/', $payername); // 检测是否只有英文、数字、空格
+
+        if (!$hasChinese || $hasEnglishOrNumOnly) {
+            $this->error('付款人姓名必须包含中文字符，不能是纯英文或纯数字');
         }
+        // 检查是否包含特殊字符
+        if (preg_match('/[^\x{4e00}-\x{9fa5}a-zA-Z\s]/u', $payername)) {
+            $this->error('付款人姓名不能包含特殊字符');
+        }
+        // 进一步检查不能包含数字（如果需要严格限制）
+        if (preg_match('/[0-9]/', $params['payername'])) {
+            $this->error('付款人姓名不能包含数字');
+        }        
 
         if($params['amount']<3500) {
             $this->error('不能小于最低金额3500');
@@ -179,7 +193,7 @@ class Cash extends Api
                     }
 
                     $limit = $count-1;
-                    $rjLst = $rujinModel->where("pay_status",">=","1")->order("id desc")->limit($limit)->column('user_id');
+                    $rjLst = $rujinModel->where("pay_status",">=","2")->order("id desc")->limit($limit)->column('user_id');
                     $diff = array_diff($ulist,$rjLst);
 
                     if (!empty($diff)) {
@@ -214,7 +228,19 @@ class Cash extends Api
         if($count==0){
            return $this->error('收款账户不存在');
         }
-        $bankInfo = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->order('sort desc,id desc')->find();
+        $lastBankAccount = $rujinModel->where("user_id",$userInfo['id'])->where("pay_status",">=","2")->order("id desc")->value('bank_account');
+
+        if($count>1){
+            $bankCards = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->where("bank_nums","<>",$lastBankAccount)->order('sort desc,id desc')->select();
+        }else{
+            $bankCards = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->order('sort desc,id desc')->select();
+        }
+        // 随机选择一张银行卡
+        $randomIndex = array_rand($bankCards);
+        $bankInfo = $bankCards[$randomIndex];
+        
+      
+        
         $rjInfo = $rujinModel->where(['orderid'=>$params['orderid']])->find();
         if($rjInfo){ 
             return $this->error('订单编号已存在');

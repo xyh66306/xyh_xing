@@ -98,7 +98,7 @@ class Buy extends Frontend
         $data['orderid'] = "casher".date("YmdHis",time());
         $data['amount'] = '3800';
         $data['diqu'] = 1;
-        $data['payername'] = '李四';
+        $data['payername'] = '王五';
 
         // var_dump($data);
         $res = $this->postCurl($url,$data,$header);
