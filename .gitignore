@@ -1,4 +1,5 @@
 # 忽略目录下的所有文件
+/application/database.php
 /view/unpackage/cache/*
 /view/unpackage/debug/*
 /view/unpackage/dist/*
