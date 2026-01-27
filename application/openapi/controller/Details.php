@@ -127,7 +127,7 @@ class Details extends Api
 
         if(!$orderid){ 
             return $this->error('订单id不能为空');
-        }
+        }       
         if(!$pay_type){ 
             return $this->error('支付方式不能为空');
         }
@@ -159,6 +159,17 @@ class Details extends Api
         $bankInfo = $UserBankcard->field("username,bank_name,bank_nums,bank_zhdz")->where(['user_id'=>$info['user_id'],'status'=>'normal','sys_status'=>'normal'])->find();
         $wxpayinfo = $userPayewm->field("username,pay_skpt,pay_nums,pay_ewm_image")->where(['user_id'=>$info['user_id'],'pay_skpt'=>'wxpay','status'=>'normal','sys_status'=>'normal'])->find();
         $alipayinfo = $userPayewm->field("username,pay_skpt,pay_nums,pay_ewm_image")->where(['user_id'=>$info['user_id'],'pay_skpt'=>'alipay','status'=>'normal','sys_status'=>'normal'])->find();        
+
+
+        if($pay_type === 'bank' && !$bankInfo) {
+            return $this->error('银行账户信息不存在或不可用');
+        }
+        if($pay_type === 'alipay' && !$alipayinfo) {
+            return $this->error('支付宝信息不存在或不可用');
+        }
+        if($pay_type === 'wxpay' && !$wxpayinfo) {
+            return $this->error('微信支付信息不存在或不可用');
+        }        
 
         Db::startTrans();
 
