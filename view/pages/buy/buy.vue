@@ -230,7 +230,7 @@
 				that.page=1;
 				that.getLst();
 				uni.stopPullDownRefresh();
-			}, 1000);
+			}, 500);
 		}
 	}
 </script>

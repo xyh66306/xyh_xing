@@ -98,12 +98,12 @@ class Cash extends Api
 
 
         $params = [
-            'orderid'    => $this->request->param('orderid',''),
+            'orderid'    => trim($this->request->param('orderid','')),
             'amount'    => $this->request->param('amount',''),
-            'payername'=> $this->request->param('payername',''),
-            'diqu'    => $this->request->param('diqu',1),
-            'backurl' => $this->request->param('backurl',''),
-            'yx_time' => $this->request->param('yx_time',60*20), // 900秒
+            'payername'=> trim($this->request->param('payername','')),
+            'diqu'    => (int)$this->request->param('diqu',1),
+            'backurl' => trim($this->request->param('backurl','')),
+            'yx_time' => (int)$this->request->param('yx_time',60*20), // 900秒
         ];
         if(empty($params['orderid'])) {
             $this->error('订单号错误');
@@ -117,6 +117,13 @@ class Cash extends Api
         if(empty($params['payername'])) {
             $this->error('付款人姓名不能为空');
         } 
+
+        // 验证参数格式
+        if (!is_numeric($params['amount']) || !is_numeric($params['yx_time'])) {
+           return $this->error('参数格式错误');
+        }  
+         $params['yx_time'] = max(0, min($params['yx_time'], 3600)); // 限制有效时间范围     
+         
 
         // 验证付款人姓名必须包含中文字符，且不能只有英文和数字
         $payername = $params['payername'];
@@ -141,12 +148,16 @@ class Cash extends Api
         }     
         
         if($params['amount']>=300000) {
-            $this->error('不能大于最低金额30万');
+            $this->error('不能大于最高金额30万');
         }           
 
         $userModel = new UserModel();
         $rujinModel = new Rujin();
 
+
+        $supplyModel = new Supply();
+        $supplyinfo = $supplyModel->where('access_key',$this->access_key)->find();
+        $usdt = truncateDecimal($params['amount'] / $supplyinfo['duiru']);     //CNY 转 USDT(接收的cny/商户兑入7.26)
 
         $where = [];
         $order = 'pay_sort desc,id desc';
@@ -182,18 +193,20 @@ class Cash extends Api
                 $where['pay_status'] = "normal";
                 $order = 'pay_sort desc,id desc';
 
-                // $ulist = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->column('id');
-                
                 if(!$userInfo){
-                    $ulist = $userModel->where($where)->where('usdt',">",100)->cache(3600)->order($order)->column('id');
+                    $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->order($order)->column('id'); //信任用户
+
+                    $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->order($order)->column('id'); //普通用户
+
+                    $ulist = array_merge($xrulist,$ptulist);
 
                     $count = count($ulist);
                     if($count<=1){
-                        return;
+                        return $this->error('收银员不存在');
                     }
 
                     $limit = $count-1;
-                    $rjLst = $rujinModel->where("pay_status",">=","2")->order("id desc")->limit($limit)->column('user_id');
+                    $rjLst = $rujinModel->where("pay_status",">=","2")->where("pay_status","<","5")->where("status","1")->order("id desc")->limit($limit)->column('user_id');
                     $diff = array_diff($ulist,$rjLst);
 
                     if (!empty($diff)) {
@@ -215,10 +228,6 @@ class Cash extends Api
 
         }
 
-
-        $supplyModel = new Supply();
-        $supplyinfo = $supplyModel->where('access_key',$this->access_key)->find();
-
         if(!$userInfo) {           
           return  $this->error('收银员不存在');
         }
@@ -228,18 +237,20 @@ class Cash extends Api
         if($count==0){
            return $this->error('收款账户不存在');
         }
+
         $lastBankAccount = $rujinModel->where("user_id",$userInfo['id'])->where("pay_status",">=","2")->order("id desc")->value('bank_account');
 
-        if($count>1){
+        if($count>1 && $lastBankAccount){
             $bankCards = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->where("bank_nums","<>",$lastBankAccount)->order('sort desc,id desc')->select();
         }else{
             $bankCards = $UserBankcard->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->order('sort desc,id desc')->select();
         }
+        if(count($bankCards)==0){
+            return $this->error('二次验证收款账户不存在');
+        }
         // 随机选择一张银行卡
         $randomIndex = array_rand($bankCards);
         $bankInfo = $bankCards[$randomIndex];
-        
-      
         
         $rjInfo = $rujinModel->where(['orderid'=>$params['orderid']])->find();
         if($rjInfo){ 
@@ -253,7 +264,7 @@ class Cash extends Api
             $BiModel = new BiModel();
             $info = $BiModel->cache(86400)->where(['default'=>1,'status'=>1])->find();
 
-            $usdt = truncateDecimal($params['amount'] / $supplyinfo['duiru']);     //CNY 转 USDT(接收的cny/商户兑入7.26)
+           
             if($params['diqu']==1){
                 // $fee_dalu_supply_duiru =  config('site.fee_dalu_supply_duiru');
 

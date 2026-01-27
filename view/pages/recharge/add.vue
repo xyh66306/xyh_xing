@@ -87,7 +87,13 @@
 			       this.fee = (this.rate * newsval/100).toFixed(4)
 			    },
 			    deep: true
-			}
+			},
+			rate: {
+			    handler (newsval,oldval) {
+			       this.fee = (this.num * newsval/100).toFixed(4)
+			    },
+			    deep: true
+			}			
 		},
 		methods: {
 			getUserinfo(){

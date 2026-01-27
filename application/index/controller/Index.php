@@ -236,7 +236,7 @@ class Index extends Frontend
         $total_supply_number = Db::name("supply_usdt")->where("pay_status",3)->sum("usdt");
         $total_supply_cz_number = Db::name("supply_usdt")->where("pay_status",3)->count("id");           
         $total_supply_cz_fee = Db::name("supply_usdt")->where("pay_status",3)->sum("fee");
-        $totol_supply_usdt = $supply[0]+$supply[1];
+        $totol_supply_usdt = $supply[0]+$supply[1]+$supply[2];
         $total_supply_freeze_usdt = $supply_freeze_usdt[0]+$supply_freeze_usdt[1];
 
         $data = [

@@ -9,7 +9,7 @@ module.exports = (vm) => {
 		// #ifndef APP
 		// config.baseURL = location.origin;
 		// config.baseURL = 'https://bingocn.wobeis.com/';
-		config.baseURL = 'http://localhost/';
+		config.baseURL = 'https://bingocn.wobeis.com/';
 		// #endif
 
 		return config

@@ -37,6 +37,7 @@
 				<view class="num">0.0000</view>
 			</view>
 		</view> -->
+		<u-modal :show="show" title="温馨提示" content='请绑定Letstalk账户' @confirm="confirm"></u-modal>
 	</view>
 </template>
 
@@ -44,6 +45,7 @@
 	export default {
 		data() {
 			return {
+				show:false,
 				tbpay_switch:0,
 				user:{}
 			}
@@ -53,10 +55,19 @@
 			this.getBaseConfig();
 		},			
 		methods: {
+			confirm(){
+				this.show = false
+				uni.navigateTo({
+					url:"/pages/user/info"
+				})
+			},			
 			getUserInfo(){
 				uni.$u.http.post('/api/user/getUserinfo').then((res) => {
 					if(res.code == 1) {
 						this.user = res.data
+						if(!res.data.letstalk){
+							this.show = true
+						}
 					}
 				})
 			},

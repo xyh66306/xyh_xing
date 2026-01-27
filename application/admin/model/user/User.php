@@ -75,6 +75,10 @@ class User extends Model
         return ['normal' => __('Status normal'), 'hidden' => __('Status hidden')];
     }
 
+    public function getTrustList()
+    {
+         return ['1' => "是", '2' => "否"];
+    }
 
 
     public function getPrevtimeTextAttr($value, $data)

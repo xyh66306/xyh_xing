@@ -26,7 +26,7 @@ class Auth
     //默认配置
     protected $config = [];
     protected $options = [];
-    protected $allowFields = ['id', 'username','paypwd', 'nickname', 'mobile', 'avatar', 'usdt','usdt_dj', 'email', 'invite', 'status','group_id','access_key','sfz_status','diqu'];
+    protected $allowFields = ['id', 'username','paypwd', 'nickname', 'mobile', 'avatar', 'usdt','usdt_dj', 'email', 'invite', 'status','group_id','sfz_status','diqu','letstalk'];
 
     public function __construct($options = [])
     {
@@ -625,7 +625,7 @@ class Auth
         return true;
     }
 
-    public function update_info($user_id,$nickname,$username,$mobile,$email)
+    public function update_info($user_id,$nickname,$username,$mobile,$email,$letstalk)
     {
         
         $user = User::get($user_id);
@@ -634,7 +634,7 @@ class Auth
         }
         Db::startTrans();
         try {
-            User::update(['nickname'=>$nickname,'username'=>$username,'mobile'=>$mobile,'email'=>$email],['id'=>$user_id]);          
+            User::update(['nickname'=>$nickname,'username'=>$username,'mobile'=>$mobile,'email'=>$email,'letstalk'=>$letstalk],['id'=>$user_id]);          
             Db::commit();
         } catch (Exception $e) {
             Db::rollback();

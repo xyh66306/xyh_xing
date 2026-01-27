@@ -256,8 +256,9 @@ class User extends Api
         $username = $this->request->post('username');
         $mobile = $this->request->post('mobile');
         $email = $this->request->post('email');
+        $letstalk = $this->request->post('letstalk');
 
-        $ret = $this->auth->update_info($this->auth->id,$nickname, $username,$mobile,$email);
+        $ret = $this->auth->update_info($this->auth->id,$nickname, $username,$mobile,$email,$letstalk);
         if ($ret) {
             $this->success("已更新");
         } else {

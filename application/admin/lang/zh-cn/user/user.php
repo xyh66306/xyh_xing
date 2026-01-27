@@ -55,4 +55,6 @@ return [
     'xinjiang'       => '江城',
     'haiwai'         => '海外',    
     'admingroup'   => '所属团队',
+    'Trust'         => '信任用户',
+    "Letstalk"      => "Letstalk"
 ];

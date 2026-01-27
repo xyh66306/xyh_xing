@@ -79,6 +79,15 @@
 				this.getLst();
 			}
 		},
+		onPullDownRefresh(){
+			let that =this
+			setTimeout(function () {
+				that.page = 1;
+				that.lst = [];
+				that.getLst();
+				uni.stopPullDownRefresh();
+			}, 500);			
+		}
 	}
 </script>
 

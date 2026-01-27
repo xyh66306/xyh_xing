@@ -20,8 +20,10 @@
         <div class="user">
             <table border='1' cellpadding='10' cellspacing='0'>
                 <tr>
-                    <td>服务商pay4</td>
-                    <td>服务商pay2fa</td>
+                    <td>服务商RG</td>
+                    <td>服务商USK</td>
+                    <td>服务商Decode</td>
+                    <td>服务商Wetrade</td>
                     <td>用户usdt</td>
                     <td>用户冻结usdt</td>
                     <td>1队</td>
@@ -34,6 +36,8 @@
                 <tr>
                     <td>{$supply[0]}</td>
                     <td>{$supply[1]}</td>
+                    <td>{$supply[2]}</td>
+                    <td>{$supply[3]}</td>
                     <td>{$userTotalUsdt}</td>
                     <td>{$userTotalUsdtdJ}</td>
                     <td>{$oneteam}</td>
@@ -52,11 +56,13 @@
                     <td>2025公司资产利润</td>
                     <td>2026公司资产</td>
                     <td>累计</td>
+                    <td>实际利润= 公司资产 + spark</td>
                 </tr>
                 <tr>
                     <td>3039.1797</td>
                     <td>{$company_usdt}</td>
                     <td>{$company_usdt_all}</td>
+                    <td>{$company_usdt_all + $spark}</td>
                 </tr>
             </table>
         </div>     
@@ -161,7 +167,7 @@
                     <td>{$total_user_number}</td>
                     <td>{$userTotalUsdt}</td>
                     <td>{$total_supply_number}</td>
-                    <td>{$supply[0]} + {$supply[1]} = {$totol_supply_usdt}</td>
+                    <td>{$supply[0]} + {$supply[1]}  + {$supply[2]}  + {$supply[3]} = {$totol_supply_usdt}</td>
                     <td>{$all_company_price}</td>
                     <td>{$commission_all}</td>
                     <td>{$diff}</td>

@@ -1,22 +1,25 @@
 <template>
 	<view class="wrap">
 		<u--form labelPosition="left" :model="model1" :rules="rules" ref="uForm">
-			<u-form-item label="头像：" labelWidth="100" prop="userInfo.avatar" borderBottom ref="item1">
+			<u-form-item label="头像：" labelWidth="120" prop="userInfo.avatar" borderBottom ref="item1">
 				<u--image :src="model1.userInfo.avatar" shape="circle" width="50px" height="50px" v-if="model1.userInfo.avatar && model1.userInfo.avatar !='/assets/img/avatar.png'"></u--image>
 				<u-avatar :text="model1.userInfo.nickname.substr(-1)" randomBgColor color-index="18" size="50" v-else></u-avatar>
 			</u-form-item>
-			<u-form-item label="昵称：" labelWidth="100" prop="userInfo.nickname" borderBottom ref="item1">
+			<u-form-item label="昵称：" labelWidth="120" prop="userInfo.nickname" borderBottom ref="item1">
 				<u--input v-model="model1.userInfo.nickname" border="none"></u--input>
 			</u-form-item>
-			<u-form-item label="姓名：" labelWidth="100" prop="userInfo.username" borderBottom ref="item1">
+			<u-form-item label="姓名：" labelWidth="120" prop="userInfo.username" borderBottom ref="item1">
 				<u--input v-model="model1.userInfo.username" border="none"></u--input>
 			</u-form-item>	
-			<u-form-item label="邮箱：" labelWidth="100" prop="userInfo.email" borderBottom ref="item1">
+			<u-form-item label="邮箱：" labelWidth="120" prop="userInfo.email" borderBottom ref="item1">
 				<u--input v-model="model1.userInfo.email" border="none"></u--input>
 			</u-form-item>				
-			<u-form-item label="手机号：" labelWidth="100" prop="userInfo.mobile" borderBottom ref="item1">
+			<u-form-item label="手机号：" labelWidth="120" prop="userInfo.mobile" borderBottom ref="item1">
 				<u--input v-model="model1.userInfo.mobile" border="none"></u--input>
-			</u-form-item>					
+			</u-form-item>		
+			<u-form-item label="Letstalk账户：" labelWidth="120" prop="userInfo.letstalk" borderBottom ref="item1">
+				<u--input v-model="model1.userInfo.letstalk" border="none"></u--input>
+			</u-form-item>							
 		</u--form>
 		<view class="footbtn">
 			<u-button type="primary" @click="submit">提交</u-button>
@@ -35,7 +38,8 @@
 						nickname: '',
 						username: '',
 						mobile:'',
-						email:''
+						email:'',
+						letstalk:''
 					}
 				},
 				rules: {
@@ -51,6 +55,12 @@
 						message: '请填写姓名',
 						trigger: ['blur', 'change']
 					},
+					'userInfo.letstalk': {
+						type: 'string',
+						required: true,
+						message: '请填写Letstalk账户',
+						trigger: ['blur', 'change']
+					},					
 					'userInfo.email': {
 						type: 'email',
 						required: true,
@@ -89,6 +99,7 @@
 						this.model1.userInfo.username = user.username
 						this.model1.userInfo.mobile = user.mobile
 						this.model1.userInfo.email = user.email
+						this.model1.userInfo.letstalk = user.letstalk
 					}
 				})
 			},			
@@ -99,6 +110,7 @@
 						if(res.code == 1) {
 							that.getUserInfo();
 							uni.$u.toast('已更新')
+							uni.navigateBack()
 						} else {
 							uni.$u.toast('更新失败')
 						}

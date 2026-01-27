@@ -101,13 +101,15 @@
 		>
 		</u-action-sheet>
 	
+		<u-modal :show="show" title="温馨提示" content='请绑定Letstalk账户' @confirm="confirm"></u-modal>
 	</view>
-</template>
+</template>    
 
 <script>
 	export default {
 		data() {
 			return {
+				show:false,
 				biArr:[],
 				biData:{},
 				biName:'CNY',
@@ -124,10 +126,19 @@
 			// this.open_team = uni.getStorageSync('open_team') ? true : false;
 		},
 		methods: {
+			confirm(){
+				this.show = false
+				uni.navigateTo({
+					url:"/pages/user/info"
+				})
+			},
 			getUserInfo(){
 				uni.$u.http.post('/api/user/getUserinfo').then(res => {
 					if(res.code == 1) {
 						this.userInfo =res.data;
+						if(!res.data.letstalk){
+							this.show = true
+						}
 					}
 				})
 			},			
