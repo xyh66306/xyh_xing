@@ -4,7 +4,6 @@
 /view/unpackage/debug/*
 /view/unpackage/dist/*
 /view/unpackage/release/*
-/thinkphp/*
 /payorder/unpackage/*
 /application/database.php
 /runtime/*
