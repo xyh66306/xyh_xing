@@ -36,12 +36,16 @@ class Cash
 
             $header = $params['header'];
 
-            recordLogs("Cash_data",json_encode($data));
             recordLogs("Cash_data",json_encode($header));
             
             $res = $this->postCurl($params['params']['url'], $data,$header);
+
+            recordLogs("Cash_data",json_encode($data));
+            recordLogs("Cash_data_status",$res);
             
-            if ($res == 'success') {
+            $res2 = strtoupper($res);
+
+            if ($res2 == 'SUCCESS' || $res2 == 'OK') {
 
                 $bData['state'] = "2";
                 $bData['updatetime'] = time();
