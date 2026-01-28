@@ -241,7 +241,7 @@ class Rujin extends Api
                 ]
             ];            
 
-            $taskModel->addTask($data, "Sell");
+            $taskModel->addTask($data, "Cash");
 
             // 提交事务
             Db::commit();

@@ -1,5 +1,7 @@
 # 忽略目录下的所有文件
 /application/database.php
+/public/otc/*
+/public/cash/*
 /view/unpackage/cache/*
 /view/unpackage/debug/*
 /view/unpackage/dist/*
