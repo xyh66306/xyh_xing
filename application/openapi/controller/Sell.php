@@ -129,6 +129,12 @@ class Sell extends Api
             if(empty($params['bankName'])) {
                 $this->error('银行卡名称错误');
             }
+
+            //不支持工商和农业 
+            if($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行') {
+                $this->error('不支持工商银行和农业银行');
+            }
+
             if(empty($params['bankBranchName'])) {
                 $this->error('客户银行分支机构名称');
             }

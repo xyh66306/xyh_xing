@@ -162,6 +162,10 @@ class Chujin extends Backend
                 $this->error('提现数量超出可提现数量');
             }
         }
+        //不支持工商和农业 
+        if($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行'){
+            $this->error('不支持工商和农业');
+        }
 
 
         $params = $this->preExcludeFields($params);
@@ -347,6 +351,12 @@ class Chujin extends Backend
         if($params['supply_usdt'] > $this->supply_info['usdt']){
             $this->error('提现数量超出可提现数量');
         }
+
+        //不支持工商和农业 
+        if($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行'){
+            $this->error('不支持工商和农业');
+        }
+
         $result = false;
         Db::startTrans();
         try {
