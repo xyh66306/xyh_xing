@@ -3,7 +3,7 @@
  * @Author: 提莫队长 =
  * @Date: 2025-11-10 17:01:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-01-29 14:10:22
+ * @LastEditTime: 2026-01-29 14:19:10
  * @FilePath: \xyh_xing\application\job\Notice.php
  */
 
@@ -34,7 +34,7 @@ public function fire(Job $job, $params)
 
         switch ($params['type']) {
             case "sendEmsNotice":
-                $this->sendEmsNotice();
+                $this->sendEmsNotice($params['supplyinfoName']);
                 break;
             case "sendEmsCdsNotice":
                 // 验证 sendEmsCdsNotice 所需参数
@@ -80,10 +80,10 @@ public function fire(Job $job, $params)
 
 
 
-    public function sendEmsNotice(){
+    public function sendEmsNotice($name){
 
         $email = "870416982@qq.com";
-        $msg = "当前商户有一笔新的兑入订单，请准备。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
+        $msg = "当前商户".$name."有一笔新的兑入订单，请准备。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
         $result = Emslib::notice($email, $msg, self::NOTICE_TEMPLATE);
         
         if (!$result) {
