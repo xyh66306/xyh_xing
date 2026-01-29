@@ -3,7 +3,7 @@
  * @Author: 提莫队长 =
  * @Date: 2025-11-10 17:01:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-01-29 14:19:10
+ * @LastEditTime: 2026-01-29 14:22:23
  * @FilePath: \xyh_xing\application\job\Notice.php
  */
 
@@ -77,7 +77,6 @@ public function fire(Job $job, $params)
     {
         // ...任务达到最大重试次数后，失败了
     }
-
 
 
     public function sendEmsNotice($name){

@@ -31,6 +31,7 @@ class Cash extends Api
     protected $noNeedLogin = ['index'];
 
     protected $access_key = "";
+    protected $supply_name = "";
     public function __construct(Request $request)
     {
         parent::__construct(); // 确保调用父类构造函数
@@ -78,6 +79,7 @@ class Cash extends Api
             $this->error('商户不存在');
         }
         $this->access_key = $header['accesskey'];
+        $this->supply_name = $header['title'];
 
         $params = [
             'accesskey'    => $header['accesskey'],
@@ -333,6 +335,7 @@ class Cash extends Api
         if($res){
             // $this->sendEmsNotice();
             $exportData['type'] = "sendEmsNotice";
+            $exportData['supplyinfoName'] = $supplyinfo['title'];            
             $jobClass = 'app\job\Notice@fire';
             \think\Queue::push($jobClass, $exportData);//加入队列
             
