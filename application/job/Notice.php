@@ -3,7 +3,7 @@
  * @Author: 提莫队长 =
  * @Date: 2025-11-10 17:01:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-01-19 17:06:25
+ * @LastEditTime: 2026-01-29 13:35:36
  * @FilePath: \xyh_xing\application\job\Notice.php
 //  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -21,27 +21,53 @@ use think\Log;
 class Notice
 {
 
-    public function fire(Job $job, $params)
-    {
-        
-        try {
+public function fire(Job $job, $params)
+{
+    
+    try {
+        // 验证必要参数存在
+        if (!isset($params['type'])) {
+            throw new \InvalidArgumentException('Missing required parameter: type');
+        }
 
-            if($params['type'] == "sendEmsNotice"){
+        switch ($params['type']) {
+            case "sendEmsNotice":
                 $this->sendEmsNotice();
-            }
-            if($params['type'] == "sendEmsCdsNotice"){
-                $this->sendEmsCdsNotice($params['email'],$params['orderid']);
-                $this->sendNotice($params['user_id'],$params['orderid']);
-            }
+                break;
+            case "sendEmsCdsNotice":
+                // 验证 sendEmsCdsNotice 所需参数
+                if (!isset($params['email'], $params['orderid'])) {
+                    throw new \InvalidArgumentException('Missing required parameters for sendEmsCdsNotice: email, orderid');
+                }
+                if (isset($params['user_id']) && isset($params['orderid'])) {
+                    $this->sendEmsCdsNotice($params['email'], $params['orderid']);
+                    $this->sendNotice($params['user_id'], $params['orderid']);
+                } else {
+                    throw new \InvalidArgumentException('Missing required parameters for sendNotice: user_id, orderid');
+                }
+                break;
+            default:
+                // 可选：记录未知类型的操作
+                break;
+        }
 
+        $job->delete();
+    } catch (\Exception $e) {
+        // 记录异常信息用于调试
+        Log::error('Job execution failed: ' . $e->getMessage(), [
+            'job_attempts' => $job->attempts(),
+            'exception' => $e
+        ]);
+        
+        // 如果已达到最大重试次数，则删除任务
+        if ($job->attempts() >= 3) { // 假设最大重试次数为3，可根据实际配置调整
             $job->delete();
-        } catch (\Exception $e) {
-            // 异常处理
-            if ($job->attempts() >= 1) {
-                $job->delete();
-            }
+        } else {
+            // 否则重新抛出异常让队列系统处理重试
+            throw $e;
         }
     }
+}
 
     public function failed($data)
     {
