@@ -3,7 +3,7 @@
  * @Author: 提莫队长 =
  * @Date: 2025-11-10 17:01:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-01-29 13:40:55
+ * @LastEditTime: 2026-01-29 14:08:56
  * @FilePath: \xyh_xing\application\job\Notice.php
 //  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -21,6 +21,8 @@ use think\Log;
 class Notice
 {
 
+const NOTICE_TEMPLATE = 'resetpwd';
+
 public function fire(Job $job, $params)
 {
     
@@ -29,6 +31,7 @@ public function fire(Job $job, $params)
         if (!isset($params['type'])) {
             throw new \InvalidArgumentException('Missing required parameter: type');
         }
+        recordLogs("Notice",$params);
 
         switch ($params['type']) {
             case "sendEmsNotice":
@@ -37,12 +40,14 @@ public function fire(Job $job, $params)
             case "sendEmsCdsNotice":
                 // 验证 sendEmsCdsNotice 所需参数
                 if (!isset($params['email'], $params['orderid'])) {
+                    recordLogs('Missing required parameters for sendEmsCdsNotice: email, orderid');
                     throw new \InvalidArgumentException('Missing required parameters for sendEmsCdsNotice: email, orderid');
                 }
                 if (isset($params['user_id']) && isset($params['orderid'])) {
                     $this->sendEmsCdsNotice($params['email'], $params['orderid']);
                     $this->sendNotice($params['user_id'], $params['orderid']);
                 } else {
+                    recordLogs('Missing required parameters for sendNotice: user_id, orderid');
                     throw new \InvalidArgumentException('Missing required parameters for sendNotice: user_id, orderid');
                 }
                 break;
@@ -80,8 +85,13 @@ public function fire(Job $job, $params)
 
         $email = "870416982@qq.com";
         $msg = "当前商户有一笔新的兑入订单，请准备。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
-        Emslib::notice($email, $msg, "resetpwd");
-        return true;
+        $result = Emslib::notice($email, $msg, self::NOTICE_TEMPLATE);
+        
+        if (!$result) {
+            Log::warning('Failed to send EMS notice', ['email' => $email]);
+        }
+        
+        return (bool)$result;
     }
     
     
@@ -89,22 +99,32 @@ public function fire(Job $job, $params)
     public function sendEmsCdsNotice($email,$orderid){
 
         $msg = "您好，订单号".$orderid.",请查看是否收到款，麻烦尽快确认。温馨提醒一定务必核实姓名，金额，订单号是否吻合，避免不必要的损失";
-        Emslib::notice($email, $msg, "resetpwd");
-        return true;
+        $result = Emslib::notice($email, $msg, self::NOTICE_TEMPLATE);
+        
+        if (!$result) {
+            Log::warning('Failed to send EMS CDS notice', ['email' => $email, 'orderid' => $orderid]);
+        }
+        
+        return (bool)$result;
     }   
     
     public function sendNotice($userid,$orderid){
 
         $mobile = "18919660526";
         $event = "resetpwd";
-        $code = rand(3333,9999);
+        $code = random_int(3333,9999);
         $ret = Smslib::notice($mobile, $code, $event);
 
         $email = "870416982@qq.com";
         // $msg = "用户ID".$userInfo['id']."当前有一笔新的兑出订单".$info['orderid']."，金额：".$info['amount']."您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
         $msg = $userid."您好，订单号".$orderid.",请查看是否收到款，麻烦尽快确认。温馨提醒一定务必核实姓名，金额，订单号是否吻合，避免不必要的损失";
-        Emslib::notice($email, $msg, "resetpwd");
-        return true;
+        $emailResult = Emslib::notice($email, $msg, self::NOTICE_TEMPLATE);
+        
+        if (!$emailResult) {
+            Log::warning('Failed to send notice email', ['email' => $email, 'userid' => $userid, 'orderid' => $orderid]);
+        }
+        
+        return (bool)$emailResult;
     }    
 
 }
