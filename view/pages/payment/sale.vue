@@ -2,7 +2,7 @@
 	<view class="page">
 		<view class="payinfo">
 			<view class="u-info">订单ID</view>
-			<view class="flex u-border-bottom">
+			<view class="flex u-border-bottom" @click="copyText(details.orderid)">
 				<view>{{details.orderid}}</view>
 			</view>		
 			<template  v-if="details.payername">
@@ -115,7 +115,30 @@
 			},
 			close() {
 			  this.show = false
-			},	
+			},
+			copyText(text) {
+			  // 检查 Clipboard API 是否可用
+			  var that = this;
+			  if (navigator.clipboard) {
+				navigator.clipboard.writeText(text).then(() => {
+				  uni.$u.toast("文本已复制到剪贴板");
+				}, (err) => {
+					uni.$u.toast("复制失败");
+				});
+			  } else {
+				// 兼容旧浏览器，使用旧的 execCommand 方法
+				const el = document.createElement('textarea');
+				el.value = text;
+				el.setAttribute('readonly', '');
+				el.style.position = 'absolute';
+				el.style.left = '-9999px';
+				document.body.appendChild(el);
+				el.select();
+				document.execCommand('copy');
+				document.body.removeChild(el);
+				uni.$u.toast("文本已复制到剪贴板");
+			  }
+			},				
 			cancel(){
 				let that = this;				
 				uni.showModal({
