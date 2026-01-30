@@ -355,6 +355,7 @@ class Index extends Frontend
             // 插入新记录
             $data['tjdate'] = $today;
             $data['ctime'] = time();
+            $data['utime'] = time();
             $result = Db::name("tongji")->insert($data);
             if ($result === false) {
                 return;
