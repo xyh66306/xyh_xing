@@ -313,6 +313,7 @@ class Index extends Frontend
         }
 
         $today = date("Y-m-d");
+        $time = time();
 
         $info = Db::name("tongji")->where("tjdate", $today)->find();
 
@@ -345,7 +346,7 @@ class Index extends Frontend
         ];
 
         if ($info) {
-            $data['utime'] = time();
+            $data['utime'] = $time;
             // 更新现有记录
             $result = Db::name("tongji")->where("id", $info['id'])->update($data);
             if ($result === false) {
@@ -354,8 +355,8 @@ class Index extends Frontend
         } else {
             // 插入新记录
             $data['tjdate'] = $today;
-            $data['ctime'] = time();
-            $data['utime'] = time();
+            $data['ctime'] = $time;
+            $data['utime'] = $time;
             $result = Db::name("tongji")->insert($data);
             if ($result === false) {
                 return;
