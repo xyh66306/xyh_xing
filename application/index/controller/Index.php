@@ -230,7 +230,7 @@ class Index extends Frontend
         $commission_all = $commission_all_2025 + $commission_all_2026;
 
         // 所有分润
-        $diff = $total_user_number - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt + $commission_all;
+        $diff = truncateDecimal($total_user_number - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt + $commission_all);
 
         $this->assign('all_company_price', $all_company_price);
         $this->assign("diff", $diff);
