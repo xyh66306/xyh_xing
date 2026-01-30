@@ -34,6 +34,9 @@ public function fire(Job $job, $params)
 
         switch ($params['type']) {
             case "sendEmsNotice":
+                if (!isset($params['supplyinfoName'])) {
+                    throw new \InvalidArgumentException('Missing required parameter for sendEmsNotice: supplyinfoName');
+                }                
                 $this->sendEmsNotice($params['supplyinfoName']);
                 break;
             case "sendEmsCdsNotice":
