@@ -30,13 +30,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 						{field: 'id', title: "ID"},
                         {field: 'orderid', title: __('Orderid'), operate: 'LIKE'},
                         {field: 'merchantOrderNo', title: __('Merchantorderno'), operate: 'LIKE'},
-                        {field: 'payername', title: "承兑商", operate: 'LIKE'},
-                        {field: 'realName', title: "收款人", 
+                        {field: 'payername', title: "承兑商", 
                             operate: 'LIKE',
                             formatter: function (value, row, index) {
                                 return row.user_id + ' - ' + value;
                             }
                         },
+                        {field: 'realName', title: "收款人",  operate: 'LIKE'},
                         {field: 'cardNumber', title: __('Cardnumber'), operate: 'LIKE'},
                         {field: 'bankName', title: __('Bankname'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'bankBranchName', title: __('Bankbranchname'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
