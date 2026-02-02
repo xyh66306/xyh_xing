@@ -3,7 +3,7 @@
  * @Author: 提莫队长 =
  * @Date: 2025-11-10 17:01:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-01-29 14:22:23
+ * @LastEditTime: 2026-02-02 10:46:39
  * @FilePath: \xyh_xing\application\job\Notice.php
  */
 
@@ -35,8 +35,8 @@ public function fire(Job $job, $params)
         switch ($params['type']) {
             case "sendEmsNotice":
                 if (!isset($params['supplyinfoName'])) {
-                     $job->delete();
-                    throw new \InvalidArgumentException('Missing required parameter for sendEmsNotice: supplyinfoName');
+                    recordLogs("Notice",'Missing required parameter for sendEmsNotice: supplyinfoName');
+                    continue;
                 }                
                 $this->sendEmsNotice($params['supplyinfoName']);
                 break;
@@ -44,16 +44,16 @@ public function fire(Job $job, $params)
                 // 验证 sendEmsCdsNotice 所需参数
                 if (!isset($params['email'], $params['orderid'])) {
                      $job->delete();
-                    recordLogs('Missing required parameters for sendEmsCdsNotice: email, orderid');
-                    throw new \InvalidArgumentException('Missing required parameters for sendEmsCdsNotice: email, orderid');
+                    recordLogs("Notice",'Missing required parameters for sendEmsCdsNotice: email, orderid');
+                    continue;
                 }
                 if (isset($params['user_id']) && isset($params['orderid'])) {
                     $this->sendEmsCdsNotice($params['email'], $params['orderid']);
                     $this->sendNotice($params['user_id'], $params['orderid']);
                 } else {
                      $job->delete();
-                    recordLogs('Missing required parameters for sendNotice: user_id, orderid');
-                    throw new \InvalidArgumentException('Missing required parameters for sendNotice: user_id, orderid');
+                    recordLogs("Notice",'Missing required parameters for sendNotice: user_id, orderid');
+                    continue;
                 }
                 break;
             default:
@@ -64,10 +64,11 @@ public function fire(Job $job, $params)
         $job->delete();
     } catch (\Exception $e) {
         // 记录异常信息用于调试
-        Log::error('Job execution failed: ' . $e->getMessage(), [
-            'job_attempts' => $job->attempts(),
-            'exception' => $e
-        ]);
+        // Log::error('Job execution failed: ' . $e->getMessage(), [
+        //     'job_attempts' => $job->attempts(),
+        //     'exception' => $e
+        // ]);
+        recordLogs("Notice", $e->getMessage());
         
         // 如果已达到最大重试次数，则删除任务
         if ($job->attempts() >= 3) { // 假设最大重试次数为3，可根据实际配置调整
