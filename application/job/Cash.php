@@ -14,6 +14,7 @@ use app\common\model\User as UserModel;
 use app\common\library\Sms as Smslib;
 use app\common\library\Ems as Emslib;
 use think\Log;
+use think\Db;
 
 class Cash
 {
@@ -36,21 +37,31 @@ class Cash
 
             $header = $params['header'];
 
-            recordLogs("Cash_data",json_encode($header));
             
             $res = $this->postCurl($params['params']['url'], $data,$header);
 
+            recordLogs("Cash_data",json_encode($header));
             recordLogs("Cash_data",json_encode($data));
-            recordLogs("Cash_data_status",$res);
+
             
             $res2 = strtoupper($res);
+            $info = Db::name("order_rujin")->where("orderid",$params['params']['orderid'])->find();
+            if($info && $info['callback_status'] ==1){
+                 $job->delete();
+                 return true;
+            }
+
+            recordLogs("Cash_data",$res);
 
             if ($res2 == 'SUCCESS' || $res2 == 'OK') {
 
+                Db::name("order_rujin")->where("id",$info['id'])->update(['callback_status'=>1]);
                 $bData['state'] = "2";
                 $bData['updatetime'] = time();
                 $ietaskModle->update($bData, ['id' => $params['task_id']]);
                 $job->delete(); // 成功后删除任务
+
+                
             } else {
                 // 增加重试次数检查
                 if ($job->attempts() >= 3) {

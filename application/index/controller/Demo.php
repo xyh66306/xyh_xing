@@ -1,4 +1,9 @@
 <?php
+/*
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+ */
 
 namespace app\index\controller;
 
@@ -65,10 +70,10 @@ class Demo extends Frontend
             // //添加用户金额
             // $res3 =  $userModel->usdt("1471.0972",168038,7,1);
             
-            $order_id = "DP591480793604296704";
+            $order_id = "87011";
             $order_info = Db::name("order_rujin")->where("orderid",$order_id)->find();
 
-            $pintai_id = "1241209564";
+            $pintai_id = "1250803358";
             $supplyModel = new Supply();
             $info = $supplyModel->where('access_key', $pintai_id)->find();
 
