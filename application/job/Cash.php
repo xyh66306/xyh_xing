@@ -40,7 +40,7 @@ class Cash
             
             $res = $this->postCurl($params['params']['url'], $data,$header);
 
-            recordLogs("Cash_data",json_encode($header));
+            // recordLogs("Cash_data",json_encode($header));
             recordLogs("Cash_data",json_encode($data));
 
             

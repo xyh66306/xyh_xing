@@ -147,9 +147,12 @@ class Cash extends Api
             $this->error('不能小于最低金额3500');
         }     
         
-        if($params['amount']>=300000) {
-            $this->error('不能大于最高金额30万');
+        if($params['amount']>500010) {
+            $this->error('不能超过最高金额50万');
         }           
+
+        //记录IP地址
+        recordLogs("IP",$this->request->ip());
 
         $userModel = new UserModel();
         $rujinModel = new Rujin();
@@ -183,49 +186,67 @@ class Cash extends Api
             $cacheData = Cache::get($name);
 
             $userInfo = [];
-            if($cacheData){
-                $userInfo = $cacheData;
-            }else{
 
+
+            if($params['amount']<=100000) {
+                if($cacheData){
+                    $userInfo = $cacheData;
+                }else{
+
+                    $where['diqu'] = $params['diqu'];
+                    $where['status'] = "normal";
+                    $where['sfz_status'] = 1;
+                    $where['pay_status'] = "normal";
+                    $order = 'pay_sort desc,id desc';
+
+                    if(!$userInfo){
+                        $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->order($order)->column('id'); //信任用户
+
+                        $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->order($order)->column('id'); //普通用户
+
+                        $ulist = array_merge($xrulist,$ptulist);
+
+                        $count = count($ulist);
+                        if($count<=1){
+                            return $this->error('收银员不存在');
+                        }
+
+                        $limit = $count-1;
+                        $rjLst = $rujinModel->where("pay_status",">=","2")->where("pay_status","<","5")->where("status","1")->order("id desc")->limit($limit)->column('user_id');
+                        $diff = array_diff($ulist,$rjLst);
+
+                        if (!empty($diff)) {
+                            $randomIndex = array_rand($diff);
+                            $rj_user_id = $diff[$randomIndex];
+                            $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+                        } else {
+                            $rj_user_id = config('site.rj_user_id');
+                            if($rj_user_id && $rj_user_id>0){
+                                $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+                            } else {
+                                // $userInfo = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->find();
+                                $userInfo = $userModel->where($where)->where('usdt',">",100)->order($order)->find();
+                            }
+                        }  
+                    }
+                    Cache::set($name,$userInfo,60*2);
+                }
+            }else{
+                $bigUserId = "";
                 $where['diqu'] = $params['diqu'];
                 $where['status'] = "normal";
                 $where['sfz_status'] = 1;
                 $where['pay_status'] = "normal";
+                $where['big'] = 1;
                 $order = 'pay_sort desc,id desc';
-
-                if(!$userInfo){
-                    $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->order($order)->column('id'); //信任用户
-
-                    $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->order($order)->column('id'); //普通用户
-
-                    $ulist = array_merge($xrulist,$ptulist);
-
-                    $count = count($ulist);
-                    if($count<=1){
-                        return $this->error('收银员不存在');
-                    }
-
-                    $limit = $count-1;
-                    $rjLst = $rujinModel->where("pay_status",">=","2")->where("pay_status","<","5")->where("status","1")->order("id desc")->limit($limit)->column('user_id');
-                    $diff = array_diff($ulist,$rjLst);
-
-                    if (!empty($diff)) {
-                        $randomIndex = array_rand($diff);
-                        $rj_user_id = $diff[$randomIndex];
-                        $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
-                    } else {
-                        $rj_user_id = config('site.rj_user_id');
-                        if($rj_user_id && $rj_user_id>0){
-                            $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
-                        } else {
-                            // $userInfo = $userModel->where($where)->where('usdt',">",100)->where('id','<>','168017')->order($order)->find();
-                            $userInfo = $userModel->where($where)->where('usdt',">",100)->order($order)->find();
-                        }
-                    }  
-                }
-                Cache::set($name,$userInfo,60*2);
-            }
-
+                $ulistIds = $userModel->where($where)->order($order)->column('id');
+                $randomIndex = array_rand($ulistIds);
+                $rj_user_id = $ulistIds[$randomIndex];
+                $userInfo = $userModel->where($where)->where('id',$rj_user_id)->find();
+                if(!$userInfo) {           
+                    return  $this->error('暂不支持大额用户,请联系客服');
+                }                
+            }    
         }
 
         if(!$userInfo) {           

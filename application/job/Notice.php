@@ -3,7 +3,7 @@
  * @Author: 提莫队长 =
  * @Date: 2025-11-10 17:01:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-02-02 10:46:39
+ * @LastEditTime: 2026-02-02 11:35:26
  * @FilePath: \xyh_xing\application\job\Notice.php
  */
 
@@ -56,6 +56,21 @@ public function fire(Job $job, $params)
                     continue;
                 }
                 break;
+            case "sendEmsCdsQueRen":
+                // 验证 sendEmsCdsNotice 所需参数
+                if (!isset($params['email'], $params['orderid'])) {
+                     $job->delete();
+                    recordLogs("Notice",'Missing required parameters for sendEmsCdsNotice: email, orderid');
+                    continue;
+                }
+                if (isset($params['email']) && isset($params['orderid'])) {
+                     $this->sendEmsCdsQueRen($params['email'], $params['orderid']);
+                } else {
+                     $job->delete();
+                    recordLogs("Notice",'Missing required parameters for sendNotice: user_id, orderid');
+                    continue;
+                }
+                break;                
             default:
                 // 可选：记录未知类型的操作
                 break;
@@ -111,7 +126,20 @@ public function fire(Job $job, $params)
         }
         
         return (bool)$result;
-    }   
+    }  
+    
+    //兑入确认承兑商通知
+    public function sendEmsCdsQueRen($email,$orderid){
+
+        $msg = "您好，订单号".$orderid."已确认。";
+        $result = Emslib::notice($email, $msg, self::NOTICE_TEMPLATE);
+        
+        if (!$result) {
+            Log::warning('Failed to send EMS CDS notice', ['email' => $email, 'orderid' => $orderid]);
+        }
+        
+        return (bool)$result;
+    }       
     
     public function sendNotice($userid,$orderid){
 

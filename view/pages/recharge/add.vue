@@ -75,11 +75,14 @@
 				previewImage:true,
 				rate:0,
 				address:'',
+				bianhao:'',
+				token:'',
 			}
 		},
 		onLoad() {
 			this.getUserinfo();
 			this.getrate();
+			this.getToken();
 		},
 		watch:{
 			num: {
@@ -96,6 +99,17 @@
 			}			
 		},
 		methods: {
+			getToken(){
+				let that =this
+				uni.$u.http.post('/api/user/getCzOrderNo').then(res => {
+					if(res.code == 1) {
+						that.bianhao = res.data.bianhao
+						that.token = res.data.token
+					}else{
+						uni.$u.toast(res.msg);
+					}
+				})
+			},
 			getUserinfo(){
 				let that =this
 				uni.$u.http.post('/api/user/getUserinfo').then(res => {
@@ -156,6 +170,8 @@
 					num:this.num,
 					type:this.cfgs[this.cfg].name,
 					address:this.cfgs[this.cfg].addr,
+					auth_token:this.token,
+					bianhao:this.bianhao
 				}).then(res => {
 					if(res.code == 1) {
 						uni.$u.toast(res.msg);

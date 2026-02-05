@@ -66,6 +66,8 @@ class Index extends Frontend
 
 
         $today = date("Y-m-d");
+        //昨日
+        $yesterday = date("Y-m-d", strtotime("-1 day"));
 
         $Commission = new Commission();
         $rujinModel = new Rujin();
@@ -110,7 +112,7 @@ class Index extends Frontend
         $cj_company_price =  $cj_user_fee + $cj_supply_fee;
 
 
-        $cj_supply_today_money = $chujinModel->where("pay_status", 5)->whereTime('updatetime', 'today')->sum("withdrawAmount");
+        $cj_supply_today_money = $cj_total_today_money = $chujinModel->where("pay_status", 5)->whereTime('updatetime', 'today')->sum("withdrawAmount");
         $cj_supply_today_money2 = $chujinModel->where("pay_status", "<=", 5)->whereTime('updatetime', 'today')->sum("withdrawAmount");
         $cj_supply_today_price = $chujinModel->where("pay_status", 5)->whereTime('updatetime', 'today')->sum("supply_usdt");
         $cj_user_today_price = $chujinModel->where("pay_status", 5)->whereTime('updatetime', 'today')->sum("user_usdt");
@@ -201,7 +203,7 @@ class Index extends Frontend
             'cj_supply_fee'    => $cj_supply_fee,
             'cj_today_total'   => $cj_today_total,
             'cj_today_total2'  => $cj_today_total2,
-
+            'cj_total_today_money'=>$cj_total_today_money,
             // 'fanyong_taday_total'=>$fanyong_taday_total,
             'cj_supply_today_money' => $cj_supply_today_money,
             'cj_supply_today_price' => $cj_supply_today_price,
@@ -244,7 +246,7 @@ class Index extends Frontend
             'rujin_user_usdt'=> $user_today_price,
             'rujin_profit_usdt' => $company_today_price,
             'chujin_num' => $cj_today_total,
-            'chujin_money'=> $total_today_money,
+            'chujin_money'=> $cj_total_today_money,
             'chujin_supply_usdt'=> $cj_supply_today_price,
             'chujin_user_usdt'  => $cj_user_today_price,
             'chujin_profit_usdt'=>$cj_company_today_price,
@@ -262,8 +264,48 @@ class Index extends Frontend
             'supply_account4'    => $supply[3],
             'supply_account5'    => $supply[4],
         ];
+
+        $userLst = [];
+        $userLst = Db::name("user")->field("id,username,usdt")->where('usdt','<>',0)->select();
+        $this->addUserTongji($userLst);
         $this->add($params);
+        $this->assign('userLst', $userLst);
+        $this->assign("yesterday",$yesterday);
         return $this->fetch();
+    }
+
+
+    public function addUserTongji($userLst){
+
+
+        if(empty($userLst)){
+            return;
+        }
+
+        $today = date("Y-m-d");
+        $userjson = json_encode($userLst, JSON_UNESCAPED_UNICODE);
+        // 验证JSON编码是否成功
+        if ($userjson === false) {
+            return false;
+        }
+
+
+        $info = Db::name("tongji_user")->where(['tjdate'=>$today])->find();
+        $time = time();
+        if($info){
+            $data['content'] = $userjson;
+            $data['utime'] = $time;
+            Db::name("tongji_user")->where(['tjdate'=>$today])->update($data);
+            return;
+        }else{
+            $data['tjdate'] = $today;
+            $data['ctime'] = $time;
+            $data['utime'] = $time;
+            $data['content'] = $userjson;
+            Db::name("tongji_user")->insert($data);
+        }
+        return true;
+
     }
 
 
@@ -363,6 +405,35 @@ class Index extends Frontend
             }
         }
         return;
+    }
+
+
+    public function read(){
+        $day = input('day');
+        if(empty($day)){
+            $day = date("Y-m-d");
+        }
+        $info = Db::name("tongji")->where("tjdate", $day)->find();
+        $ulist = Db::name("tongji_user")->where("tjdate", $day)->find();
+
+        $userLst = [];
+         if($ulist && isset($ulist['content']) && $ulist['content']){
+            $userLst = json_decode($ulist['content'], true);
+        }
+
+
+        $act_company_usdt_all = truncateDecimal($info['company_profit'] + $info['spark_profit']);
+        $totol_supply_usdt = truncateDecimal($info['supply_account1']+$info['supply_account2']+$info['supply_account3']+$info['supply_account4']+$info['supply_account5']);
+
+        $commission_all = truncateDecimal($info['rujin_profit_usdt']+$info['chujin_profit_usdt']);
+
+        $this->assign('info', $info);
+        $this->assign('userLst', $userLst);
+        $this->assign('today', $day);
+        $this->assign('act_company_usdt_all', $act_company_usdt_all);
+        $this->assign('totol_supply_usdt', $totol_supply_usdt);
+        $this->assign('commission_all', $commission_all);
+        return $this->fetch();        
     }
     
 }

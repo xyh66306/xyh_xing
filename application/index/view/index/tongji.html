@@ -120,7 +120,7 @@
                     <td>{$cj_user_usdt}</td>
                     <td>{$cj_user_fee} + {$cj_supply_fee} = {$cj_company_price}</td>
                     <td>{$cj_today_total}/{$cj_today_total2}</td>
-                    <td>{$total_today_money}</td>
+                    <td>{$cj_total_today_money}</td>
                     <td>{$cj_user_today_price}</td>
                     <td>{$cj_supply_today_price}</td>
                     <td>{$cj_company_today_price}</td>
@@ -174,11 +174,30 @@
                 </tr>
             </table>
         </div>
+
+        <div class="order mt20">
+            <h3>用户统计</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>用户ID</td>
+                    <td>昵称</td>
+                    <td>usdt</td>
+                </tr>
+                {volist name="userLst" id="vo"}
+                <tr>
+                    <td>{$vo['id']}</td>
+                    <td>{$vo['username']}</td>
+                    <td>{$vo['usdt']}</td>
+                </tr>
+                {/volist}
+            </table>
+        </div>                
     </div>
 </div>
 
 <div class="footer">
     <div class="container">
+        <p ><a href="https://bingocn.wobeis.com/index/index/read?day={$yesterday}" style="color: #fff;">昨天统计</a></p>
         <p>Copyright @ {$site.name|htmlentities} {:date('Y',time())} 版权所有 <a href="https://beian.miit.gov.cn" target="_blank">{$site.beian|htmlentities}</a></p>
     </div>
 </div>
