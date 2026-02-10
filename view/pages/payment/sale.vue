@@ -4,6 +4,9 @@
 			<view class="u-info">订单ID</view>
 			<view class="flex u-border-bottom" @click="copyText(details.orderid)">
 				<view>{{details.orderid}}</view>
+				<view class="copy">
+					<u-button type="primary" size="mini" plain>复制</u-button>
+				</view>
 			</view>		
 			<template  v-if="details.payername">
 				<view class="u-info">付款人</view>

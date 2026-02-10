@@ -4,6 +4,7 @@ namespace app\index\controller;
 
 use app\common\controller\Frontend;
 use app\common\model\order\Rujin as RujinModel;
+use app\common\model\User as UserModel;
 
 class Rujin extends Frontend
 {
@@ -23,6 +24,35 @@ class Rujin extends Frontend
         }
         
     }
+
+
+
+
+    public function notice(){
+
+        $RujinModel = new RujinModel();
+        $time = time() - 60*5;
+        $list = $RujinModel->where("pay_status",2)->where("pay_time","<=",$time)->select();
+
+        if(!$list){
+            echo "暂无数据";
+            return;
+        }
+
+        foreach ($list as $key => $value) {
+
+            $userModel = new UserModel();
+            $userInfo = $userModel->where(['id'=>$value['user_id']])->find();
+            $exportData['type']     = "sendEmsCdsNotice";
+            $exportData['email']    = $userInfo['email'];
+            $exportData['orderid']  = $value['orderid'];
+            $exportData['user_id']    = $value['user_id'];
+            $jobClass = 'app\job\Notice@fire';
+            \think\Queue::push($jobClass, $exportData);//加入队列
+        }
+
+    }
+
 
 
 }

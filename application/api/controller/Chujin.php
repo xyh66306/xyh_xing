@@ -26,7 +26,7 @@ use think\Validate;
 class Chujin extends Api
 {
 
-     protected $noNeedRight = ['index','orderin','detail','addCash','uploadPzImg'];
+     protected $noNeedRight = ['index','orderin','detail','addCash','uploadPzImg','cancel'];
 
 
 
@@ -487,6 +487,52 @@ class Chujin extends Api
         }
         return false;
     }    
+
+
+    /**
+     * 
+     * 取消订单
+     */
+    public function cancel()
+    { 
+        $orderid = input("orderid",'');
+        $authtoken = input("auth_token", '');
+
+        if(!$orderid){
+            $this->error('参数错误');
+        }
+        if (!$authtoken) {
+            $this->error('参数错误');
+        }
+        if (!$this->checkOrderToken($orderid, $authtoken)) {
+            $this->error('参数错误');
+        }
+ 
+        $chujinModel = new ChujinModel();
+
+        $orderInfo = $chujinModel->where("orderid",$orderid)->find();
+
+
+        if($orderInfo['pay_status']>2 && $orderInfo['user_id'] == $this->auth->id){
+            $this->error('请勿重复操作');
+        }
+
+
+        Db::startTrans();
+        try{ 
+            $res =  $chujinModel->update(['pay_status'=>1,'payername'=>'','user_id'=>'','updatetime'=>time()],['id'=>$orderInfo['id']]);
+            if($res){
+                Db::commit();
+            }
+
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->error('取消失败：'.$e->getMessage());
+        }
+        $this->success('已取消');
+
+
+    }
 
 
     public function sendNotice($info){

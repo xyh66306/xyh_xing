@@ -100,7 +100,11 @@
 			</template>
 			<template v-else>
 				<template v-if="pay_status==2">
-					<u-button type="primary" @click="show = true">立即付款</u-button>
+					<view class="twoBtn flex">
+						<view class="btn"><u-button type="primary" @click="confirm()" :plain="true">取消支付</u-button></view>
+						<view class="btn"><u-button type="primary" @click="show = true">立即付款</u-button></view>
+					</view>
+
 				</template>	
 				<template v-if="pay_status==3">
 					<u-button type="primary" @click="show = true">已支付，待审核</u-button>
@@ -176,6 +180,42 @@
 			this.getBiLst();
 		},
 		methods: {
+			confirm(){
+				let that = this;
+				if(this.pay_sub){
+					return;
+				}	
+				uni.showModal({
+					title: '确认取消支付！',
+					icon: 'none',
+					duration: 1000,
+					showCancel: true, // 是否显示取消按钮（默认true）
+					cancelText: '取消', // 取消按钮文字（默认"取消"）
+					cancelColor: '#999', // 取消按钮文字颜色（默认#000）
+					confirmText: '确定', // 确认按钮文字（默认"确定"）
+					confirmColor: '#007AFF', // 确认按钮颜色（默认#3CC51F）
+					success: function(res) {
+						if (res.confirm) {
+							that.pay_sub = true
+							uni.$u.http.post('/api/chujin/cancel', {
+								orderid:that.orderid,
+								auth_token:that.details.authtoken
+							}).then(res => {
+								if (res.code == 1) {
+									uni.$u.toast("已取消");
+									that.pay_sub = false
+									that.detail();									
+								} else {
+									uni.$u.toast(res.msg);
+								}
+							
+							}).catch(res => {
+								console.log(res)
+							});
+						}
+					}	
+				})	
+			},
 			previewImage(index) {
 			  const urls = this.details.pay_ewm_image_arr
 			  uni.previewImage({
@@ -416,6 +456,18 @@
 			// width:300rpx;
 			// height:300rpx;
 			// margin:0 auto;
+		}
+	}
+
+	.flex {
+		display: flex;
+	}
+
+	.twoBtn {
+		padding: 0 20rpx;
+		.btn {
+			width: 320rpx;
+			padding:0 20rpx;
 		}
 	}
 </style>

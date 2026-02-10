@@ -1,3 +1,8 @@
+<!--
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+-->
 <form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">Hash:</label>
@@ -15,14 +20,14 @@
         <label class="control-label col-xs-12 col-sm-2">{:__('Pinzheng_image')}:</label>
         <div class="col-xs-12 col-sm-8">
             <div class="input-group">
-                <input id="c-pinzheng_image" class="form-control" size="50" name="row[pinzheng_image]" type="text" value="{$row.pinzheng_image|htmlentities}">
+                <input id="c-pinzheng_images" class="form-control" size="50" name="row[pinzheng_images]" type="text" value="{$row.pinzheng_images|htmlentities}">
                 <div class="input-group-addon no-border no-padding">
-                    <span><button type="button" id="faupload-pinzheng_image" class="btn btn-danger faupload" data-input-id="c-pinzheng_image" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/webp" data-multiple="false" data-preview-id="p-pinzheng_image"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
-                    <span><button type="button" id="fachoose-pinzheng_image" class="btn btn-primary fachoose" data-input-id="c-pinzheng_image" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
+                    <span><button type="button" id="faupload-pinzheng_images" class="btn btn-danger faupload" data-input-id="c-pinzheng_images" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/webp" data-multiple="false" data-preview-id="p-pinzheng_images"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                    <span><button type="button" id="fachoose-pinzheng_images" class="btn btn-primary fachoose" data-input-id="c-pinzheng_images" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
                 </div>
-                <span class="msg-box n-right" for="c-pinzheng_image"></span>
+                <span class="msg-box n-right" for="c-pinzheng_images"></span>
             </div>
-            <ul class="row list-inline faupload-preview" id="p-pinzheng_image"></ul>
+            <ul class="row list-inline faupload-preview" id="p-pinzheng_images"></ul>
         </div>
     </div>
     <div class="form-group">
