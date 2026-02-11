@@ -3,7 +3,7 @@
  * @Author: 提莫队长 =
  * @Date: 2025-11-10 17:01:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-02-02 11:35:26
+ * @LastEditTime: 2026-01-29 14:22:23
  * @FilePath: \xyh_xing\application\job\Notice.php
  */
 
@@ -35,8 +35,8 @@ public function fire(Job $job, $params)
         switch ($params['type']) {
             case "sendEmsNotice":
                 if (!isset($params['supplyinfoName'])) {
-                    recordLogs("Notice",'Missing required parameter for sendEmsNotice: supplyinfoName');
-                    continue;
+                     $job->delete();
+                    throw new \InvalidArgumentException('Missing required parameter for sendEmsNotice: supplyinfoName');
                 }                
                 $this->sendEmsNotice($params['supplyinfoName']);
                 break;
@@ -44,31 +44,31 @@ public function fire(Job $job, $params)
                 // 验证 sendEmsCdsNotice 所需参数
                 if (!isset($params['email'], $params['orderid'])) {
                      $job->delete();
-                    recordLogs("Notice",'Missing required parameters for sendEmsCdsNotice: email, orderid');
-                    continue;
+                    recordLogs('Missing required parameters for sendEmsCdsNotice: email, orderid');
+                    throw new \InvalidArgumentException('Missing required parameters for sendEmsCdsNotice: email, orderid');
                 }
                 if (isset($params['user_id']) && isset($params['orderid'])) {
                     $this->sendEmsCdsNotice($params['email'], $params['orderid']);
                     $this->sendNotice($params['user_id'], $params['orderid']);
                 } else {
                      $job->delete();
-                    recordLogs("Notice",'Missing required parameters for sendNotice: user_id, orderid');
-                    continue;
+                    recordLogs('Missing required parameters for sendNotice: user_id, orderid');
+                    throw new \InvalidArgumentException('Missing required parameters for sendNotice: user_id, orderid');
                 }
                 break;
-            case "sendEmsCdsQueRen":
-                // 验证 sendEmsCdsNotice 所需参数
+            case "sendEmsNotice":
+                // 验证 sendEmsNotice 所需参数
                 if (!isset($params['email'], $params['orderid'])) {
                      $job->delete();
-                    recordLogs("Notice",'Missing required parameters for sendEmsCdsNotice: email, orderid');
-                    continue;
+                    recordLogs('Missing required parameters for sendEmsCdsNotice: email, orderid');
+                    throw new \InvalidArgumentException('Missing required parameters for sendEmsCdsNotice: email, orderid');
                 }
-                if (isset($params['email']) && isset($params['orderid'])) {
-                     $this->sendEmsCdsQueRen($params['email'], $params['orderid']);
+                if (isset($params['user_id']) && isset($params['orderid'])) {
+                    $this->sendEmsCdsNotice($params['email'], $params['orderid']);
                 } else {
                      $job->delete();
-                    recordLogs("Notice",'Missing required parameters for sendNotice: user_id, orderid');
-                    continue;
+                    recordLogs('Missing required parameters for sendNotice: user_id, orderid');
+                    throw new \InvalidArgumentException('Missing required parameters for sendNotice: user_id, orderid');
                 }
                 break;                
             default:
@@ -79,11 +79,10 @@ public function fire(Job $job, $params)
         $job->delete();
     } catch (\Exception $e) {
         // 记录异常信息用于调试
-        // Log::error('Job execution failed: ' . $e->getMessage(), [
-        //     'job_attempts' => $job->attempts(),
-        //     'exception' => $e
-        // ]);
-        recordLogs("Notice", $e->getMessage());
+        Log::error('Job execution failed: ' . $e->getMessage(), [
+            'job_attempts' => $job->attempts(),
+            'exception' => $e
+        ]);
         
         // 如果已达到最大重试次数，则删除任务
         if ($job->attempts() >= 3) { // 假设最大重试次数为3，可根据实际配置调整
@@ -126,20 +125,7 @@ public function fire(Job $job, $params)
         }
         
         return (bool)$result;
-    }  
-    
-    //兑入确认承兑商通知
-    public function sendEmsCdsQueRen($email,$orderid){
-
-        $msg = "您好，订单号".$orderid."已确认。";
-        $result = Emslib::notice($email, $msg, self::NOTICE_TEMPLATE);
-        
-        if (!$result) {
-            Log::warning('Failed to send EMS CDS notice', ['email' => $email, 'orderid' => $orderid]);
-        }
-        
-        return (bool)$result;
-    }       
+    }   
     
     public function sendNotice($userid,$orderid){
 

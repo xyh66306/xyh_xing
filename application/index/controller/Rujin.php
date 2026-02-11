@@ -35,7 +35,6 @@ class Rujin extends Frontend
         $list = $RujinModel->where("pay_status",2)->where("pay_time","<=",$time)->select();
 
         if(!$list){
-            echo "暂无数据";
             return;
         }
 
@@ -43,7 +42,7 @@ class Rujin extends Frontend
 
             $userModel = new UserModel();
             $userInfo = $userModel->where(['id'=>$value['user_id']])->find();
-            $exportData['type']     = "sendEmsCdsNotice";
+            $exportData['type']     = "sendEmsNotice";
             $exportData['email']    = $userInfo['email'];
             $exportData['orderid']  = $value['orderid'];
             $exportData['user_id']    = $value['user_id'];

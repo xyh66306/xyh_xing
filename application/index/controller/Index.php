@@ -97,6 +97,7 @@ class Index extends Frontend
         $fanyong_taday_total_1d = $Commission->where(['source' => 1, 'chaoshi' => 1, 'status' => 1, 'p_userid' => 168024])->whereTime('ctime', 'today')->sum("money"); //1队
         $fanyong_taday_total_2d = $Commission->where(['source' => 1, 'chaoshi' => 1, 'status' => 1, 'p_userid' => 168023])->whereTime('ctime', 'today')->sum("money"); //2队
         $fanyong_taday_total_spark = $Commission->where(['source' => 1, 'chaoshi' => 1, 'status' => 1, 'p_userid' => 168022])->whereTime('ctime', 'today')->sum("money"); //spark
+        $rujinLst = $rujinModel->where("pay_status", 4)->whereTime('ctime', 'today')->select();
 
 
 
@@ -123,6 +124,7 @@ class Index extends Frontend
         $cj_taday_fanyong_total = $Commission->where(['source' => 2, 'chaoshi' => 1, 'status' => 1])->whereTime('ctime', 'today')->sum("money");
         $cj_taday_daili_fanyong_total = $Commission->where(['source' => 2, 'chaoshi' => 1, 'status' => 1])->whereNotIn('id', '168023,168024,168022')->whereTime('ctime', 'today')->sum("money");
         $cj_company_today_price =  truncateDecimal($cj_user_today_fee + $cj_supply_today_fee - $cj_taday_fanyong_total);
+        $cjLst = $chujinModel->where("pay_status", 5)->whereTime('updatetime', 'today')->select();
 
 
         $supply = Db::name("supply")->where("id", '>', 2)->column('usdt');
@@ -234,9 +236,20 @@ class Index extends Frontend
         // 所有分润
         $diff = truncateDecimal($total_user_number - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt + $commission_all);
 
+
+        foreach ($rujinLst as $key => $value) {
+            $rujinLst[$key]['username'] = Db::name("user")->where("id", $value['user_id'])->value("username");
+        }
+
+        foreach ($cjLst as $key => $value) {
+            $cjLst[$key]['username'] = Db::name("user")->where("id", $value['user_id'])->value("username");
+        }
+
         $this->assign('all_company_price', $all_company_price);
         $this->assign("diff", $diff);
         $this->assign("commission_all", $commission_all);
+        $this->assign("rujinLst", $rujinLst);
+        $this->assign("cjLst", $cjLst);
 
 
         $params =[

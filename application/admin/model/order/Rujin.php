@@ -140,7 +140,6 @@ class Rujin extends Model
 
     public function supply()
     {
-         return $this->belongsTo('app\admin\model\Supply', 'pintai_id', 'access_key', [], 'LEFT');
-        // return $this->belongsTo('app\admin\model\Supply', 'pintai_id', 'access_key', [], 'LEFT')->setEagerlyType(0);
+        return $this->belongsTo('app\admin\model\Supply', 'pintai_id', 'access_key', [], 'LEFT')->setEagerlyType(0);
     }
 }
