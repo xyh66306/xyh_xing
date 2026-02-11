@@ -247,7 +247,7 @@ class Cash extends Api
             $this->error('数据不存在');
         }
         $data['ctime'] = date("Y-m-d H:i:s",$data['ctime']);
-        $data['pz_image'] = "https://".$_SERVER['HTTP_HOST'].$data['pz_image'];
+        $data['pz_image'] = _sImage($data['pz_image']);
         $this->success('', $data);
 
     }

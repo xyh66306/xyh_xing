@@ -107,7 +107,10 @@
 
 				</template>	
 				<template v-if="pay_status==3">
-					<u-button type="primary" @click="show = true">已支付，待审核</u-button>
+					<view class="twoBtn flex">
+						<view class="btn"><u-button type="primary" @click="shensu()" :plain="true">我要申诉</u-button></view>
+						<view class="btn"><u-button type="primary" @click="show = true">已支付，待审核</u-button></view>
+					</view>					
 				</template>		
 				<template v-if="pay_status==4">
 					<u-button type="primary" @click="show = true">商户已审核</u-button>
@@ -180,6 +183,11 @@
 			this.getBiLst();
 		},
 		methods: {
+			shensu(){
+				uni.navigateTo({
+					url:"/pages/shensu/index?type=1&id="+this.orderid
+				})
+			},
 			confirm(){
 				let that = this;
 				if(this.pay_sub){
