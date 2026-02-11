@@ -280,9 +280,21 @@ class Index extends Frontend
 
         $userLst = [];
         $userLst = Db::name("user")->field("id,username,usdt")->where('usdt','<>',0)->select();
+
+        $userCzLst = Db::name("user_usdt")->field("id,user_id,num,createtime")->where('status','normal')->order("id desc")->select();
+
+        foreach ($userCzLst as $key => $value) {
+            $userCzLst[$key]['username'] = Db::name("user")->where("id", $value['user_id'])->value("username");
+            $userCzLst[$key]['createtime'] = date("Y-m-d H:i:s", $value['createtime']);
+        }
+        $userCzCount = Db::name("user_usdt")->field("id,user_id,num,createtime")->where('status','normal')->sum("num");
+
+
         $this->addUserTongji($userLst);
         $this->add($params);
         $this->assign('userLst', $userLst);
+        $this->assign('userCzLst', $userCzLst);
+        $this->assign('userCzCount', $userCzCount);
         $this->assign("yesterday",$yesterday);
         return $this->fetch();
     }

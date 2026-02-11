@@ -38,7 +38,7 @@ class Chujin extends Backend
     protected $model = null;
     protected $supply_info = [];
 
-    protected $noNeedRight = ['editsply'];
+    protected $noNeedRight = ['editsply','import'];
     //editsply
 
     public function _initialize()
@@ -61,7 +61,8 @@ class Chujin extends Backend
 
         $BiModel = new BiModel();
         $biinfo = $BiModel->where("id", 1)->find();
-        $fee_dalu_supply_duichu = config('site.fee_dalu_supply_duichu');
+        // $fee_dalu_supply_duichu = config('site.fee_dalu_supply_duichu');
+        $fee_dalu_supply_duichu = $supply_info['duichu_fanyong'];
         $fee_dalu_supply_duichu = $fee_dalu_supply_duichu / 100;
 
         $this->supply_info = $supply_info;
@@ -157,11 +158,11 @@ class Chujin extends Backend
         }
 
         unset($params['access_key']);
-        if($this->supply_info['access_key'] == $row['access_key']){            
-            if($params['supply_usdt'] > $this->supply_info['usdt']){
-                $this->error('提现数量超出可提现数量');
-            }
-        }
+        // if($this->supply_info['access_key'] == $row['access_key']){            
+        //     if($params['supply_usdt'] > $this->supply_info['usdt']){
+        //         $this->error('提现数量超出可提现数量');
+        //     }
+        // }
         //不支持工商和农业 
         if($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行'){
             $this->error('不支持工商和农业');
@@ -348,9 +349,9 @@ class Chujin extends Backend
             $params[$this->dataLimitField] = $this->auth->id;
         }
 
-        if($params['supply_usdt'] > $this->supply_info['usdt']){
-            $this->error('提现数量超出可提现数量');
-        }
+        // if($params['supply_usdt'] > $this->supply_info['usdt']){
+        //     $this->error('提现数量超出可提现数量');
+        // }
 
         //不支持工商和农业 
         if($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行'){
@@ -583,6 +584,7 @@ class Chujin extends Backend
             $importCount++;
         }
 
+
         // 如果有数据需要处理
         if (!empty($data)) {
             foreach ($data as $item) {
@@ -598,6 +600,31 @@ class Chujin extends Backend
                     $user_usdt = sprintf('%.4f',truncateDecimal($item['money']/$biinfo['duichu'],4));
                     $supply_fee = truncateDecimal($usdt*$fee_dalu_supply_duichu);
                     $supply_usdt = truncateDecimal($usdt + $supply_fee);
+
+                    $data = [
+                        'access_key' =>$this->supply_info['access_key'],
+                        'orderid'   => getOrderNo(),
+                        'merchantOrderNo'=>$item['orderid'],
+                        'realName' => $item['realName'],
+                        'bankName' => $item['bankName'],
+                        'cardNumber' => $item['cardNumber'],
+                        'bankBranchName' => $item['bankBranchName'],
+                        'pay_type' => 'bank',
+                        'diqu'      => 1,
+                        'fiatCurrency' => 'USDT',
+                        'withdrawCurrency'=>'USDT',
+                        'withdrawAmount'=>$item['money'],
+                        'huilv'         => $duichu_rate,
+                        'pay_status'    =>1,
+                        'usdt'          => $usdt,
+                        'user_usdt'     => $user_usdt,
+                        'user_fee'      => $usdt - $user_usdt,
+                        'supply_fee'   => $supply_fee,
+                        'supply_usdt'   => $supply_usdt,
+                    ];
+                    dump($data);
+                    die;
+
                     $this->model->allowField(true)->save([
                         'access_key' =>$this->supply_info['access_key'],
                         'orderid'   => getOrderNo(),

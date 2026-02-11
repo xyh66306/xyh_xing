@@ -257,8 +257,45 @@
                     <td>{$vo['usdt']}</td>
                 </tr>
                 {/volist}
+                <tr>
+                    <td >
+                        统计
+                    </td>
+                    <td colspan="2">
+                       {$userTotalUsdt} usdt
+                    </td>
+                </tr>                
             </table>
-        </div>                
+        </div>    
+        
+        <div class="order mt20">
+            <h3>用户充值统计</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>用户ID</td>
+                    <td>昵称</td>
+                    <td>usdt</td>
+                    <td>时间</td>
+                </tr>
+                {volist name="userCzLst" id="vo"}
+                <tr>
+                    <td>{$vo['id']}</td>
+                    <td>{$vo['username']}</td>
+                    <td>{$vo['num']}</td>
+                    <td>{$vo['createtime']}</td>
+                </tr>
+                {/volist}
+                <tr>
+                    <td >
+                        统计
+                    </td>
+                    <td colspan="3">
+                        {$userCzCount} usdt
+                    </td>
+                </tr>
+            </table>
+        </div>         
+        
     </div>
 </div>
 

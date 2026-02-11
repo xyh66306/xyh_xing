@@ -371,6 +371,9 @@ class Usdt extends Backend
         }
 
         $post['supply_id'] = $supply_info['access_key'];
+        if(isset($post['fee']) && $post['fee'] > 0){
+            $post['usdt'] = $post['usdt'] - $post['fee'];
+        }
 
         Db::startTrans();
         try {
