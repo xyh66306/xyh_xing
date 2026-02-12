@@ -200,11 +200,19 @@ class Cash extends Api
                     $order = 'pay_sort desc,id desc';
 
                     if(!$userInfo){
-                        $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->order($order)->column('id'); //信任用户
 
-                        $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->order($order)->column('id'); //普通用户
+                        if($params['amount']>=7200){
+                            //所有信任用户
+                            $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->order($order)->column('id'); //信任用户
+                            $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->order($order)->column('id'); //普通用户
+                            $ulist = array_merge($xrulist,$ptulist);
+                        }else{
+                            //小额信任用户
+                            $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->where("big",2)->order($order)->column('id'); //信任用户
+                            $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->where("big",2)->order($order)->column('id'); //普通用户
+                            $ulist = array_merge($xrulist,$ptulist);
+                        }
 
-                        $ulist = array_merge($xrulist,$ptulist);
 
                         $count = count($ulist);
                         if($count<=1){
@@ -232,7 +240,6 @@ class Cash extends Api
                     Cache::set($name,$userInfo,60*2);
                 }
             }else{
-                $bigUserId = "";
                 $where['diqu'] = $params['diqu'];
                 $where['status'] = "normal";
                 $where['sfz_status'] = 1;

@@ -108,15 +108,16 @@
                 <tr>
                     <td>
                         {volist name='rujinLst' id='vo'}
-                            {$vo.supply_usdt} +
-                        {/volist}
-                        ={$supply_today_price}
-                    </td>
-                    <td>
-                        {volist name='rujinLst' id='vo'}
                             {$vo.user_usdt} +
                         {/volist}
                         ={$user_today_price}
+
+                    </td>
+                    <td>
+                        {volist name='rujinLst' id='vo'}
+                            {$vo.supply_usdt} +
+                        {/volist}
+                        ={$supply_today_price}
                     </td>                
                 </tr>
                 <tr>
@@ -127,6 +128,12 @@
                        
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="2">
+                       利润统计：{$company_today_price}
+                       
+                    </td>
+                </tr>                
             </table> 
         </div>    
         <div class="order mt20">
@@ -171,15 +178,16 @@
                 <tr>
                     <td>
                         {volist name='cjLst' id='vo'}
-                            {$vo.supply_usdt} +
+                            {$vo.user_usdt} +
                         {/volist}
-                        ={$cj_supply_today_price}
+                        ={$cj_user_today_price}                        
+
                     </td>
                     <td>
                         {volist name='cjLst' id='vo'}
-                            {$vo.user_usdt} +
+                            {$vo.supply_usdt} +
                         {/volist}
-                        ={$cj_user_today_price}
+                        ={$cj_supply_today_price}
                     </td>                
                 </tr>
                 <tr>

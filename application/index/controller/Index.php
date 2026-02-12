@@ -92,7 +92,7 @@ class Index extends Frontend
         $today_total2 = $rujinModel->where("pay_status", '>=', 2)->where("pay_status", '<', 5)->where("status", 1)->whereTime('ctime', 'today')->count("id");
         $fanyong_taday_total = $Commission->where(['source' => 1, 'chaoshi' => 1, 'status' => 1])->whereTime('ctime', 'today')->sum("money");
         $fanyong_daili_taday_total = $Commission->where(['source' => 1, 'chaoshi' => 1, 'status' => 1])->whereNotIn('id', '168023,168024,168022')->whereTime('ctime', 'today')->sum("money");
-        $company_today_price = truncateDecimal($user_today_fee + $supply_today_fee - $fanyong_taday_total);
+        $company_today_price = truncateDecimal($user_today_fee + $supply_today_fee);
 
         $fanyong_taday_total_1d = $Commission->where(['source' => 1, 'chaoshi' => 1, 'status' => 1, 'p_userid' => 168024])->whereTime('ctime', 'today')->sum("money"); //1队
         $fanyong_taday_total_2d = $Commission->where(['source' => 1, 'chaoshi' => 1, 'status' => 1, 'p_userid' => 168023])->whereTime('ctime', 'today')->sum("money"); //2队
@@ -123,7 +123,7 @@ class Index extends Frontend
         $cj_today_total2 = $chujinModel->where("pay_status", '>=', 1)->where("pay_status", '<=', 5)->whereTime('updatetime', 'today')->count("id");
         $cj_taday_fanyong_total = $Commission->where(['source' => 2, 'chaoshi' => 1, 'status' => 1])->whereTime('ctime', 'today')->sum("money");
         $cj_taday_daili_fanyong_total = $Commission->where(['source' => 2, 'chaoshi' => 1, 'status' => 1])->whereNotIn('id', '168023,168024,168022')->whereTime('ctime', 'today')->sum("money");
-        $cj_company_today_price =  truncateDecimal($cj_user_today_fee + $cj_supply_today_fee - $cj_taday_fanyong_total);
+        $cj_company_today_price =  truncateDecimal($cj_user_today_fee + $cj_supply_today_fee);
         $cjLst = $chujinModel->where("pay_status", 5)->whereTime('updatetime', 'today')->select();
 
 
