@@ -96,7 +96,46 @@
                     <td>{$fanyong_daili_taday_total}</td>                    
                 </tr>
             </table>
-        </div>     
+          
+        </div>   
+        <div class="order mt20">
+            <h3>入金统计详情</h3>  
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>入金承兑商详情</td>           
+                    <td>入金商户详情</td>           
+                </tr>
+                <tr>
+                    <td>
+                        {volist name='rujinLst' id='vo' key="index"}
+                            {$vo.user_usdt} {if $index < count($rujinLst)}+{/if}
+                        {/volist}
+                        ={$user_today_price}
+
+                    </td>
+                    <td>
+                        {volist name='rujinLst' id='vo' key="index"}
+                            {$vo.supply_usdt} {if $index < count($rujinLst)}+{/if}
+                        {/volist}
+                        ={$supply_today_price}
+                    </td>                
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        {volist name='rujinLst' id='vo' key="index"}
+                          <p>{$index}:{$vo.user_id} - {$vo.username}   {$vo.amount}cny  结算数量   {$vo.user_usdt}</p>
+                        {/volist}
+                       
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                       利润统计：{$company_today_price}
+                       
+                    </td>
+                </tr>                
+            </table> 
+        </div>    
         <div class="order mt20">
             <h3>出金统计</h3>
             <table border='1' cellpadding='10' cellspacing='0'>
@@ -120,7 +159,7 @@
                     <td>{$cj_user_usdt}</td>
                     <td>{$cj_user_fee} + {$cj_supply_fee} = {$cj_company_price}</td>
                     <td>{$cj_today_total}/{$cj_today_total2}</td>
-                    <td>{$total_today_money}</td>
+                    <td>{$cj_total_today_money}</td>
                     <td>{$cj_user_today_price}</td>
                     <td>{$cj_supply_today_price}</td>
                     <td>{$cj_company_today_price}</td>
@@ -128,6 +167,48 @@
                 </tr>
             </table>            
         </div>   
+        
+        <div class="order mt20">
+            <h3>出金统计详情</h3>  
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>出金承兑商详情</td>           
+                    <td>出金商户详情</td>           
+                </tr>
+                <tr>
+                    <td>
+                        {volist name='cjLst' id='vo' key="index"}
+                            {$vo.user_usdt} {if $index < count($cjLst)}+{/if}
+                        {/volist}
+                        ={$cj_user_today_price}                        
+
+                    </td>
+                    <td>
+                        {volist name='cjLst' id='vo' key="index"}
+                            {$vo.supply_usdt} {if $index < count($cjLst)}+{/if}
+                        {/volist}
+                        ={$cj_supply_today_price}
+                    </td>                
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        {volist name='cjLst' id='vo' key="index"} 
+                        <p>{$index}:{$vo.user_id} - {$vo.username}   {$vo.withdrawAmount}cny  结算数量   {$vo.user_usdt}</p>
+                        {/volist}
+                       
+                    </td>
+                </tr>   
+                <tr>
+                    <td colspan="2">
+                        统计：
+                        {$cj_company_today_price}
+                    </td>
+                </tr>             
+            </table> 
+        </div>  
+
+
+
         <div class="order mt20"> 
             <h3>充值提现</h3>
             <table border='1' cellpadding='10' cellspacing='0'> 
@@ -137,6 +218,7 @@
                     <td>服务商提现累计笔数</td>
                     <td>服务商提现累计数量</td> 
                     <td>服务商冻结数量</td> 
+                    <td>服务商充值数量</td> 
                    <td>服务商提现累计手续费</td>                     
                 </tr>
                 <tr>
@@ -145,6 +227,7 @@
                     <td> {$total_supply_cz_number}</td>
                     <td>{$total_supply_number}</td>
                     <td>{$total_supply_freeze_usdt}</td>
+                    <td>{$supply_chongzhi}</td>
                     <td>{$total_supply_cz_fee}</td>
                 </tr>
             </table>
@@ -167,18 +250,74 @@
                     <td>{$total_user_number}</td>
                     <td>{$userTotalUsdt}</td>
                     <td>{$total_supply_number}</td>
-                    <td>{$supply[0]} + {$supply[1]}  + {$supply[2]}  + {$supply[3]} = {$totol_supply_usdt}</td>
+                    <td>{$supply[0]} {if $supply[1]>0}+ {$supply[1]}{/if}  + {$supply[2]} {if $supply[1]>0} + {$supply[3]}{/if} = {$totol_supply_usdt}</td>
                     <td>{$all_company_price}</td>
                     <td>{$commission_all}</td>
                     <td>{$diff}</td>
                 </tr>
             </table>
         </div>
+
+        <div class="order mt20">
+            <h3>用户统计</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>用户ID</td>
+                    <td>昵称</td>
+                    <td>usdt</td>
+                </tr>
+                {volist name="userLst" id="vo"}
+                <tr>
+                    <td>{$vo['id']}</td>
+                    <td>{$vo['username']}</td>
+                    <td>{$vo['usdt']}</td>
+                </tr>
+                {/volist}
+                <tr>
+                    <td >
+                        统计
+                    </td>
+                    <td colspan="2">
+                       {$userTotalUsdt} usdt
+                    </td>
+                </tr>                
+            </table>
+        </div>    
+        
+        <div class="order mt20">
+            <h3>用户充值统计</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>用户ID</td>
+                    <td>昵称</td>
+                    <td>usdt</td>
+                    <td>时间</td>
+                </tr>
+                {volist name="userCzLst" id="vo"}
+                <tr>
+                    <td>{$vo['id']}</td>
+                    <td>{$vo['username']}</td>
+                    <td>{$vo['num']}</td>
+                    <td>{$vo['createtime']}</td>
+                </tr>
+                {/volist}
+                <tr>
+                    <td >
+                        统计
+                    </td>
+                    <td colspan="3">
+                        {$userCzCount} usdt
+                    </td>
+                </tr>
+            </table>
+        </div>         
+        
     </div>
 </div>
 
 <div class="footer">
     <div class="container">
+        <p ><a href="https://bingocn.wobeis.com/index/index/read?day={$yesterday}" style="color: #fff;">昨天统计</a></p>
         <p>Copyright @ {$site.name|htmlentities} {:date('Y',time())} 版权所有 <a href="https://beian.miit.gov.cn" target="_blank">{$site.beian|htmlentities}</a></p>
     </div>
 </div>

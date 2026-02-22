@@ -117,7 +117,7 @@ class Rujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'orderid','user_id', 'merchantOrderNo','amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt','utime','status','order_status']);
+                $row->visible(['id', 'orderid','user_id', 'merchantOrderNo','amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt','utime','status','order_status','callback_status']);
                 $row->visible(['supply']);
                 $row->getRelation('supply')->visible(['title']);
                 $row->fee = $row->supply_fee;
@@ -155,9 +155,17 @@ class Rujin extends Backend
         $this->request->filter(['strip_tags', 'trim']);
         if ($this->request->isAjax()) {
             //如果发送的来源是Selectpage，则转发到Selectpage
+
+            if (isset($where['ctime_text'])) {
+                $where['ctime'] = $where['ctime_text'];
+                unset($where['ctime_text']);
+            }
+
             if ($this->request->request('keyField')) {
                 return $this->selectpage();
             }
+
+
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
 
             $list = $this->model
@@ -280,6 +288,14 @@ class Rujin extends Backend
                         ]
                     ];
                     $taskModel->addTask($data, "Cash");
+
+                    $email = Db::name("user")->where("id",$row['user_id'])->value("email");     
+                    $exportData['orderid'] =$row['orderid'];
+                    $exportData['email'] = $email;  
+                    $exportData['type'] = "sendEmsCdsQueRen";          
+                    $jobClass = 'app\job\Notice@fire';
+                    \think\Queue::push($jobClass, $exportData);//加入队列                                  
+
                 }
                 //增加商户USDT
                 $SpullyUsdtLog = new SpullyUsdtLog();

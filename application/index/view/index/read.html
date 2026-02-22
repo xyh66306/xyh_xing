@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{$site.name|htmlentities}</title>
+    <link rel="shortcut icon" href="__CDN__/assets/img/favicon.ico"/>
+    <link href="__CDN__/assets/css/index.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="mainbody">
+    <div class="container">
+        <h3>{$today}</h3>
+        <div class="user">
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>服务商RG</td>
+                    <td>服务商USK</td>
+                    <td>服务商Decode</td>
+                    <td>服务商Wetrade</td>
+                    <td>用户usdt</td>
+                    <td>1队</td>
+                    <td>2队</td>
+                    <td>spark</td>              
+                </tr>
+                <tr>
+                    <td>{$info.supply_account1}</td>
+                    <td>{$info.supply_account2}</td>
+                    <td>{$info.supply_account3}</td>
+                    <td>{$info.supply_account4}</td>
+                    <td>{$info.user_total_usdt}</td>
+                    <td>{$info.one_profit}</td>
+                    <td>{$info.two_profit}</td>
+                    <td>{$info.spark_profit}</td>                
+                </tr>
+            </table>
+        </div>
+        <div class="company">
+             <h3>公司资产统计</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>2025公司资产利润</td>
+                    <td>累计</td>
+                    <td>实际利润= 公司资产 + spark</td>
+                </tr>
+                <tr>
+                    <td>3039.1797</td>
+                    <td>{$info.company_profit}</td>
+                    <td>{$act_company_usdt_all}</td>
+                </tr>
+            </table>
+        </div>     
+        <div class="order mt20">
+            <h3>入金统计</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>今日订单数量(个)</td>
+                    <td>今日累计金额(cny)</td>
+                    <th>今日承兑商结算数量(usdt)</th>
+                    <th>今日商户结算数量(usdt)</th>
+                    <th>今日公司利润(usdt)</th>
+                </tr>
+                <tr>
+                    <td>{$info.rujin_num}</td>
+                    <td>{$info.rujin_money}</td>
+                    <td>{$info.rujin_user_usdt}</td>
+                    <td>{$info.rujin_supply_usdt}</td>
+                    <td>{$info.rujin_profit_usdt}</td>
+                </tr>
+            </table>
+        </div>     
+        <div class="order mt20">
+            <h3>出金统计</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>今日订单数量(个)</td>
+                    <td>今日累计金额(cny)</td>
+                    <th>今日承兑商结算数量(usdt)</th>
+                    <th>今日商户结算数量(usdt)</th>
+                    <th>今日公司利润(usdt)</th>                 
+                </tr>
+                <tr>
+                    <td>{$info.chujin_num}</td>
+                    <td>{$info.chujin_money}</td>
+                    <td>{$info.chujin_user_usdt}</td>
+                    <td>{$info.chujin_supply_usdt}</td>
+                    <td>{$info.chujin_profit_usdt}</td>
+                </tr>
+            </table>            
+        </div>   
+
+        <div class="order mt20">
+            <h3>佣金今日统计计算</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>兑出+兑入利润</td>
+                </tr>
+                <tr>
+                    <td>{$commission_all}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="order mt20">
+            <h3>误差计算</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>承兑商充值</td>
+                    <td>承兑商账户余额</td>
+                    <td>服务商提现额度</td>
+                    <td>服务商余额</td>
+                    <td>返佣</td>
+                </tr>
+                <tr>
+                    <td>{$info.user_cz_usdt}</td>
+                    <td>{$info.user_total_usdt}</td>
+                    <td>{$info.supply_tx_usdt}</td>
+                    <td>{$totol_supply_usdt}</td>
+                    <td>{$info.fanyong}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="order mt20">
+            <h3>用户统计</h3>
+            <table border='1' cellpadding='10' cellspacing='0'>
+                <tr>
+                    <td>用户ID</td>
+                    <td>昵称</td>
+                    <td>usdt</td>
+                </tr>
+                {volist name="userLst" id="vo"}
+                <tr>
+                    <td>{$vo['id']}</td>
+                    <td>{$vo['username']}</td>
+                    <td>{$vo['usdt']}</td>
+                </tr>
+                {/volist}
+            </table>
+        </div>        
+    </div>
+</div>
+
+<div class="footer">
+    <div class="container">
+        <p>Copyright @ {$site.name|htmlentities} {:date('Y',time())} 版权所有 <a href="https://beian.miit.gov.cn" target="_blank">{$site.beian|htmlentities}</a></p>
+    </div>
+</div>
+
+
+<style>
+    .user, .company,.mt20 {
+        margin-top: 20px;
+    }
+
+#mainbody {
+    position: relative;
+    width: 100%;
+    min-height: auto;
+    overflow-y: auto;
+    background: #f1f6fd;
+    color: #474157;
+    height:auto;
+    padding-bottom: 100px;
+}
+</style>
+</body>
+
+</html>

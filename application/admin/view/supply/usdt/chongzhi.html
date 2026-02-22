@@ -14,7 +14,7 @@
     </div>
 
     <div class="panel-body">
-
+            <input type="hidden" id="cz_rate" value="{$supply_info.cz_rate}">
             <!-- 第一步：转账信息 -->
             <div id="step1" class="active-step step-content">
                 <div class="item">
@@ -27,7 +27,7 @@
                 <div class="item">
                     <label class="block" for="usdt">充币数量</label>
                     <div class="relative">
-                        <input type="number" id="usdt" class="form-control" placeholder="0.00" step="0.01" min="0">
+                        <input type="number" id="usdt" class="form-control" onblur="calculateResult()" placeholder="0.00" min="0">
                     </div>
                 </div>
                 <div class="item">
@@ -35,7 +35,13 @@
                     <div class="relative">
                         <input type="text" id="hash" class="form-control" placeholder="0.00" step="0.01" min="0">
                     </div>
-                </div>                    
+                </div>  
+                <div class="item">
+                    <label class="block" for="fee">手续费</label>
+                    <div class="relative">
+                        <input type="text" id="fee" class="form-control" placeholder="0.00"  min="0">
+                    </div>
+                </div>                                    
                 <div class="form-group">
                     <label class="control-label col-xs-12 col-sm-2">二维码:</label>
                     <div class="col-xs-12 col-sm-8">
@@ -70,6 +76,25 @@
         });
     }
 
+    function calculateResult() {
+        // 获取输入的 usdt 值
+        const usdtValue = parseFloat(document.getElementById('usdt').value);
+
+        // 获取 cz_rate 的值
+        const czRate = parseFloat(document.getElementById('cz_rate').value);
+
+        // 判断输入是否有效
+        if (isNaN(usdtValue) || usdtValue <= 0) {
+            alert('请输入有效的充币数量');
+            return;
+        }
+
+        // 计算结果
+        const result = usdtValue * czRate/100;
+
+        document.getElementById('fee').value = result;
+    }
+
 
     function submitTransfer() {
         
@@ -77,6 +102,7 @@
         const type = document.getElementById('type').value;
         const usdt = document.getElementById('usdt').value;
         const hash = document.getElementById('hash').value;
+        const fee = document.getElementById('fee').value;
 
         if (!type) {
             Toastr.error('请选择通道类型'); 
@@ -97,6 +123,7 @@
         transferData.type = type;  
         transferData.usdt = usdt;
         transferData.hash = hash; 
+        transferData.fee = fee; 
        
         // 提交转账申请
         Fast.api.ajax({
@@ -126,9 +153,9 @@
 
 
     // 初始化
-    document.addEventListener('DOMContentLoaded', () => {
-        updateStepIndicator(1);
-    });
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     updateStepIndicator(1);
+    // });
 </script>
 
 

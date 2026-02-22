@@ -9,7 +9,7 @@
     <input type="hidden" id="fee" name="fee" value="{$supply_fee}">
     <input type="hidden" id="access_key" name="row[access_key]" value="{$supply_info.access_key}">
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">提现金额:</label>
+        <label class="control-label col-xs-12 col-sm-2">提现金额(cny):</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-withdrawAmount" class="form-control" name="row[withdrawAmount]" value="{$row.withdrawAmount|htmlentities}" type="text">
         </div>
@@ -24,7 +24,7 @@
         </div>
     </div>  
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">账户余额:</label>
+        <label class="control-label col-xs-12 col-sm-2">账户余额(usdt):</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-account" class="form-control" readonly value="{$supply_info.usdt}" name="account" type="text">
         </div>
@@ -37,21 +37,21 @@
     </div>  
     
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">提现数量:</label>
+        <label class="control-label col-xs-12 col-sm-2">提现数量(usdt):</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-usdt" class="form-control" name="row[usdt]" value="{$row.usdt|htmlentities}" type="text">
         </div>
     </div>
 
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">手续费:</label>
+        <label class="control-label col-xs-12 col-sm-2">手续费(usdt):</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-supply_fee" readonly class="form-control" name="row[supply_fee]" value="{$row.supply_fee|htmlentities}"  type="text">
         </div>
     </div>
 
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">结算数量:</label>
+        <label class="control-label col-xs-12 col-sm-2">结算数量(usdt):</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-supply_usdt" readonly class="form-control" name="row[supply_usdt]" value="{$row.supply_usdt|htmlentities}" type="text">
         </div>

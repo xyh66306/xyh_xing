@@ -35,6 +35,7 @@ public function fire(Job $job, $params)
         switch ($params['type']) {
             case "sendEmsNotice":
                 if (!isset($params['supplyinfoName'])) {
+                     $job->delete();
                     throw new \InvalidArgumentException('Missing required parameter for sendEmsNotice: supplyinfoName');
                 }                
                 $this->sendEmsNotice($params['supplyinfoName']);
@@ -42,6 +43,7 @@ public function fire(Job $job, $params)
             case "sendEmsCdsNotice":
                 // 验证 sendEmsCdsNotice 所需参数
                 if (!isset($params['email'], $params['orderid'])) {
+                     $job->delete();
                     recordLogs('Missing required parameters for sendEmsCdsNotice: email, orderid');
                     throw new \InvalidArgumentException('Missing required parameters for sendEmsCdsNotice: email, orderid');
                 }
@@ -49,10 +51,26 @@ public function fire(Job $job, $params)
                     $this->sendEmsCdsNotice($params['email'], $params['orderid']);
                     $this->sendNotice($params['user_id'], $params['orderid']);
                 } else {
+                     $job->delete();
                     recordLogs('Missing required parameters for sendNotice: user_id, orderid');
                     throw new \InvalidArgumentException('Missing required parameters for sendNotice: user_id, orderid');
                 }
                 break;
+            case "sendEmsNotice":
+                // 验证 sendEmsNotice 所需参数
+                if (!isset($params['email'], $params['orderid'])) {
+                     $job->delete();
+                    recordLogs('Missing required parameters for sendEmsCdsNotice: email, orderid');
+                    throw new \InvalidArgumentException('Missing required parameters for sendEmsCdsNotice: email, orderid');
+                }
+                if (isset($params['user_id']) && isset($params['orderid'])) {
+                    $this->sendEmsCdsNotice($params['email'], $params['orderid']);
+                } else {
+                     $job->delete();
+                    recordLogs('Missing required parameters for sendNotice: user_id, orderid');
+                    throw new \InvalidArgumentException('Missing required parameters for sendNotice: user_id, orderid');
+                }
+                break;                
             default:
                 // 可选：记录未知类型的操作
                 break;

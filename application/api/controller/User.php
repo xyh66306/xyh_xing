@@ -17,6 +17,7 @@ use app\admin\model\user\Usdt as UsdtModel;
 use fast\Random;
 use think\Config;
 use think\Validate;
+use think\Cache;
 use think\Db;
 
 /**
@@ -766,6 +767,21 @@ class User extends Api
 
     /**
      * 
+     * 获取充值订单号
+     * @return void
+     */
+    public function getCzOrderNo(){
+
+        $bianhao = getOrderNo('withdraw');
+        $token = $this->getOrderToken($bianhao);
+        $this->success("success",[
+            'bianhao'=>$bianhao,
+            'token'=>$token
+        ]);
+    }
+
+    /**
+     * 
      * czusdt资金列表
      * @return void
      */
@@ -774,6 +790,14 @@ class User extends Api
         $UsdtModel = new UsdtModel();
 
         $post = $this->request->post();
+
+        if(isset($post['auth_token'])){
+           $auth =  $this->checkOrderToken($post['bianhao'],$post['auth_token']);
+           if(!$auth){
+               $this->error("Token已过期");
+           }
+        }
+
 
         $info = $UsdtModel->where("user_id",$this->auth->id)->where("status","hidden")->find();
         if($info){
@@ -791,7 +815,7 @@ class User extends Api
             $post['fee'] = 0;
         }
         $post['act_num'] = $post['num']-$post['fee'];
-        $post['bianhao'] = getOrderNo('withdraw');
+        $post['bianhao'] = $post['bianhao'];
         $res = $UsdtModel->allowField(true)->save($post);
         if($res){
             $this->success("添加成功");
@@ -1041,5 +1065,24 @@ class User extends Api
         $userRebate->saveAll($data);
 
     }
+
+
+    //结合orderid 生成一个一次性令牌
+    public function getOrderToken($order_id)
+    { 
+        $token = md5($order_id . time() . uniqid());
+        Cache::set('order_token_' . $order_id, $token, 60*30); // 15分钟有效期
+        return $token;        
+    }
+    public function checkOrderToken($order_id, $token)
+    {
+        $cache_token = Cache::get('order_token_' . $order_id);
+        if ($cache_token == $token) {
+            // 验证成功 删除Token
+            Cache::rm('order_token_' . $order_id);
+            return true;
+        }
+        return false;
+    }    
 
 }
