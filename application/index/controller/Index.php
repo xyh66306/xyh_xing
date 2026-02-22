@@ -247,6 +247,15 @@ class Index extends Frontend
             $cjLst[$key]['username'] = Db::name("user")->where("id", $value['user_id'])->value("username");
         }
 
+
+        foreach ($rujinLst as $key => $value) {
+            $rujinLst[$key]['username'] = Db::name("user")->where("id", $value['user_id'])->value("username");
+        }
+
+        foreach ($cjLst as $key => $value) {
+            $cjLst[$key]['username'] = Db::name("user")->where("id", $value['user_id'])->value("username");
+        }
+
         $this->assign('all_company_price', $all_company_price);
         $this->assign("diff", $diff);
         $this->assign("commission_all", $commission_all);

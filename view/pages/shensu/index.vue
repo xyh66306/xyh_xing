@@ -1,14 +1,27 @@
 <template>
 	<view class="page">
 		<view class="payinfo">
+			<view class="u-info">类型</view>
+			<view class="flex u-border-bottom">
+				{{typeArr[type-1]}}
+			</view>		
+			<view class="u-info">订单号</view>
+			<view class="flex u-border-bottom">
+				{{orderid}}
+			</view>					
 			<view class="u-info">备注</view>
 			<view class="flex u-border-bottom">
 				<u-input type="textarea" border="true" placeholder="请填写订单申诉原因" v-model="intro" />
 			</view>
 			<view class="u-info">凭证</view>
 			<view class="flex u-border-bottom">
-				<u-upload :fileList="ewmlst" @afterRead="afterRead" @delete="deletePic" :maxCount="1" name="ewmlst"
-					width="150" height="150" :previewFullImage="true" uploadText="点击上传凭证"></u-upload>
+				<template v-if="pz_image && id">
+					<image :src="pz_image" mode=""></image>
+				</template>
+				<template v-else>
+					<u-upload :fileList="ewmlst" @afterRead="afterRead" @delete="deletePic" :maxCount="1" name="ewmlst"
+						width="150" height="150" :previewFullImage="true" multiple uploadText="点击上传凭证"></u-upload>
+				</template>
 			</view>			
 		</view>
 		<view class="payinfo sysStatus" v-if="ishistory">
@@ -21,7 +34,7 @@
 				{{sysbeizhu || ""}}
 			</view>			
 		</view>
-		<u-button type="primary" @click="submit()" v-if="status!=1">点击申诉</u-button>
+		<u-button type="primary" @click="submit()" v-else>立即申诉</u-button>
 	</view>
 </template>
 
@@ -39,9 +52,14 @@
 				sysbeizhu:'',
 				statusArr:["申诉中",'已处理','已驳回'],
 				status:0,
+				type:'',
+				typeArr:["兑出","兑入"],
 			}
 		},
 		onLoad(e) {
+			if(e.type){
+				this.type = e.type
+			}
 			if(e.id){
 				this.orderid = e.id
 				this.getHistory();
@@ -60,6 +78,7 @@
 				}
 				uni.$u.http.post('/api/cash/shensu', {
 					id:this.id,
+					type:this.type,	
 					orderid: this.orderid,
 					beizhu:this.intro,
 					pz_image:this.pz_image
@@ -77,12 +96,16 @@
 					orderid: this.orderid,
 				}).then(res => {
 					if(res.code==1){
+						this.id = res.data.id
 						this.ishistory = true
 						this.intro = res.data.beizhu
 						this.pz_image = res.data.pz_image
 						this.sysbeizhu = res.data.sysbeizhu
 						this.status = res.data.status
-						this.ewmlst =[res.data.pz_image];
+						// this.ewmlst =[res.data.pz_image];
+						// this.ewmlst.push(res.data.pz_image);
+						
+						console.log(this.status)
 					}
 				}).catch(res => {
 					console.log(res)
