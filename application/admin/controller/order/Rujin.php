@@ -266,8 +266,33 @@ class Rujin extends Backend
         $result = false;
         Db::startTrans();
         try {
+
+
+             if ($params['pay_status'] == 3 ) {
+                if($row['pay_status']<=2 && !$params['pinzheng_image']){
+                    Db::rollback();
+                    $this->error("请上传凭证");
+                }
+                //
+                $userModel = new UserModel();
+                //添加usdt_dj 冻结金额
+                $userModel->usdt_dj($row['user_usdt'], $row['user_id'], 8, 1);
+                //扣除usdt 金额
+                $userModel->usdt($row['user_usdt'], $row['user_id'], 8, 2, $row['orderid']);
+                $time = time();
+                if($row['yx_time']<$time){
+                    $row['order_status'] = 2;
+                }
+             
+             }
+
+
             if ($params['pay_status'] == 4 && $row['pay_status'] != 4 && $row['callback']) {
 
+                if($row['pay_status']!=3){
+                    Db::rollback();
+                    $this->error("订单状态必须是用户已审核");
+                }
                 $row['act_amount'] = $params['amount'];
                 $params['pay_time'] = time();
                 //通知买方已确认

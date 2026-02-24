@@ -232,9 +232,20 @@ class Index extends Frontend
         $commission_all_2026 = $Commission->where(['chaoshi' => 1, 'status' => 1])->sum("money");
         $commission_all_2025 = 691.5565;
         $commission_all = $commission_all_2025 + $commission_all_2026;
+        
+        $supply_chongzhi = Db::name("supply_recharge")->where("pay_status",3)->sum("usdt");
 
         // 所有分润
-        $diff = truncateDecimal($total_user_number - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt + $commission_all);
+        $diff = truncateDecimal($total_user_number - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt + $commission_all+$supply_chongzhi);
+
+
+        foreach ($rujinLst as $key => $value) {
+            $rujinLst[$key]['username'] = Db::name("user")->where("id", $value['user_id'])->value("username");
+        }
+
+        foreach ($cjLst as $key => $value) {
+            $cjLst[$key]['username'] = Db::name("user")->where("id", $value['user_id'])->value("username");
+        }
 
 
         foreach ($rujinLst as $key => $value) {
@@ -296,6 +307,7 @@ class Index extends Frontend
         $this->assign('userCzLst', $userCzLst);
         $this->assign('userCzCount', $userCzCount);
         $this->assign("yesterday",$yesterday);
+        $this->assign("supply_chongzhi",$supply_chongzhi);
         return $this->fetch();
     }
 

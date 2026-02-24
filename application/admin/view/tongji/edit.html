@@ -1,0 +1,171 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Rujin_num')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-rujin_num" data-rule="required" class="form-control" name="row[rujin_num]" type="number" value="{$row.rujin_num|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Rujin_money')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-rujin_money" data-rule="required" class="form-control" step="0.01" name="row[rujin_money]" type="number" value="{$row.rujin_money|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Rujin_supply_usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-rujin_supply_usdt" class="form-control" step="0.0001" name="row[rujin_supply_usdt]" type="number" value="{$row.rujin_supply_usdt|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Rujin_user_usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-rujin_user_usdt" class="form-control" step="0.0001" name="row[rujin_user_usdt]" type="number" value="{$row.rujin_user_usdt|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Rujin_profit_usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-rujin_profit_usdt" class="form-control" step="0.0001" name="row[rujin_profit_usdt]" type="number" value="{$row.rujin_profit_usdt|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Chujin_num')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-chujin_num" data-rule="required" class="form-control" name="row[chujin_num]" type="number" value="{$row.chujin_num|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Chujin_money')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-chujin_money" data-rule="required" class="form-control" step="0.01" name="row[chujin_money]" type="number" value="{$row.chujin_money|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Chujin_supply_usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-chujin_supply_usdt" class="form-control" step="0.0001" name="row[chujin_supply_usdt]" type="number" value="{$row.chujin_supply_usdt|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Chujin_user_usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-chujin_user_usdt" class="form-control" step="0.0001" name="row[chujin_user_usdt]" type="number" value="{$row.chujin_user_usdt|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Chujin_profit_usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-chujin_profit_usdt" class="form-control" step="0.0001" name="row[chujin_profit_usdt]" type="number" value="{$row.chujin_profit_usdt|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('User_cz_usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-user_cz_usdt" class="form-control" step="0.0001" name="row[user_cz_usdt]" type="number" value="{$row.user_cz_usdt|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Supply_tx_usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-supply_tx_usdt" class="form-control" step="0.0001" name="row[supply_tx_usdt]" type="number" value="{$row.supply_tx_usdt|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Company_profit')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-company_profit" class="form-control" step="0.0001" name="row[company_profit]" type="number" value="{$row.company_profit|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Spark_profit')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-spark_profit" class="form-control" step="0.0001" name="row[spark_profit]" type="number" value="{$row.spark_profit|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('One_profit')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-one_profit" class="form-control" step="0.0001" name="row[one_profit]" type="number" value="{$row.one_profit|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Two_profit')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-two_profit" class="form-control" step="0.0001" name="row[two_profit]" type="number" value="{$row.two_profit|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('User_total_usdt')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-user_total_usdt" class="form-control" step="0.0001" name="row[user_total_usdt]" type="number" value="{$row.user_total_usdt|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Fanyong')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-fanyong" class="form-control" step="0.0001" name="row[fanyong]" type="number" value="{$row.fanyong|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Supply_account1')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-supply_account1" class="form-control" step="0.0001" name="row[supply_account1]" type="number" value="{$row.supply_account1|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Supply_account2')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-supply_account2" class="form-control" step="0.0001" name="row[supply_account2]" type="number" value="{$row.supply_account2|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Supply_account3')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-supply_account3" class="form-control" step="0.0001" name="row[supply_account3]" type="number" value="{$row.supply_account3|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Supply_account4')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-supply_account4" class="form-control" step="0.0001" name="row[supply_account4]" type="number" value="{$row.supply_account4|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Supply_account5')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-supply_account5" class="form-control" step="0.0001" name="row[supply_account5]" type="number" value="{$row.supply_account5|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Supply_account6')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-supply_account6" class="form-control" step="0.0001" name="row[supply_account6]" type="number" value="{$row.supply_account6|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Tjdate')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-tjdate" class="form-control datetimepicker" data-date-format="YYYY-MM-DD" data-use-current="true" name="row[tjdate]" type="text" value="{$row.tjdate}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Utime')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-utime" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[utime]" type="text" value="{:$row.utime?datetime($row.utime):''}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Ctime')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-ctime" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[ctime]" type="text" value="{:$row.ctime?datetime($row.ctime):''}">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>

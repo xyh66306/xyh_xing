@@ -118,7 +118,7 @@
                             {$vo.supply_usdt} {if $index < count($rujinLst)}+{/if}
                         {/volist}
                         ={$supply_today_price}
-                    </td>                
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -218,6 +218,7 @@
                     <td>服务商提现累计笔数</td>
                     <td>服务商提现累计数量</td> 
                     <td>服务商冻结数量</td> 
+                    <td>服务商充值数量</td> 
                    <td>服务商提现累计手续费</td>                     
                 </tr>
                 <tr>
@@ -226,6 +227,7 @@
                     <td> {$total_supply_cz_number}</td>
                     <td>{$total_supply_number}</td>
                     <td>{$total_supply_freeze_usdt}</td>
+                    <td>{$supply_chongzhi}</td>
                     <td>{$total_supply_cz_fee}</td>
                 </tr>
             </table>

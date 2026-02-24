@@ -1,0 +1,31 @@
+<?php
+
+return [
+    'Rujin_num'          => '入金累计数量（个）',
+    'Rujin_money'        => '入金累计金额(cny)',
+    'Rujin_supply_usdt'  => '入金商户结算数量',
+    'Rujin_user_usdt'    => '入金承兑商结算数量',
+    'Rujin_profit_usdt'  => '入金利润',
+    'Chujin_num'         => '出金累计数量（个）',
+    'Chujin_money'       => '出金累计金额(cny)',
+    'Chujin_supply_usdt' => '出金商户结算数量',
+    'Chujin_user_usdt'   => '出金承兑商结算数量',
+    'Chujin_profit_usdt' => '出金利润',
+    'User_cz_usdt'       => '承兑商充值数量',
+    'Supply_tx_usdt'     => '商户提现数量',
+    'Company_profit'     => '公司账户利润',
+    'Spark_profit'       => 'spark资金',
+    'One_profit'         => '1队利润',
+    'Two_profit'         => '2队利润',
+    'User_total_usdt'    => '承兑商U统计',
+    'Fanyong'            => '所有返佣',
+    'Supply_account1'    => '商户RG',
+    'Supply_account2'    => '商户USK',
+    'Supply_account3'    => '商户Decode',
+    'Supply_account4'    => '商户Wetrade',
+    'Supply_account5'    => '商户BGI',
+    'Supply_account6'    => '商户2',
+    'Tjdate'             => '统计时间',
+    'Utime'              => '更新时间',
+    'Ctime'              => '创建时间'
+];
