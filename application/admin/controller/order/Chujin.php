@@ -52,7 +52,7 @@ class Chujin extends Backend
 
         $supplyModel = new Supply();
         $admin_id = $this->auth->id;
-        if ($admin_id < 5) {
+        if ($admin_id < 5 || $admin_id ==13) {
             $admin_id = 0;
         }
 
@@ -62,7 +62,7 @@ class Chujin extends Backend
         $BiModel = new BiModel();
         $biinfo = $BiModel->where("id", 1)->find();
         // $fee_dalu_supply_duichu = config('site.fee_dalu_supply_duichu');
-        $fee_dalu_supply_duichu = $supply_info['duichu_fanyong'];
+        $fee_dalu_supply_duichu = isset($supply_info['duichu_fanyong']) ? $supply_info['duichu_fanyong'] : 0;
         $fee_dalu_supply_duichu = $fee_dalu_supply_duichu / 100;
 
         $this->supply_info = $supply_info;

@@ -107,15 +107,15 @@
                 </tr>
                 <tr>
                     <td>
-                        {volist name='rujinLst' id='vo'}
-                            {$vo.user_usdt} +
+                        {volist name='rujinLst' id='vo' key="index"}
+                            {$vo.user_usdt} {if $index < count($rujinLst)}+{/if}
                         {/volist}
                         ={$user_today_price}
 
                     </td>
                     <td>
-                        {volist name='rujinLst' id='vo'}
-                            {$vo.supply_usdt} +
+                        {volist name='rujinLst' id='vo' key="index"}
+                            {$vo.supply_usdt} {if $index < count($rujinLst)}+{/if}
                         {/volist}
                         ={$supply_today_price}
                     </td>                
@@ -177,15 +177,15 @@
                 </tr>
                 <tr>
                     <td>
-                        {volist name='cjLst' id='vo'}
-                            {$vo.user_usdt} +
+                        {volist name='cjLst' id='vo' key="index"}
+                            {$vo.user_usdt} {if $index < count($cjLst)}+{/if}
                         {/volist}
                         ={$cj_user_today_price}                        
 
                     </td>
                     <td>
-                        {volist name='cjLst' id='vo'}
-                            {$vo.supply_usdt} +
+                        {volist name='cjLst' id='vo' key="index"}
+                            {$vo.supply_usdt} {if $index < count($cjLst)}+{/if}
                         {/volist}
                         ={$cj_supply_today_price}
                     </td>                
@@ -197,7 +197,13 @@
                         {/volist}
                        
                     </td>
-                </tr>                
+                </tr>   
+                <tr>
+                    <td colspan="2">
+                        统计：
+                        {$cj_company_today_price}
+                    </td>
+                </tr>             
             </table> 
         </div>  
 
@@ -242,7 +248,7 @@
                     <td>{$total_user_number}</td>
                     <td>{$userTotalUsdt}</td>
                     <td>{$total_supply_number}</td>
-                    <td>{$supply[0]} + {$supply[1]}  + {$supply[2]}  + {$supply[3]} = {$totol_supply_usdt}</td>
+                    <td>{$supply[0]} {if $supply[1]>0}+ {$supply[1]}{/if}  + {$supply[2]} {if $supply[1]>0} + {$supply[3]}{/if} = {$totol_supply_usdt}</td>
                     <td>{$all_company_price}</td>
                     <td>{$commission_all}</td>
                     <td>{$diff}</td>

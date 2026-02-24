@@ -99,22 +99,27 @@ class Rujin extends Backend
                 return $this->selectpage();
             }
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
-            
-            $list = $this->model
-                ->with('supply')
-                ->where($where)
-                ->order($sort, $order)
-                ->paginate($limit);
+
+            if ($diqu) {
+                $list = $this->model
+                    ->with(['supply'])
+                    ->where($where)
+                    ->where('diqu', $diqu)
+                    ->order($sort, $order)
+                    ->paginate($limit);
+            } else {
+                $list = $this->model
+                    ->with(['supply'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->paginate($limit);
+            }
 
 
             foreach ($list as $row) {
-                // if ($row->supply && strpos($row->supply->title, 'some keyword') !== false) {
-                //     $filteredRows[] = $row;
-                // }
-                $row->visible(['id', 'orderid','user_id', 'merchantOrderNo','amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt','utime','status','order_status','callback_status','pintai_id']);
+                $row->visible(['id', 'orderid','user_id', 'merchantOrderNo','amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt','utime','status','order_status','callback_status']);
                 $row->visible(['supply']);
                 $row->getRelation('supply')->visible(['title']);
-
                 $row->fee = $row->supply_fee;
             }
             $supply_price = $this->model->where($where)->sum("supply_usdt");
@@ -150,9 +155,17 @@ class Rujin extends Backend
         $this->request->filter(['strip_tags', 'trim']);
         if ($this->request->isAjax()) {
             //如果发送的来源是Selectpage，则转发到Selectpage
+
+            if (isset($where['ctime_text'])) {
+                $where['ctime'] = $where['ctime_text'];
+                unset($where['ctime_text']);
+            }
+
             if ($this->request->request('keyField')) {
                 return $this->selectpage();
             }
+
+
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
 
             $list = $this->model
@@ -164,7 +177,7 @@ class Rujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'orderid', 'merchantOrderNo','amount','pay_type', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt','supply_huilv','pintai_id']);
+                $row->visible(['id', 'orderid', 'merchantOrderNo','amount','pay_type', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt','supply_huilv']);
                 $row->visible(['supply']);
                 $row->getRelation('supply')->visible(['title']);
                 $row->fee = $row->supply_fee;
