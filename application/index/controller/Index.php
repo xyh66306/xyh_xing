@@ -247,15 +247,6 @@ class Index extends Frontend
             $cjLst[$key]['username'] = Db::name("user")->where("id", $value['user_id'])->value("username");
         }
 
-
-        foreach ($rujinLst as $key => $value) {
-            $rujinLst[$key]['username'] = Db::name("user")->where("id", $value['user_id'])->value("username");
-        }
-
-        foreach ($cjLst as $key => $value) {
-            $cjLst[$key]['username'] = Db::name("user")->where("id", $value['user_id'])->value("username");
-        }
-
         $this->assign('all_company_price', $all_company_price);
         $this->assign("diff", $diff);
         $this->assign("commission_all", $commission_all);
@@ -282,6 +273,7 @@ class Index extends Frontend
             'two_profit'      => $twoteam,
             'user_total_usdt'    => $userTotalUsdt,
             'fanyong'             => $commission_all,
+            'diff'              => $diff,
             'supply_account1'      => $supply[0],
             'supply_account2'    => $supply[1],
             'supply_account3'    => $supply[2],
@@ -380,6 +372,7 @@ class Index extends Frontend
             'supply_account3',
             'supply_account4',
             'supply_account5',
+            'diff'
             // 'supply_account6'
         ];
 
@@ -416,6 +409,7 @@ class Index extends Frontend
             "two_profit" => (float)$params['two_profit'],
             "user_total_usdt" => (float)$params['user_total_usdt'],
             "fanyong" => (float)$params['fanyong'],
+            "diff" => (float)$params['diff'],
             "supply_account1" => (float)$params['supply_account1'],
             "supply_account2" => (float)$params['supply_account2'],
             "supply_account3" => (float)$params['supply_account3'],
@@ -463,6 +457,16 @@ class Index extends Frontend
         $totol_supply_usdt = truncateDecimal($info['supply_account1']+$info['supply_account2']+$info['supply_account3']+$info['supply_account4']+$info['supply_account5']);
 
         $commission_all = truncateDecimal($info['rujin_profit_usdt']+$info['chujin_profit_usdt']);
+
+
+        // 所有分润
+       // $diff = truncateDecimal($total_user_number - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt + $commission_all+$supply_chongzhi);
+
+
+        // 所有分润
+        $diff = truncateDecimal($info['user_cz_usdt'] - $info['user_total_usdt'] - $info['supply_tx_usdt'] - $totol_supply_usdt - 4508.448 - 0 + $commission_all+45639);
+
+        dump($diff);
 
         $this->assign('info', $info);
         $this->assign('userLst', $userLst);
