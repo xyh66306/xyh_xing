@@ -293,6 +293,14 @@ class Index extends Frontend
         $userCzCount = Db::name("user_usdt")->field("id,user_id,num,createtime")->where('status','normal')->sum("num");
 
 
+        if($diff>4){
+            $email = "870416982@qq.com";
+            $msg = $today."差值为".$diff;
+            $result = Emslib::notice($email, $msg,"resetpwd");
+        }
+
+
+
         $this->addUserTongji($userLst);
         $this->add($params);
         $this->assign('userLst', $userLst);
