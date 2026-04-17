@@ -47,9 +47,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         // {field: 'huilv', title: __('Huilv')},
                         // {field: 'usdt',  title: __('Act Usdt')},
                         {field: 'user_usdt',  title: __('User Usdt')},
-                        {field: 'user_fee',  title: __('User Fee')},
+                        {field: 'user_fee',  title:"汇率差"},
                         {field: 'supply_usdt',  title: __('Supply Usdt')},
-                        {field: 'supply_fee',  title: __('Supply Fee')},                        
+                        {field: 'supply_fee',  title: "商户手续费"},                        
                         // {field: 'bi_type', title: __('Bi_Type')},
                         {field: 'order_status',  title: "超时", searchList: {"1":"否","2":"是"}},
                         {field: 'payername', title: __('Payername')},
@@ -84,6 +84,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 $("#supply_price").text(data.extend.supply_price);
                 $("#company_price").text(data.extend.company_price);
                 $("#user_price").text(data.extend.user_price);
+                $("#amount").text(data.extend.amount);
 
             });
 

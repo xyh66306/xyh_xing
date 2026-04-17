@@ -20,10 +20,10 @@
         <div class="user">
             <table border='1' cellpadding='10' cellspacing='0'>
                 <tr>
-                    <td>服务商RG</td>
-                    <td>服务商USK</td>
-                    <td>服务商Decode</td>
-                    <td>服务商Wetrade</td>
+                    <td>商户RG</td>
+                    <td>商户USK</td>
+                    <td>商户Decode</td>
+                    <td>商户Wetrade</td>
                     <td>用户usdt</td>
                     <td>用户冻结usdt</td>
                     <td>1队</td>
@@ -55,7 +55,7 @@
                 <tr>
                     <td>2025公司资产利润</td>
                     <td>2026公司资产</td>
-                    <td>累计</td>
+                    <td>公司资产</td>
                     <td>实际利润= 公司资产 + spark</td>
                 </tr>
                 <tr>
@@ -74,7 +74,7 @@
                     <td>累计金额（cny）</td>
                     <th>商户累计结算数量(usdt)</th>
                     <th>承兑商累计结算数量(usdt)</th>
-                    <th>手续费+汇率差 利润</th>
+                    <th>总利润</th>
                     <td>今日订单数量(个)</td>
                     <td>今日累计金额(cny)</td>
                     <th>今日承兑商结算数量(usdt)</th>
@@ -95,8 +95,20 @@
                     <td>{$company_today_price}</td>
                     <td>{$fanyong_daili_taday_total}</td>                    
                 </tr>
+                <tr>
+                    <td>商户RG(条)</td>
+                    <td>商户Decode（条）</td>
+                    <td colspan="9">
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>{$rgRjCount}</td>
+                    <td>{$deRjCount}</td>
+                    <td colspan="9"></td>
+                </tr>                
             </table>
-          
+        </div>
         </div>   
         <div class="order mt20">
             <h3>入金统计详情</h3>  
@@ -118,7 +130,7 @@
                             {$vo.supply_usdt} {if $index < count($rujinLst)}+{/if}
                         {/volist}
                         ={$supply_today_price}
-                    </td>
+                    </td>                
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -144,7 +156,7 @@
                     <td>累计金额（cny）</td>
                     <th>商户累计结算数量(usdt)</th>
                     <th>承兑商累计结算数量(usdt)</th>
-                    <th>手续费+汇率差 利润</th>
+                    <th>总利润</th>
                     <td>今日订单数量(个)</td>
                     <td>今日累计金额(cny)</td>
                     <th>今日承兑商结算数量(usdt)</th>
@@ -165,6 +177,18 @@
                     <td>{$cj_company_today_price}</td>
                     <td>{$cj_taday_daili_fanyong_total}</td>                    
                 </tr>
+                <tr>
+                    <td>商户RG(条)</td>
+                    <td>商户Decode（条）</td>
+                    <td colspan="9">
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>{$rgCjCount}</td>
+                    <td>{$deCjCount}</td>
+                    <td colspan="9"></td>
+                </tr>                  
             </table>            
         </div>   
         
@@ -215,11 +239,11 @@
                 <tr>
                     <td>承兑商充值累计笔数</td>
                     <td>承兑商充值累计数量</td>
-                    <td>服务商提现累计笔数</td>
-                    <td>服务商提现累计数量</td> 
-                    <td>服务商冻结数量</td> 
-                    <td>服务商充值数量</td> 
-                   <td>服务商提现累计手续费</td>                     
+                    <td>商户提现累计笔数</td>
+                    <td>商户提现累计数量</td> 
+                    <td>商户冻结数量</td> 
+                    <td>商户充值数量</td> 
+                   <td>商户提现累计手续费</td>                     
                 </tr>
                 <tr>
                     <td>{$total_user_cz_number}</td>
@@ -240,8 +264,8 @@
                 <tr>
                     <td>承兑商充值</td>
                     <td>承兑商账户余额</td>
-                    <td>服务商提现额度</td>
-                    <td>服务商余额</td>
+                    <td>商户提现额度</td>
+                    <td>商户余额</td>
                     <td>兑出+兑入利润</td>
                     <td>返佣</td>
                     <td>误差计算</td>

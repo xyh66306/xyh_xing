@@ -83,6 +83,9 @@ class Index extends Frontend
         $company_price = truncateDecimal($user_fee + $supply_fee);
 
 
+        $rgRjCount = $rujinModel->where("pay_status", 4)->where("status", 1)->where("pintai_id","1250803358")->whereTime('ctime', 'today')->count("id");
+        $deRjCount = $rujinModel->where("pay_status", 4)->where("status", 1)->where("pintai_id","1241209564")->whereTime('ctime', 'today')->count("id");
+
         $supply_today_price = $rujinModel->where("pay_status", 4)->where("status", 1)->whereTime('ctime', 'today')->sum("supply_usdt");
         $user_today_price = $rujinModel->where("pay_status", 4)->where("status", 1)->whereTime('ctime', 'today')->sum("user_usdt");
         $total_today_money = $rujinModel->where("pay_status", 4)->where("status", 1)->whereTime('ctime', 'today')->sum("amount");
@@ -113,6 +116,9 @@ class Index extends Frontend
         $cj_company_price =  $cj_user_fee + $cj_supply_fee;
 
 
+        $rgCjCount = $chujinModel->where("pay_status",">=",1)->where("pay_status", '<=', 5)->where("access_key","1250803358")->whereTime('updatetime', 'today')->count("id");
+        $deCjCount = $chujinModel->where("pay_status",">=",1)->where("pay_status", '<=', 5)->where("access_key","1241209564")->whereTime('updatetime', 'today')->count("id");
+
         $cj_supply_today_money = $cj_total_today_money = $chujinModel->where("pay_status", 5)->whereTime('updatetime', 'today')->sum("withdrawAmount");
         $cj_supply_today_money2 = $chujinModel->where("pay_status", "<=", 5)->whereTime('updatetime', 'today')->sum("withdrawAmount");
         $cj_supply_today_price = $chujinModel->where("pay_status", 5)->whereTime('updatetime', 'today')->sum("supply_usdt");
@@ -130,8 +136,8 @@ class Index extends Frontend
         $supply = Db::name("supply")->where("id", '>', 2)->column('usdt');
         $supply_freeze_usdt = Db::name("supply")->where("id", '>', 2)->column('freeze_usdt');
         $company = Db::name("company")->where("id", 1)->find();
-        $oneteam = Db::name("user")->where("id", 168023)->value('usdt');
-        $twoteam = Db::name("user")->where("id", 168024)->value('usdt');
+        $oneteam = Db::name("user")->where("id", 168024)->value('usdt');
+        $twoteam = Db::name("user")->where("id", 168023)->value('usdt');
         $spark = Db::name("user")->where("id", 168022)->value('usdt');
         $userTotalUsdt = Db::name("user")->where("usdt", "<>", 0)->sum('usdt');
         $userTotalUsdtdJ = Db::name("user")->where("usdt", "<>", 0)->sum('usdt_dj');
@@ -173,7 +179,9 @@ class Index extends Frontend
             'fanyong_taday_total_spark'  => $fanyong_taday_total_spark,
             'supply'            => $supply,
             'totol_supply_usdt' => $totol_supply_usdt,
-            'total_supply_freeze_usdt' => $total_supply_freeze_usdt
+            'total_supply_freeze_usdt' => $total_supply_freeze_usdt,
+            'rgRjCount' => $rgRjCount,
+            'deRjCount' => $deRjCount,
         ];
         $this->assign($data);
 
@@ -213,6 +221,8 @@ class Index extends Frontend
             'cj_company_today_price'   => $cj_company_today_price,
             'cj_taday_daili_fanyong_total' => $cj_taday_daili_fanyong_total,
             'cj_company_price' => $cj_company_price,
+            'rgCjCount' => $rgCjCount,
+            'deCjCount' => $deCjCount,
         ];
         $this->assign($cjdata);
 

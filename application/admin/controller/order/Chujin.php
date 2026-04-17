@@ -256,6 +256,27 @@ class Chujin extends Backend
                 $commissionModel->update(['status'=>2,'order_status'=>3],['fy_orderid'=>$row['orderid']]);                
             }
 
+            //取消商户订单
+            if ($params['pay_status'] == 6 && $row['pay_status']==3) {
+                 //添加商户冻结金额
+                $Usdtlog = new Usdtlog();
+                $Usdtlog->quxiaotxLog($row['access_key'],$row['supply_usdt'],1,$row['orderid'],2);
+
+                //添加承兑商冻结金额
+                $userModel = new UserModel();
+                $res2 = $userModel->usdt_dj($row['user_usdt'],$row['user_id'],7,1);
+
+                //减少用户金额
+                $res3 =  $userModel->usdt($row['user_usdt'],$row['user_id'],7,2);                
+                if(!$res2 || !$res3){
+                    Db::rollback();
+                    $this->error('扣除承兑商冻结金额失败');                    
+                }                
+
+                $commissionModel = new Commission();
+                $commissionModel->update(['status'=>2,'order_status'=>3],['fy_orderid'=>$row['orderid']]);                
+            }            
+
 
             //是否采用模型验证
             if ($this->modelValidate) {
@@ -302,7 +323,9 @@ class Chujin extends Backend
         //         $this->error('提现数量超出可提现数量');
         //     }
         // }
-
+        if($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行'){
+            $this->error('不支持工商和农业');
+        }
 
         $params = $this->preExcludeFields($params);
         $result = false;

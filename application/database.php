@@ -1,14 +1,10 @@
 <?php
+/*
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+ */
 
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
-// +----------------------------------------------------------------------
 
 use think\Env;
 
@@ -18,11 +14,11 @@ return [
     // 服务器地址
     'hostname'        => Env::get('database.hostname', '127.0.0.1'),
     // 数据库名
-    'database'        => Env::get('database.database', 'bingocn'),
+    'database'        => Env::get('database.database', 'otc'),
     // 用户名
-    'username'        => Env::get('database.username', 'bingocn'),
+    'username'        => Env::get('database.username', 'root'),
     // 密码
-    'password'        => Env::get('database.password', 'Gmh4tbsYDw6rZZKT'),
+    'password'        => Env::get('database.password', 'root'),
     // 端口
     'hostport'        => Env::get('database.hostport', ''),
     // 连接dsn

@@ -126,10 +126,11 @@ class Rujin extends Backend
             $user_price = $this->model->where($where)->sum("user_usdt");
             $user_fee = $this->model->where($where)->sum("user_fee");
             $supply_fee = $this->model->where($where)->sum("supply_fee");
+            $amount = $this->model->where($where)->sum("amount");
             $company_price =  truncateDecimal($user_fee + $supply_fee);
 
 
-            $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('supply_price','user_price','company_price'));
+            $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('supply_price','user_price','company_price',"amount"));
 
             return json($result);
         }
@@ -264,16 +265,17 @@ class Rujin extends Backend
         }
         $params = $this->preExcludeFields($params);
         $result = false;
+
+        if($params['pay_status']>=2 && $params['pay_status'] <=4 && !$params['pinzheng_image']){
+            Db::rollback();
+            $this->error("请上传凭证");
+            return;
+        }
+
         Db::startTrans();
         try {
 
-
-             if ($params['pay_status'] == 3 ) {
-                if($row['pay_status']<=2 && !$params['pinzheng_image']){
-                    Db::rollback();
-                    $this->error("请上传凭证");
-                }
-                //
+            if ($params['pay_status'] == 3 ) {
                 $userModel = new UserModel();
                 //添加usdt_dj 冻结金额
                 $userModel->usdt_dj($row['user_usdt'], $row['user_id'], 8, 1);

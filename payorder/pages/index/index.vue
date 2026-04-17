@@ -219,12 +219,12 @@
 								that.bankCard.address = data.bankInfo.bank_zhmc
 								that.paymentMethods[2]['isShow'] = true
 							}
-							if (data.wxpay) {
+							if (data.wxpay && data.amount<10000) {
 								that.username = data.wxpay.username
 								that.wechatQRCode = data.wxpay.pay_ewm_image
 								that.paymentMethods[0]['isShow'] = true
 							}
-							if (data.alipay) {
+							if (data.alipay && data.amount<10000) {
 								that.username = data.alipay.username
 								that.alipayQRCode = data.alipay.pay_ewm_image
 								that.paymentMethods[1]['isShow'] = true

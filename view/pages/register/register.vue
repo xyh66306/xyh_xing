@@ -25,7 +25,7 @@
 						maxlength="16"></u--input>
 				</u-form-item>
 				<u-form-item label="邀请码" prop="invite" borderBottom ref="invite">
-					<u--input type="number" v-model="loginForm.invite" border="none" disabled placeholder="请输入邀请码"></u--input>
+					<u--input type="number" v-model="loginForm.invite" border="none"  placeholder="请输入邀请码"></u--input>
 				</u-form-item>
 				<!-- -->
 			</u--form>

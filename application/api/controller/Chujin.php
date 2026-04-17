@@ -101,7 +101,7 @@ class Chujin extends Api
 
         $data['authtoken'] = $this->getOrderToken($orderid);
         $data['ctime'] = date("Y-m-d H:i:s",$data['createtime']);
-        // $data['pay_ewm_image'] = $data['pay_ewm_image']?_sImage($data['pay_ewm_image']):'';
+        $data['pinzheng_image'] = $data['pinzheng_image']?_sImage($data['pinzheng_image']):'';
         if($data['pay_ewm_image']){
             $arr = explode(",", $data['pay_ewm_image']);
             for ($i = 0; $i < count($arr); $i++) {
@@ -208,7 +208,7 @@ class Chujin extends Api
             $this->error('订单金额不足');
         }
         if (!$this->checkOrderToken($orderId, $authtoken)) {
-            $this->error('令牌验证失败');
+            $this->error('请刷新页面,重新提交');
         }
         if($info['pay_status']!=2){
              $this->error('状态错误!请联系客服');

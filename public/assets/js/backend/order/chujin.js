@@ -98,7 +98,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'cardNumber', title: __('Cardnumber'), operate: 'LIKE'},
                         {field: 'bankName', title: __('Bankname'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'bankBranchName', title: __('Bankbranchname'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
-                        {field: 'pay_ewm_image', title: __('Pay_ewm_image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
+                        {field: 'pay_ewm_image', title: __('Pay_ewm_image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.images},
                         {field: 'withdrawCurrency', title: "提现金额(CNY)", operate: 'LIKE'},
                         {field: 'usdt', title: "提现数量(USDT)", operate: 'LIKE'},
                         {field: 'supply_fee', title: "手续费(USDT)", operate: 'LIKE'},

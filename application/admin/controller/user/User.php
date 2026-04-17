@@ -265,6 +265,11 @@ class User extends Backend
                 $params['bianhao'] = getOrderNo('user');
             }
 
+            if($params['paypwd']){
+                $paypwd = $params['paypwd'];
+                $params['paypwd'] = $this->getEncryptPassword($paypwd, $row['salt']); 
+            }
+
             //是否采用模型验证
             if ($this->modelValidate) {
                 $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));

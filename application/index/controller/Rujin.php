@@ -1,4 +1,9 @@
 <?php
+/*
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+ */
 
 namespace app\index\controller;
 
@@ -42,7 +47,7 @@ class Rujin extends Frontend
 
             $userModel = new UserModel();
             $userInfo = $userModel->where(['id'=>$value['user_id']])->find();
-            $exportData['type']     = "sendEmsNotice";
+            $exportData['type']     = "sendEmsCdsNotice";
             $exportData['email']    = $userInfo['email'];
             $exportData['orderid']  = $value['orderid'];
             $exportData['user_id']    = $value['user_id'];

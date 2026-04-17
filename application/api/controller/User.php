@@ -794,7 +794,7 @@ class User extends Api
         if(isset($post['auth_token'])){
            $auth =  $this->checkOrderToken($post['bianhao'],$post['auth_token']);
            if(!$auth){
-               $this->error("Token已过期");
+               $this->error("请勿重复提交");
            }
         }
 
@@ -875,6 +875,7 @@ class User extends Api
         $page = $this->request->post("page",1);
         $type = $this->request->post("type",'');
         $flow_type = $this->request->post("flow_type",'');
+        $open_team = $this->request->post("open_team",false);
 
         $usdtLogModel = new UsdtLog();
 
@@ -888,6 +889,12 @@ class User extends Api
         if($flow_type){
             $where["flow_type"] = $flow_type;
         }
+
+        if(!$open_team){
+            $where["type"] = ['neq',5];
+        }
+
+
 
         $list = $usdtLogModel->where($where)->page($page)->order("id desc")->select();
         $data['count'] =  $usdtLogModel->where($where)->count("id");

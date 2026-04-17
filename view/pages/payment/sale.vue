@@ -31,10 +31,12 @@
 				<view class="flex u-border-bottom">
 					<view>{{details.bank_name}}</view>
 				</view>
-				<view class="u-info">支行名称</view>
-				<view class="flex u-border-bottom">
-					<view>{{details.bank_zhihang}}</view>
-				</view>
+				<block v-if="details.bank_zhihang">
+					<view class="u-info">支行名称</view>
+					<view class="flex u-border-bottom">
+						<view>{{details.bank_zhihang}}</view>
+					</view>
+				</block>
 			</template>
 			<template v-else>
 				<view class="u-info">付款账户</view>

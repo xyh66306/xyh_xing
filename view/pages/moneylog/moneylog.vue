@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<view class="list">
+		<view class="list" @click="openTeam">
 			<view class="item u-border-bottom" v-for="(vo,index) in list" :key="index">
 				<view class="icon">
 					<template v-if="vo.type==1">
@@ -111,11 +111,14 @@
 				flow_type:'',
 				loadStatus: 'more',
 				list:[],
-				randomBgColor:''
+				randomBgColor:'',
+				open_team:false,//true不显示返佣
+				timer:0,
 			}
 		},
 		onLoad() {
 			this.getUsdtLog();
+			this.open_team = uni.getStorageSync('open_team') ? true : false;
 		},
 		onReachBottom() {
 			if (this.loadStatus === 'more') {
@@ -126,6 +129,25 @@
 			this.randomBgColor = this.getRandomColor(); // 在组件挂载后设置随机颜色
 		},		
 		methods: {
+			openTeam() {
+				if (this.timer) {
+					clearTimeout(this.timer);
+				}
+				
+				this.times++;
+				if (this.times >= 5) {
+					this.open_team = !this.open_team;
+					uni.setStorageSync('open_team', this.open_team);
+					uni.$u.toast(this.open_team ? '显示返佣数据' : '已关闭返佣数据');
+					this.times = 0;
+					this.list = [];
+					this.getUsdtLog();
+					return;
+				}
+				this.timer = setTimeout(() => {
+					this.times = 0;
+				}, 1000);
+			},			
 			getRandomColor() {
 			  const letters = '0123456789ABCDEF';
 			  let color = '#';
@@ -139,6 +161,7 @@
 					page:this.page,
 					type:this.type,
 					flow_type:this.flow_type,
+					open_team:this.open_team
 				}).then((res)=>{
 					if(res.code == 1) {
 						const _list = res.data.list;

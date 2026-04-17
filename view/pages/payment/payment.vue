@@ -29,7 +29,7 @@
 					<u-button type="primary" size="mini" plain @click="copy(details.withdrawAmount)">复制</u-button>
 				</view>
 			</view>										
-			<template v-if="details.pay_type=='bank'">
+			<template v-if="details.bank_account">
 				<view class="u-info">付款账户</view>
 				<view class="flex u-border-bottom">
 					<view>{{details.bank_account}}</view>
@@ -52,8 +52,8 @@
 					</view>
 				</view>
 			</template>
-			<template v-else>
-				<view class="u-info">付款账户</view>
+			<template v-if="details.pinzheng_image">
+<!-- 				<view class="u-info">付款账户</view>
 				<view class="flex u-border-bottom">
 					<view>{{details.pay_account}}</view>
 					<view class="copy">
@@ -68,7 +68,13 @@
 						<template v-if="details.pay_type=='wxpay'">微信</template>
 					
 					</view>
-				</view>			
+				</view>	 -->
+				<view class="u-info">付款二维码</view>
+				<view class="flex u-border-bottom">
+					<view>
+						<image :src="details.pinzheng_image" @click="preview" class="pay_ewm_img"></image>
+					</view>
+				</view>										
 			</template>	
 		
 			<template v-if="details.pay_ewm_image_arr.length>0">
@@ -165,6 +171,7 @@
 					ctime:'',
 					pay_ewm_image_arr:[],
 					authtoken:'',
+					pinzheng_image:''
 				},
 				pay_status:'',
 				orderid:'',
@@ -223,6 +230,13 @@
 						}
 					}	
 				})	
+			},
+			preview(){
+				const urls = [this.details.pinzheng_image];
+				uni.previewImage({
+					current: 1,
+					urls: urls
+				});
 			},
 			previewImage(index) {
 			  const urls = this.details.pay_ewm_image_arr
@@ -323,11 +337,12 @@
 							pay_ewm_image:data.pay_ewm_image,
 							pay_ewm_image_arr:data.pay_ewm_image_arr,
 							ctime:data.ctime, 
-							authtoken:data.authtoken
+							authtoken:data.authtoken,
+							pinzheng_image:data.pinzheng_image
 						}
-						if(data.pinzheng_image){
-							that.pay_ewm.push(data.pinzheng_image);
-						}
+						// if(data.pinzheng_image){
+						// 	that.pay_ewm.push(data.pinzheng_image);
+						// }
 					}				
 				}).catch(res => {
 					// console.log(res)

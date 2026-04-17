@@ -145,7 +145,7 @@ class Cash extends Api
 
         if($params['amount']<3500) {
             $this->error('不能小于最低金额3500');
-        }     
+        }   
         
         if($params['amount']>500010) {
             $this->error('不能超过最高金额50万');
@@ -164,7 +164,7 @@ class Cash extends Api
 
         $where = [];
         $order = 'pay_sort desc,id desc';
-        if($this->access_key == '1250730111'){
+        if($this->access_key == '1250730111' ||  $this->access_key == '1525364505'){
             // 测试账户
             // $rj_user_id = config('site.rj_user_id');
             
@@ -200,16 +200,29 @@ class Cash extends Api
                     $order = 'pay_sort desc,id desc';
 
                     if(!$userInfo){
-
-                        if($params['amount']>=7200){
+                        $ulist =[];
+                        if($params['amount']>=7000){
                             //所有信任用户
                             $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->order($order)->column('id'); //信任用户
-                            $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->order($order)->column('id'); //普通用户
-                            $ulist = array_merge($xrulist,$ptulist);
+
+                            $ptulist = []; //大额限制普通用户
+                            if($params['amount']>10000){
+                                $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->where("min_cny",">=",10000)->order($order)->column('id'); //大额限制普通用户
+                            }
+
+                            $ptulist2 = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->where("big",2)->where("min_cny",0)->order($order)->column('id');
+
+                            $ulist = array_merge(
+                                is_array($xrulist) ? $xrulist : [], 
+                                is_array($ptulist) ? $ptulist : [], 
+                                is_array($ptulist2) ? $ptulist2 : []
+                            );
+                            $ulist = array_unique($ulist);
+                            
                         }else{
                             //小额信任用户
                             $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->where("big",2)->order($order)->column('id'); //信任用户
-                            $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->where("big",2)->order($order)->column('id'); //普通用户
+                            $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->where("big",2)->where("min_cny",0)->order($order)->column('id'); //普通用户
                             $ulist = array_merge($xrulist,$ptulist);
                         }
 
@@ -237,7 +250,7 @@ class Cash extends Api
                             }
                         }  
                     }
-                    Cache::set($name,$userInfo,60*2);
+                    Cache::set($name,$userInfo,60*20);
                 }
             }else{
                 $where['diqu'] = $params['diqu'];

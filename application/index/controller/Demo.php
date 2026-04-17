@@ -70,10 +70,10 @@ class Demo extends Frontend
             //添加用户金额
             // $userModel->usdt("986.6064", 168041, 8, 2,91592);
             
-            // $order_id = "87011";
+            // $order_id = "202604020544220496";
             // $order_info = Db::name("order_rujin")->where("orderid",$order_id)->find();
 
-            // $pintai_id = "1250803358";
+            // $pintai_id = "1525364505";
             // $supplyModel = new Supply();
             // $info = $supplyModel->where('access_key', $pintai_id)->find();
 
@@ -92,10 +92,34 @@ class Demo extends Frontend
             // $taskModel->addTask($data, "Cash");    
             
             
-            $userModel = new User();
+            // $userModel = new User();
             // $userModel->usdt(497.8843,168033, 6, 2,92402);
             // $userModel->usdt(497.8843, 168033, 8, 2,92402);
+
+
+            $order_id = "202604020526500225";
+            $order_info = Db::name("order_rujin")->where("orderid",$order_id)->find();
+
+            $pintai_id = "1525364505";
+            $supplyModel = new Supply();
+            $info = $supplyModel->where('access_key', $pintai_id)->find();
+
+            $taskModel = new Task();
+            $data = [
+                'access_key'    => $info['access_key'],
+                'access_secret' => $info['access_secret'],
+                'name' => 'cash',
+                'message' => '',
+                'params' => [
+                    'orderid' => $order_id,
+                    'url'  => "https://api-test.logtec.dev/fapi/payment/psp/public/inlandxjpay/withdraw/back",
+                    'pay_status' => 3
+                ]
+            ];
+            $taskModel->addTask($data, "Sell");    
+
         
     }
+    
 
 }

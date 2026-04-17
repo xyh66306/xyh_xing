@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:6:{s:78:"E:\wwwroot\2025\git\xyh_xing\public/../application/admin\view\index\index.html";i:1723629628;s:68:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\meta.html";i:1689043530;s:70:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\header.html";i:1689043530;s:68:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\menu.html";i:1689043530;s:71:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\control.html";i:1689043530;s:70:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\script.html";i:1689043530;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:6:{s:78:"E:\wwwroot\2025\git\xyh_xing\public/../application/admin\view\index\index.html";i:1723629628;s:68:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\meta.html";i:1689043530;s:70:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\header.html";i:1775010404;s:68:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\menu.html";i:1689043530;s:71:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\control.html";i:1689043530;s:70:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\script.html";i:1689043530;}*/ ?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -63,7 +63,7 @@
             <ul class="nav navbar-nav">
 
                 <li class="hidden-xs">
-                    <a href="/" target="_blank"><i class="fa fa-home" style="font-size:14px;"></i> <?php echo __('Home'); ?></a>
+                    <a href="/kyc2024.php/general/index?ref=addtabs"><i class="fa fa-home" style="font-size:14px;"></i> <?php echo __('Home'); ?></a>
                 </li>
 
                 <!-- 清除缓存 -->

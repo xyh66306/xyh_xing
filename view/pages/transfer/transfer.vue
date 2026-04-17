@@ -9,7 +9,7 @@
 		<view class="item">
 			<view class="title">数量</view>
 			<view class="input">
-				<u-input type="number" v-model="num" placeholder="最小转账数量1">
+				<u-input type="digit" v-model="num" placeholder="最小转账数量1">
 					<template slot="suffix">
 						<view class="flex">
 							<view class="u-info">USDT</view>

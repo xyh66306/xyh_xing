@@ -63,29 +63,29 @@ class Buy extends Frontend
 
     public function cash()
     { 
-        $url = "https://bingocn.wobeis.com/openapi/cash/index";
+        $url = "http://www.otn.com/openapi/cash/index";
 
         $randomStr = $this->getRandomStr(32);
         
         // $randomStr = "87986fe0c0de401da57f1f5987a66f05";
 
         $header = [
-            'accesskey' => '1251201271',
+            'accesskey' => '1525364505',
             'randomstr' => $randomStr,
             'gmtrequest' => time(),
         ];
-        $access_secret = '04e53093edba7b32528af3949483051a';
+        $access_secret = 'c87047c344517d5b26d5de992b93ce5b';
         $sign = $this->makeSign($header, $access_secret);
         $header['signature'] = $sign;
 
 
 
         $params = [
-            'access_key' => '1251201271',   
+            'access_key' => '1525364505',   
             'randomStr' => $randomStr,         
             'gmtRequest'=> time(),
         ];
-        $access_secret = '04e53093edba7b32528af3949483051a';
+        $access_secret = 'c87047c344517d5b26d5de992b93ce5b';
         $sign = $this->makeSign($params,$access_secret);
 
 
@@ -94,7 +94,7 @@ class Buy extends Frontend
         $data['signature'] = $sign;
         $data['backurl'] = 'https://bingocn.wobeis.com/index/index/ceshi';
         $data['orderid'] = "casher".date("YmdHis",time());
-        $data['amount'] = '110000';
+        $data['amount'] = '1000';
         $data['diqu'] = 1;
         $data['payername'] = '李四';
 
@@ -105,6 +105,55 @@ class Buy extends Frontend
 
     }    
 
+
+    public function chujin()
+    { 
+        $url = "https://bingocn.wobeis.com/openapi/sell/index";
+
+        $randomStr = $this->getRandomStr(32);
+        
+
+        $header = [
+            'accesskey' => '1525364505',
+            'randomstr' => $randomStr,
+            'gmtrequest' => time(),
+        ];
+        $access_secret = 'c87047c344517d5b26d5de992b93ce5b';
+        $sign = $this->makeSign($header, $access_secret);
+        $header['signature'] = $sign;
+
+
+
+        $params = [
+            'access_key' => '1525364505',   
+            'randomStr' => $randomStr,         
+            'gmtRequest'=> time(),
+        ];
+        $sign = $this->makeSign($params,$access_secret);
+
+
+        $data = $params;
+        $data['access_secret'] = $access_secret;
+        $data['signature'] = $sign;
+        $data['webhookUrl'] = 'https://bingocn.wobeis.com/index/index/ceshi';
+        $data['orderid'] = "casher".date("YmdHis",time());
+        // $data['amount'] = '8000';
+        $data['diqu'] = 1;
+
+        $data['usdt']   =525;
+        $data['realName'] = 'feng+feng';
+        $data['cardNumber'] = '6564777';
+        $data['bankName'] = 'er';
+        $data['bankBranchName'] = 'zhongyinh';
+        $data['pay_type'] = 'wxpay';
+        $data['pay_account'] = '123456789';
+        $data['pay_ewm_image'] = '/image.png';
+
+        $data['diqu'] =1;
+        $res = $this->postCurl($url,$data,$header);
+        var_dump($res);
+
+    }        
 
 
     public function makeSign($params = [], $secret = '')

@@ -98,6 +98,12 @@ class Details extends Api
         // if($detailsInfo['yx_time']-time()<=0){
         //     return $this->error('已超时');
         // }
+        if($wxpayinfo && $wxpayinfo['pay_ewm_image']){
+            $wxpayinfo['pay_ewm_image'] = _sImage($wxpayinfo['pay_ewm_image']);
+        }
+        if($alipayinfo && $alipayinfo['pay_ewm_image']){
+            $alipayinfo['pay_ewm_image'] = _sImage($alipayinfo['pay_ewm_image']);
+        }        
 
         $minutes = intdiv($detailsInfo['yx_time']-time(),60); 
         $seconds =  floatval(($detailsInfo['yx_time']-time())%60); 

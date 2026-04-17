@@ -62,7 +62,13 @@
 								content: message,
 								success: res => {
 									if (res.confirm) {
+										// #ifdef H5
 										window.location.href = "http://down.wobeis.com/wap/#/?id=4";
+										// #endif
+										// #ifdef APP
+										plus.runtime.openURL("http://down.wobeis.com/wap/#/?id=4");
+										// #endif
+										
 									}
 								}
 							})

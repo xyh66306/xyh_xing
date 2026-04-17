@@ -115,7 +115,8 @@
 				biName:'CNY',
 				showBi:false,
 				open_team: false,
-				userInfo:{},	
+				userInfo:{},
+				tishi:false
 			}
 		},
 		onLoad() {
@@ -127,6 +128,7 @@
 		},
 		methods: {
 			confirm(){
+				this.tishi = true
 				this.show = false
 				uni.navigateTo({
 					url:"/pages/user/info"
@@ -136,8 +138,10 @@
 				uni.$u.http.post('/api/user/getUserinfo').then(res => {
 					if(res.code == 1) {
 						this.userInfo =res.data;
-						if(!res.data.letstalk){
-							this.show = true
+						if(!res.data.letstalk && res.data.sfz_status==1){
+							if(!this.tishi){
+								this.show = true	
+							}
 						}
 					}
 				})

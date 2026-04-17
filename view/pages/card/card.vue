@@ -80,7 +80,7 @@
 					</view>
 
 					<!-- 微信支付 -->
-					<view class="popup-item" @click="handleClick('wxpay')" v-if="showAddWxpay">
+<!-- 					<view class="popup-item" @click="handleClick('wxpay')" v-if="showAddWxpay">
 						<view class="popup-icon wechat-icon">
 							<u-icon name="weixin-fill" size="32" color="#fff"></u-icon>
 						</view>
@@ -89,7 +89,7 @@
 							<text class="popup-tip">支持个人微信</text>
 						</view>
 						<u-icon name="arrow-right" size="20" color="#ccc"></u-icon>
-					</view>
+					</view> -->
 
 					<!-- 银行卡 -->
 					<view class="popup-item" @click="handleClick('bank')" v-if="showAddBankpay">

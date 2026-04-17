@@ -1,4 +1,9 @@
 <?php
+/*
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+ */
 
 
 namespace app\api\controller;
@@ -29,9 +34,9 @@ class Commission extends Api
         $userModel       = new UserModel();
         $userTeam        = new UserTeam();
         
-        $teamids = $userTeam->where("user_id",$user_id)->column("team_user_id");
+        // $teamids = $userTeam->where("user_id",$user_id)->column("team_user_id");
 
-        $list = $commissionModel->where("p_userid",'in',$teamids)->page($page)->select();
+        $list = $commissionModel->where("p_userid",$user_id)->page($page)->order("id desc")->select();
 
         foreach ($list as $key => $value) {
             $list[$key]['nickname'] = $userModel->where("id",$value['user_id'])->value("nickname");

@@ -3,7 +3,7 @@
  * @Author: 提莫队长 =
  * @Date: 2025-11-10 17:01:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-01-29 14:22:23
+ * @LastEditTime: 2026-03-24 20:07:00
  * @FilePath: \xyh_xing\application\job\Notice.php
  */
 
@@ -56,21 +56,21 @@ public function fire(Job $job, $params)
                     throw new \InvalidArgumentException('Missing required parameters for sendNotice: user_id, orderid');
                 }
                 break;
-            case "sendEmsNotice":
-                // 验证 sendEmsNotice 所需参数
-                if (!isset($params['email'], $params['orderid'])) {
-                     $job->delete();
-                    recordLogs('Missing required parameters for sendEmsCdsNotice: email, orderid');
-                    throw new \InvalidArgumentException('Missing required parameters for sendEmsCdsNotice: email, orderid');
-                }
-                if (isset($params['user_id']) && isset($params['orderid'])) {
-                    $this->sendEmsCdsNotice($params['email'], $params['orderid']);
-                } else {
-                     $job->delete();
-                    recordLogs('Missing required parameters for sendNotice: user_id, orderid');
-                    throw new \InvalidArgumentException('Missing required parameters for sendNotice: user_id, orderid');
-                }
-                break;                
+            // case "sendEmsNotice":
+            //     // 验证 sendEmsNotice 所需参数
+            //     if (!isset($params['email'], $params['orderid'])) {
+            //          $job->delete();
+            //         recordLogs('Missing required parameters for sendEmsCdsNotice: email, orderid');
+            //         throw new \InvalidArgumentException('Missing required parameters for sendEmsCdsNotice: email, orderid');
+            //     }
+            //     if (isset($params['user_id']) && isset($params['orderid'])) {
+            //         $this->sendEmsCdsNotice($params['email'], $params['orderid']);
+            //     } else {
+            //          $job->delete();
+            //         recordLogs('Missing required parameters for sendNotice: user_id, orderid');
+            //         throw new \InvalidArgumentException('Missing required parameters for sendNotice: user_id, orderid');
+            //     }
+            //     break;                
             default:
                 // 可选：记录未知类型的操作
                 break;
@@ -132,7 +132,7 @@ public function fire(Job $job, $params)
         $mobile = "18919660526";
         $event = "resetpwd";
         $code = random_int(3333,9999);
-        $ret = Smslib::notice($mobile, $code, $event);
+        // $ret = Smslib::notice($mobile, $code, $event);
 
         $email = "870416982@qq.com";
         // $msg = "用户ID".$userInfo['id']."当前有一笔新的兑出订单".$info['orderid']."，金额：".$info['amount']."您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";

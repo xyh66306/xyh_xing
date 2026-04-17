@@ -81,6 +81,21 @@
         </div>
     </div>
 
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">付款二维码:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-pinzheng_image" class="form-control" size="50" name="row[pinzheng_image]" type="text" value="">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-pinzheng_image" class="btn btn-danger faupload" data-input-id="c-pinzheng_image" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/webp" data-multiple="false" data-preview-id="p-pinzheng_image"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                    <span><button type="button" id="fachoose-pinzheng_image" class="btn btn-primary fachoose" data-input-id="c-pinzheng_image" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-pinzheng_image"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-pinzheng_image"></ul>
+        </div>
+    </div>  
+
     <div class="form-group layer-footer">
         <label class="control-label col-xs-12 col-sm-2"></label>
         <div class="col-xs-12 col-sm-8">
