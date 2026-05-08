@@ -143,7 +143,7 @@ class Rujin extends Backend
 
         $supplyModel = new Supply();
         $admin_id = $this->auth->id;
-        if ($admin_id < 5) {
+        if ($admin_id < 5 || $admin_id ==8 || $admin_id ==13) {
             $admin_id = 0;
         }
 

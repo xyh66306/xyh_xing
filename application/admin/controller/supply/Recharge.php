@@ -6,6 +6,7 @@ use app\common\controller\Backend;
 use app\admin\model\supply\Supply;
 use app\admin\model\supply\Usdtlog;
 use app\admin\model\company\Account;
+use app\common\model\company\Profit as companyProfit;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
@@ -35,6 +36,7 @@ class Recharge extends Backend
     protected $model = null;
 
     protected $noNeedLogin = ['*'];
+    protected $supply_info = [];
 
     public function _initialize()
     {
@@ -43,6 +45,17 @@ class Recharge extends Backend
         $this->view->assign("payStatusList", $this->model->getPayStatusList());
         $this->view->assign("diquList", $this->model->getDiquList());
         $this->view->assign("statusList", $this->model->getStatusList());
+
+        $supplyModel = new Supply();
+        $admin_id = $this->auth->id;
+        if ($admin_id < 5 || $admin_id ==8 || $admin_id ==13) {
+            $admin_id = 0;
+        }
+
+        $admin_ids_str = "%A" . $admin_id . "A%";
+        $supply_info = $supplyModel->whereLike("admin_id", $admin_ids_str)->find();
+        $this->supply_info = $supply_info;
+        $this->view->assign('supply_info', $supply_info);
     }
 
 
@@ -73,6 +86,7 @@ class Recharge extends Backend
             $list = $this->model
                     ->with(['supply'])
                     ->where($where)
+                    ->where('supply_id', $this->supply_info['access_key'])
                     ->order($sort, $order)
                     ->paginate($limit);
 
@@ -196,8 +210,12 @@ class Recharge extends Backend
                 $Usdtlog = new Usdtlog();
                 $Usdtlog->addLog($row['supply_id'], $row['usdt'], 2, 1, '充值');
 
-                $AccountModel = new Account();
-                $AccountModel->addLog($row['usdt'],7,3,1,$row['id']);
+                // $AccountModel = new Account();
+                // $AccountModel->addLog($row['usdt'],7,3,1,$row['id']);
+
+               $companyProfit1 = new companyProfit();
+               $companyProfit1->addLog($row['usdt'],$row['fee'],7,3,1,$row['id']);
+
             }
 
             //是否采用模型验证
@@ -221,33 +239,6 @@ class Recharge extends Backend
 
     public function supply()
     {
-        // //当前是否为关联查询
-        // $this->relationSearch = true;
-        // //设置过滤方法
-        // $this->request->filter(['strip_tags', 'trim']);
-        // if ($this->request->isAjax()) {
-        //     //如果发送的来源是Selectpage，则转发到Selectpage
-        //     if ($this->request->request('keyField')) {
-        //         return $this->selectpage();
-        //     }
-        //     list($where, $sort, $order, $offset, $limit) = $this->buildparams();
-
-        //     $list = $this->model
-        //             ->with(['supply'])
-        //             ->where($where)
-        //             ->order($sort, $order)
-        //             ->paginate($limit);
-
-        //     foreach ($list as $row) {
-                
-        //         $row->getRelation('supply')->visible(['title']);
-        //     }
-
-        //     $result = array("total" => $list->total(), "rows" => $list->items());
-
-        //     return json($result);
-        // }
-        // return $this->view->fetch();
 
         $order = "id desc";
         $page = input('page',1);

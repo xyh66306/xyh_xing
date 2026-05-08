@@ -31,8 +31,6 @@ class Sell
 
             $header = $params['header'];
 
-            recordLogs("Sell_data",json_encode($data));
-            recordLogs("Sell_data",json_encode($header));
             
             $res = $this->postCurl($params['params']['url'], $data,$header);
             

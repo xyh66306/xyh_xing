@@ -79,7 +79,30 @@ class Index extends Frontend
         $user_fee = $rujinModel->where("pay_status", 4)->sum("user_fee");
         $supply_fee = $rujinModel->where("pay_status", 4)->sum("supply_fee");
         $total = $rujinModel->where("pay_status", 4)->count("id");
-        $fanyong_total = $Commission->where(['source' => 1, 'chaoshi' => 1, 'status' => 1])->sum("money");
+        $fanyong_daili_total_2026 = $Commission->where(['chaoshi' => 1, 'status' => 1])->whereNotIn('p_userid', '168023,168024,168022')->sum("money");
+        $fanyong_daili_total = $fanyong_daili_total_2026+ 691.5565;
+
+        $fanyong_duizhang_total_2026 = $Commission->where(['chaoshi' => 1, 'status' => 1])->whereIn('p_userid', '168023,168024,168022')->sum("money");
+        $fanyong_duizhang_total = $fanyong_duizhang_total_2026+ 670.9940;        
+        // echo $Commission->getLastsql();
+
+        $fanyong_total_1d = $Commission->where(['chaoshi' => 1, 'status' => 1, 'p_userid' => 168024])->sum("money"); //1队
+        $fanyong_total_2d = $Commission->where(['chaoshi' => 1, 'status' => 1, 'p_userid' => 168023])->sum("money"); //2队
+        $fanyong_total_spark = $Commission->where(['chaoshi' => 1, 'status' => 1, 'p_userid' => 168022])->sum("money"); //spark
+        $fanyong_total_1d = $fanyong_total_1d+83.8091;
+        $fanyong_total_2d = $fanyong_total_2d+24.3899;
+        $fanyong_total_spark = $fanyong_total_spark+562.7950;
+        // echo $Commission->getLastsql();
+        $fydata = [
+            "fanyong_total_1d"             => $fanyong_total_1d,
+            'fanyong_total_2d'     => $fanyong_total_2d,
+            'fanyong_total_spark'  => $fanyong_total_spark,
+            'fanyong_duizhang_total'=>$fanyong_duizhang_total
+        ];
+        $this->assign($fydata);
+
+
+
         $company_price = truncateDecimal($user_fee + $supply_fee);
 
 
@@ -157,15 +180,17 @@ class Index extends Frontend
         //服务商提现
         $total_supply_number = Db::name("supply_usdt")->where("pay_status", 3)->sum("usdt");
         $total_supply_cz_number = Db::name("supply_usdt")->where("pay_status", 3)->count("id");
-        $total_supply_cz_fee = Db::name("supply_usdt")->where("pay_status", 3)->sum("fee");
+        $total_supply_tx_fee = Db::name("supply_usdt")->where("pay_status", 3)->sum("fee");
+        $total_supply_recharge_fee = Db::name("supply_recharge")->where("pay_status", 3)->sum("fee");
+
+        
         $totol_supply_usdt = $supply[0] + $supply[1] + $supply[2];
         $total_supply_freeze_usdt = $supply_freeze_usdt[0] + $supply_freeze_usdt[1];
 
-        $company_usdt_all = $company['usdt'] + 3039.1797;
+        $company_usdt_all = truncateDecimal($company['usdt'] + 3039.1797 + $total_supply_recharge_fee);
 
         $data = [
             "today"             => $today,
-            'userTotalUsdt'     => $userTotalUsdt,
             'userTotalUsdt'     => $userTotalUsdt,
             'userTotalUsdtdJ'   => $userTotalUsdtdJ,
             'oneteam'           => $oneteam,
@@ -182,6 +207,7 @@ class Index extends Frontend
             'total_supply_freeze_usdt' => $total_supply_freeze_usdt,
             'rgRjCount' => $rgRjCount,
             'deRjCount' => $deRjCount,
+            'fanyong_daili_total'=>$fanyong_daili_total
         ];
         $this->assign($data);
 
@@ -231,7 +257,8 @@ class Index extends Frontend
             'total_user_cz_number' => $total_user_cz_number,
             'total_supply_number' => $total_supply_number,
             'total_supply_cz_number'   => $total_supply_cz_number,
-            'total_supply_cz_fee' => $total_supply_cz_fee,
+            'total_supply_tx_fee' => $total_supply_tx_fee,
+            'total_supply_recharge_fee' => $total_supply_recharge_fee,
         ];
         $this->assign($cztxData);
 
@@ -246,7 +273,10 @@ class Index extends Frontend
         $supply_chongzhi = Db::name("supply_recharge")->where("pay_status",3)->sum("usdt");
 
         // 所有分润
-        $diff = truncateDecimal($total_user_number - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt + $commission_all+$supply_chongzhi);
+        // $diff = truncateDecimal($total_user_number+ $commission_all+$supply_chongzhi - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt );
+        // $diff = $company['usdt'] - $commission_all_2026;
+        //承兑商充值累计数量 + 商户充值数量 + 商户充值手续费 + 商户提现手续费 - 承兑商账户余额 - 商户账户余额 - 公司资产
+        $diff = truncateDecimal($total_user_number + $supply_chongzhi + $total_supply_recharge_fee  + $total_supply_tx_fee - $userTotalUsdt - $total_supply_number  - $totol_supply_usdt -$company_usdt_all);
 
 
         foreach ($rujinLst as $key => $value) {
@@ -303,11 +333,11 @@ class Index extends Frontend
         $userCzCount = Db::name("user_usdt")->field("id,user_id,num,createtime")->where('status','normal')->sum("num");
 
 
-        if($diff>4){
-            $email = "870416982@qq.com";
-            $msg = $today."差值为".$diff;
-            $result = Emslib::notice($email, $msg,"resetpwd");
-        }
+        // if($diff>4){
+        //     $email = "870416982@qq.com";
+        //     $msg = $today."差值为".$diff;
+        //     $result = Emslib::notice($email, $msg,"resetpwd");
+        // }
 
 
 

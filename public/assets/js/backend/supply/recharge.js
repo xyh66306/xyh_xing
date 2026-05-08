@@ -88,7 +88,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                     ]
-                ]
+                ],
+                queryParams: function (params) {
+                    //这里可以追加搜索条件
+                    var filter = JSON.parse(params.filter);
+                    var op = JSON.parse(params.op);
+                    filter.supply_id = 2;
+                    op.supply_id = "=";
+                    params.filter = JSON.stringify(filter);
+                    params.op = JSON.stringify(op);
+                    return params;
+                },                
             });
 
             // 为表格绑定事件

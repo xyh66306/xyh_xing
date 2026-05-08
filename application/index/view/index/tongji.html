@@ -26,9 +26,9 @@
                     <td>商户Wetrade</td>
                     <td>用户usdt</td>
                     <td>用户冻结usdt</td>
-                    <td>1队</td>
-                    <td>2队</td>
-                    <td>spark</td>
+                    <td>1队返佣</td>
+                    <td>2队返佣</td>
+                    <td>spark返佣</td>
                     <td>1队今日返佣</td>
                     <td>2队今日返佣</td>
                     <td>spark今日返佣</td>                    
@@ -40,9 +40,9 @@
                     <td>{$supply[3]}</td>
                     <td>{$userTotalUsdt}</td>
                     <td>{$userTotalUsdtdJ}</td>
-                    <td>{$oneteam}</td>
-                    <td>{$twoteam}</td>
-                    <td>{$spark}</td>
+                    <td>{$fanyong_total_1d}</td>
+                    <td>{$fanyong_total_2d}</td>
+                    <td>{$fanyong_total_spark}</td>
                     <td>{$fanyong_taday_total_1d}</td>
                     <td>{$fanyong_taday_total_2d}</td>
                     <td>{$fanyong_taday_total_spark}</td>                    
@@ -56,13 +56,13 @@
                     <td>2025公司资产利润</td>
                     <td>2026公司资产</td>
                     <td>公司资产</td>
-                    <td>实际利润= 公司资产 + spark</td>
+                    <td>实际利润= 公司资产 + spark返佣</td>
                 </tr>
                 <tr>
                     <td>3039.1797</td>
                     <td>{$company_usdt}</td>
                     <td>{$company_usdt_all}</td>
-                    <td>{$company_usdt_all + $spark}</td>
+                    <td>{$company_usdt_all + $fanyong_total_spark}</td>
                 </tr>
             </table>
         </div>     
@@ -243,7 +243,8 @@
                     <td>商户提现累计数量</td> 
                     <td>商户冻结数量</td> 
                     <td>商户充值数量</td> 
-                   <td>商户提现累计手续费</td>                     
+                   <td>商户提现手续费</td>    
+                    <td>商户充值手续费</td>                                        
                 </tr>
                 <tr>
                     <td>{$total_user_cz_number}</td>
@@ -252,7 +253,8 @@
                     <td>{$total_supply_number}</td>
                     <td>{$total_supply_freeze_usdt}</td>
                     <td>{$supply_chongzhi}</td>
-                    <td>{$total_supply_cz_fee}</td>
+                    <td>{$total_supply_tx_fee}</td>
+                    <td>{$total_supply_recharge_fee}</td>
                 </tr>
             </table>
         </div> 
@@ -268,6 +270,8 @@
                     <td>商户余额</td>
                     <td>兑出+兑入利润</td>
                     <td>返佣</td>
+                    <td>代理返佣</td>
+                    <td>队长返佣</td>
                     <td>误差计算</td>
                 </tr>
                 <tr>
@@ -277,6 +281,8 @@
                     <td>{$supply[0]} {if $supply[1]>0}+ {$supply[1]}{/if}  + {$supply[2]} {if $supply[1]>0} + {$supply[3]}{/if} = {$totol_supply_usdt}</td>
                     <td>{$all_company_price}</td>
                     <td>{$commission_all}</td>
+                    <td>{$fanyong_daili_total}</td>
+                    <td>{$fanyong_duizhang_total}</td>
                     <td>{$diff}</td>
                 </tr>
             </table>

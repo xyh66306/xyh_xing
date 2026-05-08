@@ -97,26 +97,31 @@ class Demo extends Frontend
             // $userModel->usdt(497.8843, 168033, 8, 2,92402);
 
 
-            $order_id = "202604020526500225";
-            $order_info = Db::name("order_rujin")->where("orderid",$order_id)->find();
+            // $order_id = "202604020526500225";
+            // $order_info = Db::name("order_rujin")->where("orderid",$order_id)->find();
 
-            $pintai_id = "1525364505";
-            $supplyModel = new Supply();
-            $info = $supplyModel->where('access_key', $pintai_id)->find();
+            // $pintai_id = "1525364505";
+            // $supplyModel = new Supply();
+            // $info = $supplyModel->where('access_key', $pintai_id)->find();
 
-            $taskModel = new Task();
-            $data = [
-                'access_key'    => $info['access_key'],
-                'access_secret' => $info['access_secret'],
-                'name' => 'cash',
-                'message' => '',
-                'params' => [
-                    'orderid' => $order_id,
-                    'url'  => "https://api-test.logtec.dev/fapi/payment/psp/public/inlandxjpay/withdraw/back",
-                    'pay_status' => 3
-                ]
-            ];
-            $taskModel->addTask($data, "Sell");    
+            // $taskModel = new Task();
+            // $data = [
+            //     'access_key'    => $info['access_key'],
+            //     'access_secret' => $info['access_secret'],
+            //     'name' => 'cash',
+            //     'message' => '',
+            //     'params' => [
+            //         'orderid' => $order_id,
+            //         'url'  => "https://api-test.logtec.dev/fapi/payment/psp/public/inlandxjpay/withdraw/back",
+            //         'pay_status' => 3
+            //     ]
+            // ];
+            // $taskModel->addTask($data, "Sell");    
+        $lastMoney =0;
+        $list = Db::name("company_profit")->select();
+        foreach ($list as $item){
+            if($item[''])
+        }
 
         
     }

@@ -323,6 +323,10 @@ class Usdt extends Backend
         $admin_ids_str = "%A" . $admin_id . "A%";
         $supply_info = $supplyModel->whereLike("admin_id", $admin_ids_str)->find();
 
+        $show_czdd = config("site.show_czdd");
+        $recharge = config("site.recharge");
+        $this->view->assign("show_czdd", $show_czdd);
+        $this->view->assign("recharge",$recharge['TRC-20']);
         $this->view->assign("supply_info", $supply_info);
         return $this->view->fetch();
     }

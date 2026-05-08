@@ -152,7 +152,12 @@ class Cash extends Api
         }           
 
         //记录IP地址
-        recordLogs("IP",$this->request->ip());
+        // recordLogs("IP",$this->request->ip());
+        //黑名单
+        $isset = Db::name("blacklist")->where("username",$payername)->find();
+        if($isset){
+            $this->error('用户名在黑名单中');
+        }        
 
         $userModel = new UserModel();
         $rujinModel = new Rujin();
@@ -164,7 +169,8 @@ class Cash extends Api
 
         $where = [];
         $order = 'pay_sort desc,id desc';
-        if($this->access_key == '1250730111' ||  $this->access_key == '1525364505'){
+        // if($this->access_key == '1250730111' ||  $this->access_key == '1525364505'){
+        if($this->access_key == '1250730111'){
             // 测试账户
             // $rj_user_id = config('site.rj_user_id');
             
@@ -183,12 +189,14 @@ class Cash extends Api
             $pinyinname = \fast\Pinyin::get($params['payername']);
             $name = $this->access_key."-".$params['amount']."-".$pinyinname;
             
+            // $cacheData = false;
             $cacheData = Cache::get($name);
 
+             
             $userInfo = [];
 
 
-            if($params['amount']<=100000) {
+            if($params['amount']<=200000) {
                 if($cacheData){
                     $userInfo = $cacheData;
                 }else{
@@ -207,23 +215,36 @@ class Cash extends Api
 
                             $ptulist = []; //大额限制普通用户
                             if($params['amount']>10000){
-                                $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->where("min_cny",">=",10000)->order($order)->column('id'); //大额限制普通用户
+                                $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",">=",10000)->order($order)->column('id'); //大额限制普通用户
+                                
                             }
-
-                            $ptulist2 = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->where("big",2)->where("min_cny",0)->order($order)->column('id');
+                            $ptulist2 = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",0)->order($order)->column('id');
 
                             $ulist = array_merge(
-                                is_array($xrulist) ? $xrulist : [], 
+                                // is_array($xrulist) ? $xrulist : [], 
                                 is_array($ptulist) ? $ptulist : [], 
                                 is_array($ptulist2) ? $ptulist2 : []
                             );
                             $ulist = array_unique($ulist);
-                            
+
+                            if(empty($ulist)){
+                                $ulist = $xrulist;
+                            }
+
                         }else{
                             //小额信任用户
-                            $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->where("big",2)->order($order)->column('id'); //信任用户
-                            $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("trust",2)->where("big",2)->where("min_cny",0)->order($order)->column('id'); //普通用户
-                            $ulist = array_merge($xrulist,$ptulist);
+                            $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->where("big",2)->where("min_cny",0)->order($order)->column('id'); //信任用户
+
+                            $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",0)->order($order)->column('id'); //普通用户
+
+                            // $ulist = array_merge($xrulist,$ptulist);
+                            // $ulist = $ptulist;   
+                            if(empty($ptulist)){
+                                $ulist = $xrulist;
+                            }else{
+                                $ulist = $ptulist;
+                            }
+
                         }
 
 
@@ -268,6 +289,7 @@ class Cash extends Api
                 }                
             }    
         }
+
 
         if(!$userInfo) {           
           return  $this->error('收银员不存在');

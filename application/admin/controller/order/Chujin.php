@@ -52,7 +52,7 @@ class Chujin extends Backend
 
         $supplyModel = new Supply();
         $admin_id = $this->auth->id;
-        if ($admin_id < 5 || $admin_id ==13) {
+        if ($admin_id < 5 || $admin_id ==8 || $admin_id ==13) {
             $admin_id = 0;
         }
 
@@ -167,7 +167,10 @@ class Chujin extends Backend
         if($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行'){
             $this->error('不支持工商和农业');
         }
-
+        $isset = Db::name("blacklist")->where("username",$params['realName'])->find();
+        if($isset){
+            $this->error('用户名在黑名单中');
+        }        
 
         $params = $this->preExcludeFields($params);
         $result = false;
@@ -217,7 +220,7 @@ class Chujin extends Backend
 
                 $supplyModel = new Supply();
                 $info = $supplyModel->where('access_key', $row['access_key'])->find();
-                if ($info) {
+                if ($info && $row['webhookUrl']) {
                     $taskModel = new Task();
                     $data = [
                         'access_key'    => $info['access_key'],
@@ -232,18 +235,7 @@ class Chujin extends Backend
                     ];
                     $taskModel->addTask($data, "Sell");
                 }
-                // $comlist = $commissionModel->where("fy_orderid",$row['orderid'])->select();
-                // $comSum  = $commissionModel->where("fy_orderid",$row['orderid'])->sum('money');
-                // if($comSum>0){
-                //     foreach ($comlist as $vo) {
-                //         $userModel = new UserModel();
-                //         $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$row['orderid']);
-                //     }
-
-                //     $companyProfit3 = new companyProfit();
-                //     $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,2,$row['orderid']); 
-                //     $commissionModel->update(['status'=>1,'chaoshi'=>1],['fy_orderid'=>$row['orderid']]);
-                // }
+ 
  
             }
             //取消商户订单
@@ -323,9 +315,7 @@ class Chujin extends Backend
         //         $this->error('提现数量超出可提现数量');
         //     }
         // }
-        if($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行'){
-            $this->error('不支持工商和农业');
-        }
+
 
         $params = $this->preExcludeFields($params);
         $result = false;
@@ -380,6 +370,10 @@ class Chujin extends Backend
         if($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行'){
             $this->error('不支持工商和农业');
         }
+        $isset = Db::name("blacklist")->where("username",$params['realName'])->find();
+        if($isset){
+            $this->error('用户名在黑名单中');
+        }               
 
         $result = false;
         Db::startTrans();
@@ -409,7 +403,6 @@ class Chujin extends Backend
             $params['pay_status'] = 1;
             // $params['user_fee'] = '7.26';
             //7.2兑出汇率用户
-            $this->sendNotice();
 
             $BiModel = new BiModel();
             $biinfo = $BiModel->where("id", 1)->find();
@@ -425,6 +418,7 @@ class Chujin extends Backend
         if ($result === false) {
             $this->error(__('No rows were inserted'));
         }
+        $this->sendNotice();
         $this->success();
     }
 
@@ -437,7 +431,7 @@ class Chujin extends Backend
 
         $supplyModel = new Supply();
         $admin_id = $this->auth->id;
-        if ($admin_id < 5) {
+        if ($admin_id < 5 || $admin_id ==8 || $admin_id ==13) {
             $admin_id = 0;
         }
 
@@ -484,7 +478,7 @@ class Chujin extends Backend
 
         $supplyModel = new Supply();
         $admin_id = $this->auth->id;
-        if($admin_id<5){
+        if ($admin_id < 5 || $admin_id ==8 || $admin_id ==13) {
             $admin_id = 0;
         }
 
@@ -714,7 +708,15 @@ class Chujin extends Backend
     public function sendNotice(){
 
         $email = "870416982@qq.com";
-        $msg = "您好，商户已分配1笔订单兑出订单，麻烦请处理，谢谢。温馨提醒交易员需麻烦确认好金额才打款，不要多付/重复打款，避免不必要的损失";
+        $count = Db::name("order_chujin")->where("pay_status","<",2)->count();
+        $amounts = Db::name("order_chujin")->where("pay_status","<",2)->column("withdrawAmount");
+
+        foreach ($amounts as &$amount) {
+            $amount = floatval($amount);
+        }
+
+        $amounts_str = implode(",",$amounts);
+        $msg = "您好，商户已分配".$count."笔订单兑出订单,金额：".$amounts_str."，麻烦请处理，谢谢。温馨提醒交易员需麻烦确认好金额才打款，不要多付/重复打款，避免不必要的损失";
         Emslib::notice($email, $msg, "resetpwd");
 
     }    

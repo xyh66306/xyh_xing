@@ -93,6 +93,7 @@ class Sell extends Api
             'bankBranchName'    => $this->request->param('bankBranchName',''), //客户银行分支机构名称
             'pay_type'          => $this->request->param('pay_type',''),
             'usdt'              => $this->request->param('usdt',''),
+            'money'              => $this->request->param('money',0),
             'merchantOrderNo'   => $this->request->param('orderid',''), //商户订单号
             'webhookUrl'        => $this->request->param('webhookUrl',''),  //回调地址
             'pay_account'       => $this->request->param('pay_account',''),
@@ -139,11 +140,15 @@ class Sell extends Api
                 $this->error('客户银行分支机构名称');
             }
         }
-
-        if(empty($params['usdt']) || $params['usdt'] <= 100) {
-            $this->error('提现金额错误');
+        if($params['money']==0){
+            if(empty($params['usdt']) || $params['usdt'] <= 500) {
+                $this->error('提现金额错误');
+            }
+        }else{
+            if($params['money']<3500){
+                $this->error('提现金额错误');
+            }
         }
-
 
 
         $supplyModel = new Supply();
@@ -168,16 +173,19 @@ class Sell extends Api
         if($chujinInfo){ 
             return $this->error('商户订单号已存在');
         }
-
-        $withdrawAmount = round($params['usdt'] * $supplyinfo['duichu'],2);
+        if($params['money']==0){
+            $withdrawAmount = round($params['usdt'] * $supplyinfo['duichu'],2);
+        }else{
+            $withdrawAmount = $params['money']; 
+            $params['usdt'] = bcdiv($params['money'],$supplyinfo['duichu'],4);
+        }
 
         $BiModel = new BiModel();
         $biinfo = $BiModel->where("id", 1)->find();
         $params['user_usdt'] = truncateDecimal($withdrawAmount/$biinfo['duichu'],4);
         $params['user_fee'] = $params['usdt'] - $params['user_usdt'];
 
-        $fee_dalu_supply_duichu = config('site.fee_dalu_supply_duichu');
-        $fee_dalu_supply_duichu = $fee_dalu_supply_duichu / 100;
+        $fee_dalu_supply_duichu = $supplyinfo['duichu_fanyong'] / 100;
         $params['supply_fee'] = truncateDecimal($params['usdt'] * $fee_dalu_supply_duichu);
         $params['supply_usdt'] = $params['usdt'] + $params['supply_fee'];
 

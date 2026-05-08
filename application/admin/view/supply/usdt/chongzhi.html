@@ -30,6 +30,14 @@
                         <input type="number" id="usdt" class="form-control" onblur="calculateResult()" placeholder="0.00" min="0">
                     </div>
                 </div>
+                {if $show_czdd==1}
+                <div class="item">
+                    <label class="block" for="address">充值地址</label>
+                    <div class="relative">
+                        <input type="text" id="address" disabled value="{$recharge}" class="form-control" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                </div>      
+                {/if}            
                 <div class="item">
                     <label class="block" for="hash">哈希值</label>
                     <div class="relative">
@@ -117,7 +125,7 @@
             return;
         }            
         if (!transferData.pay_ewm_image) {
-            Toastr.error('请上传提币二维码'); 
+            Toastr.error('请上传充币二维码'); 
             return;
         }     
         transferData.type = type;  
