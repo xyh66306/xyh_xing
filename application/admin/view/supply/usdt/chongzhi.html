@@ -18,10 +18,11 @@
             <!-- 第一步：转账信息 -->
             <div id="step1" class="active-step step-content">
                 <div class="item">
-                    <label class="block" for="type">类型</label>
+                    <label class="block" for="type">网络</label>
                     <select id="type" name="type" class="form-control">
-                        <option value="">请选择通道类型</option>
+                        <option value="">请选择通道类型改选择网络</option>
                         <option value="USDT-TRC20">USDT-TRC20</option>
+                        <option value="BSC/BEP-20">BSC/BEP-20</option>
                     </select>
                 </div>
                 <div class="item">
@@ -31,12 +32,18 @@
                     </div>
                 </div>
                 {if $show_czdd==1}
-                <div class="item">
+                <div class="item TRC20 hidden">
                     <label class="block" for="address">充值地址</label>
                     <div class="relative">
-                        <input type="text" id="address" disabled value="{$recharge}" class="form-control" placeholder="0.00" step="0.01" min="0">
+                        <input type="text" id="address" disabled value="{$recharge['TRC-20']}" class="form-control" placeholder="0.00" step="0.01" min="0">
                     </div>
-                </div>      
+                </div>  
+                <div class="item BSC20 hidden">
+                    <label class="block" for="address">充值地址</label>
+                    <div class="relative">
+                        <input type="text" id="address" disabled value="{$recharge['BSC/BEP-20']}" class="form-control" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                </div>                     
                 {/if}            
                 <div class="item">
                     <label class="block" for="hash">哈希值</label>
@@ -50,9 +57,9 @@
                         <input type="text" id="fee" class="form-control" placeholder="0.00"  min="0">
                     </div>
                 </div>                                    
-                <div class="form-group">
-                    <label class="control-label col-xs-12 col-sm-2">二维码:</label>
-                    <div class="col-xs-12 col-sm-8">
+                <div class="item">
+                    <label class="control-label">充值凭证:</label>
+                    <div class="relative" style="width:350px">
                         
                         <div class="input-group">
                             <input id="c-pay_ewm_image" data-rule="required" class="form-control" size="50" name="row[pay_ewm_image]" type="text" value="{$row.pay_ewm_image|htmlentities}">
@@ -104,6 +111,26 @@
     }
 
 
+    // 监听网络类型选择变化
+    document.getElementById('type').addEventListener('change', function() {
+        const selectedType = this.value;
+        
+        // 获取两个地址容器
+        const trc20Element = document.querySelector('.TRC20');
+        const bsc20Element = document.querySelector('.BSC20');
+        
+        // 先给两个元素都加上 hidden 类（隐藏）
+        if (trc20Element) trc20Element.classList.add('hidden');
+        if (bsc20Element) bsc20Element.classList.add('hidden');
+        
+        // 根据选择的值移除对应元素的 hidden 类（显示）
+        if (selectedType === 'USDT-TRC20') {
+            if (trc20Element) trc20Element.classList.remove('hidden');
+        } else if (selectedType === 'BSC/BEP-20') {
+            if (bsc20Element) bsc20Element.classList.remove('hidden');
+        }
+    });
+
     function submitTransfer() {
         
         // 验证第一步数据
@@ -125,7 +152,7 @@
             return;
         }            
         if (!transferData.pay_ewm_image) {
-            Toastr.error('请上传充币二维码'); 
+            Toastr.error('请上传充值凭证'); 
             return;
         }     
         transferData.type = type;  
@@ -168,6 +195,12 @@
 
 
 <style>
+
+    .hidden{
+        display: none !important;
+    }
+ 
+
     .item_header {
         margin-bottom: 4px;
         color: rgba(0, 0, 0, .45);

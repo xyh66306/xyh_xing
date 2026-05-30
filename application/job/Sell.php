@@ -33,6 +33,10 @@ class Sell
 
             
             $res = $this->postCurl($params['params']['url'], $data,$header);
+
+           recordLogs("Sell_data",json_encode($data));
+            recordLogs("Sell_data",$res);
+
             
             if ($res == 'success') {
                 $bData['state'] = "2";

@@ -63,8 +63,8 @@ class Buy extends Frontend
 
     public function cash()
     { 
-        // $url = "http://www.localhost.com/openapi/cash/index";
-        $url ="https://bingocn.wobeis.com/openapi/cash/index";
+        // $url = "https://bingocn.wobeis.com/openapi/cash/index";
+        $url = "www.localhost.com/openapi/cash/index";
 
         $randomStr = $this->getRandomStr(32);
         
@@ -95,9 +95,9 @@ class Buy extends Frontend
         $data['signature'] = $sign;
         $data['backurl'] = 'https://bingocn.wobeis.com/index/index/ceshi';
         $data['orderid'] = "casher".date("YmdHis",time());
-        $data['amount'] = '6500';
+        $data['amount'] = '500000';
         $data['diqu'] = 1;
-        $data['payername'] = '李四';
+        $data['payername'] = '测试';
 
         // var_dump($data);
         $res = $this->postCurl($url,$data,$header);

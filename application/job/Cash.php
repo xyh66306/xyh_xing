@@ -51,7 +51,7 @@ class Cash
                  return true;
             }
 
-            recordLogs("Cash_data",$res);
+            recordLogs("Cash_data_res",$res);
 
             if ($res2 == 'SUCCESS' || $res2 == 'OK') {
 

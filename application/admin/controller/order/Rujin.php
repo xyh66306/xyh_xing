@@ -117,20 +117,27 @@ class Rujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'orderid','user_id', 'merchantOrderNo','amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt','utime','status','order_status','callback_status']);
+                $row->visible(['id', 'orderid', 'user_id', 'merchantOrderNo', 'amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt', 'utime', 'status', 'order_status', 'callback_status']);
                 $row->visible(['supply']);
                 $row->getRelation('supply')->visible(['title']);
                 $row->fee = $row->supply_fee;
             }
-            $supply_price = $this->model->where($where)->sum("supply_usdt");
-            $user_price = $this->model->where($where)->sum("user_usdt");
-            $user_fee = $this->model->where($where)->sum("user_fee");
-            $supply_fee = $this->model->where($where)->sum("supply_fee");
-            $amount = $this->model->where($where)->sum("amount");
+            // $supply_price = $this->model->where($where)->sum("supply_usdt");
+            // $user_price = $this->model->where($where)->sum("user_usdt");
+            // $user_fee = $this->model->where($where)->sum("user_fee");
+            // $supply_fee = $this->model->where($where)->sum("supply_fee");
+            // $amount = $this->model->where($where)->sum("amount");
+
+            $supply_price = $this->model->where($where)->where(['pay_status' => 4])->sum("supply_usdt");
+            $user_price = $this->model->where($where)->where(['pay_status' => 4])->sum("user_usdt");
+            $user_fee = $this->model->where($where)->where(['pay_status' => 4])->sum("user_fee");
+            $supply_fee = $this->model->where($where)->where(['pay_status' => 4])->sum("supply_fee");
+            $amount = $this->model->where($where)->where(['pay_status' => 4])->sum("amount");
+
             $company_price =  truncateDecimal($user_fee + $supply_fee);
 
 
-            $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('supply_price','user_price','company_price',"amount"));
+            $result = array("total" => $list->total(), "rows" => $list->items(), "extend" => compact('supply_price', 'user_price', 'company_price', "amount"));
 
             return json($result);
         }
@@ -143,7 +150,7 @@ class Rujin extends Backend
 
         $supplyModel = new Supply();
         $admin_id = $this->auth->id;
-        if ($admin_id < 5 || $admin_id ==8 || $admin_id ==13) {
+        if ($admin_id < 5 || $admin_id == 8 || $admin_id == 13) {
             $admin_id = 0;
         }
 
@@ -178,17 +185,17 @@ class Rujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'orderid', 'merchantOrderNo','amount','pay_type', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt','supply_huilv']);
+                $row->visible(['id', 'orderid', 'merchantOrderNo', 'amount', 'pay_type', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt', 'supply_huilv']);
                 $row->visible(['supply']);
                 $row->getRelation('supply')->visible(['title']);
                 $row->fee = $row->supply_fee;
             }
-            $supply_price = $this->model->where("pay_status",4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_usdt");
-            $supply_fee = $this->model->where("pay_status",4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_fee");
+            $supply_price = $this->model->where("pay_status", 4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_usdt");
+            $supply_fee = $this->model->where("pay_status", 4)->where('pintai_id', $supply_info['access_key'])->cache(3600)->sum("supply_fee");
             $duirurate = $supply_info['duiru'];
 
 
-            $result = array("total" => $list->total(), "rows" => $list->items(),'extend'=>compact('supply_price','supply_fee','duirurate'));
+            $result = array("total" => $list->total(), "rows" => $list->items(), 'extend' => compact('supply_price', 'supply_fee', 'duirurate'));
 
             return json($result);
         }
@@ -225,7 +232,7 @@ class Rujin extends Backend
             }
             $result = $row->allowField(true)->save($params);
             Db::commit();
-        } catch (ValidateException|PDOException|Exception $e) {
+        } catch (ValidateException | PDOException | Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
         }
@@ -266,32 +273,35 @@ class Rujin extends Backend
         $params = $this->preExcludeFields($params);
         $result = false;
 
-        if($params['pay_status']>=2 && $params['pay_status'] <=4 && !$params['pinzheng_image']){
-            Db::rollback();
+        if ($params['pay_status'] >= 2 && $params['pay_status'] <= 4 && !$params['pinzheng_image']) {
             $this->error("请上传凭证");
+            return;
+        }
+
+        if ($params['pay_status'] == $row['pay_status']) {
+            $this->error("订单状态一致，禁止操作");
             return;
         }
 
         Db::startTrans();
         try {
 
-            if ($params['pay_status'] == 3 ) {
+            if ($params['pay_status'] == 3) {
                 $userModel = new UserModel();
                 //添加usdt_dj 冻结金额
                 $userModel->usdt_dj($row['user_usdt'], $row['user_id'], 8, 1);
                 //扣除usdt 金额
                 $userModel->usdt($row['user_usdt'], $row['user_id'], 8, 2, $row['orderid']);
                 $time = time();
-                if($row['yx_time']<$time){
+                if ($row['yx_time'] < $time) {
                     $row['order_status'] = 2;
                 }
-             
-             }
+            }
 
 
             if ($params['pay_status'] == 4 && $row['pay_status'] != 4 && $row['callback']) {
 
-                if($row['pay_status']!=3){
+                if ($row['pay_status'] != 3) {
                     Db::rollback();
                     $this->error("订单状态必须是用户已审核");
                 }
@@ -316,12 +326,12 @@ class Rujin extends Backend
                     ];
                     $taskModel->addTask($data, "Cash");
 
-                    $email = Db::name("user")->where("id",$row['user_id'])->value("email");     
-                    $exportData['orderid'] =$row['orderid'];
-                    $exportData['email'] = $email;  
-                    $exportData['type'] = "sendEmsCdsQueRen";          
+                    $email = Db::name("user")->where("id", $row['user_id'])->value("email");
+                    $exportData['orderid'] = $row['orderid'];
+                    $exportData['email'] = $email;
+                    $exportData['type'] = "sendEmsCdsQueRen";
                     $jobClass = 'app\job\Notice@fire';
-                    \think\Queue::push($jobClass, $exportData);//加入队列                                  
+                    \think\Queue::push($jobClass, $exportData); //加入队列                                  
 
                 }
                 //增加商户USDT
@@ -331,32 +341,32 @@ class Rujin extends Backend
                 // //减少USDT //用户没有手续费
                 // $UsdtLog = new UsdtLog();
                 // $UsdtLog->addLog($row['user_id'], 3, 2, $row['usdt'], $row['orderid']);
-                
+
                 //减少用户usdt_dj 冻结金额
                 $userModel = new UserModel();
-                $userModel->usdt_dj($row['user_usdt'],$row['user_id'], 6, 2);
+                $userModel->usdt_dj($row['user_usdt'], $row['user_id'], 6, 2);
 
                 // 增加代理商分润
 
                 //添加公司金额
                 $companyProfit1 = new companyProfit();
-                $companyProfit1->addLog($row['usdt'],$row['supply_fee'],1,1,1,$row['orderid']);   
+                $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 1, 1, 1, $row['orderid']);
 
                 $companyProfit2 = new companyProfit();
-                $companyProfit2->addLog($row['usdt'],$row['user_fee'],1,3,1,$row['orderid']); 
+                $companyProfit2->addLog($row['usdt'], $row['user_fee'], 1, 3, 1, $row['orderid']);
 
                 //添加代理商佣金
                 $commissionModel = new Commission();
-                if($row['order_status']==2){
-                    $commissionModel->update(['chaoshi'=>2,'order_status'=>2],['fy_orderid'=>$row['merchantOrderNo']]);
+                if ($row['order_status'] == 2) {
+                    $commissionModel->update(['chaoshi' => 2, 'order_status' => 2], ['fy_orderid' => $row['merchantOrderNo']]);
                 } else {
 
-                     $commissionModel->update(['chaoshi'=>1,'order_status'=>2],['fy_orderid'=>$row['merchantOrderNo']]);
+                    $commissionModel->update(['chaoshi' => 1, 'order_status' => 2], ['fy_orderid' => $row['merchantOrderNo']]);
                     // 佣金发放
                     // $comlist = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->select();
                     // $comSum  = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->sum('money');
                     // if($comSum>0){
-                        
+
                     //     foreach ($comlist as $vo) {
                     //         $userModel = new UserModel();
                     //         $userModel->usdt($vo['money'],$vo['p_userid'],5,1,$row['orderid']);
@@ -368,49 +378,48 @@ class Rujin extends Backend
                     // }                
 
                 }
-
             }
 
             //订单取消,追回订单佣金
-            if ($params['pay_status'] == 5 && $row['pay_status']==4) {
+            if ($params['pay_status'] == 5 && $row['pay_status'] == 4) {
                 //减少商户USDT
                 $SpullyUsdtLog = new SpullyUsdtLog();
-                $SpullyUsdtLog->addLog($row['pintai_id'], $row['supply_usdt'], 1, 2,'ping-'. $row['orderid']);
+                $SpullyUsdtLog->addLog($row['pintai_id'], $row['supply_usdt'], 1, 2, 'ping-' . $row['orderid']);
 
                 //增加用户usdt 金额
                 $userModel = new UserModel();
-                $userModel->usdt($row['user_usdt'],$row['user_id'], 6, 1);
+                $userModel->usdt($row['user_usdt'], $row['user_id'], 6, 1);
 
                 //减少公司金额
                 $companyProfit1 = new companyProfit();
-                $companyProfit1->addLog($row['usdt'],$row['supply_fee'],1,1,2,'ping-'.$row['orderid']);   
+                $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 1, 1, 2, 'ping-' . $row['orderid']);
 
                 $companyProfit2 = new companyProfit();
-                $companyProfit2->addLog($row['usdt'],$row['user_fee'],1,3,2,'ping-'.$row['orderid']); 
+                $companyProfit2->addLog($row['usdt'], $row['user_fee'], 1, 3, 2, 'ping-' . $row['orderid']);
 
                 //减少代理商佣金
-                if($row['order_status']==1){
-                    $commissionModel = new Commission();                         
-                    $comlist = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->select();
-                    $comSum  = $commissionModel->where("fy_orderid",$row['merchantOrderNo'])->sum('money');
-                    if($comSum>0){
-                        
+                if ($row['order_status'] == 1) {
+                    $commissionModel = new Commission();
+                    $comlist = $commissionModel->where("fy_orderid", $row['merchantOrderNo'])->select();
+                    $comSum  = $commissionModel->where("fy_orderid", $row['merchantOrderNo'])->sum('money');
+                    if ($comSum > 0) {
+
                         foreach ($comlist as $vo) {
                             $userModel = new UserModel();
-                            $userModel->usdt($vo['money'],$vo['p_userid'],5,2,$row['orderid']);
+                            $userModel->usdt($vo['money'], $vo['p_userid'], 5, 2, $row['orderid']);
                         }
 
                         $companyProfit3 = new companyProfit();
-                        $res5 = $companyProfit3->addLog($row['usdt'],$comSum,10,2,1,$row['orderid']); 
-                        $commissionModel->update(['status'=>2,'chaoshi'=>1],['fy_orderid'=>$row['merchantOrderNo']]);
-                    }   
+                        $res5 = $companyProfit3->addLog($row['usdt'], $comSum, 10, 2, 1, $row['orderid']);
+                        $commissionModel->update(['status' => 2, 'chaoshi' => 1], ['fy_orderid' => $row['merchantOrderNo']]);
+                    }
                 }
-            }  
+            }
             //订单取消，佣金状态取消
             if ($params['pay_status'] == 5) {
                 $commissionModel = new Commission();
-                $commissionModel->update(['status'=>2,'order_status'=>3],['fy_orderid'=>$row['merchantOrderNo']]);
-            }               
+                $commissionModel->update(['status' => 2, 'order_status' => 3], ['fy_orderid' => $row['merchantOrderNo']]);
+            }
 
             //是否采用模型验证
             if ($this->modelValidate) {
@@ -428,5 +437,33 @@ class Rujin extends Backend
             $this->error(__('No rows were updated'));
         }
         $this->success();
+    }
+
+    public function huidiao($ids = null)
+    {
+        $row = $this->model->get($ids);
+        if (!$row) {
+            $this->error(__('No Results were found'));
+        }
+        $supplyModel = new Supply();
+        $info = $supplyModel->where('access_key', $row['pintai_id'])->find();
+        $taskModel = new Task();
+        $data = [
+            'access_key'    => $info['access_key'],
+            'access_secret' => $info['access_secret'],
+            'name' => 'cash',
+            'message' => '',
+            'params' => [
+                'orderid' => $row['orderid'],
+                'url'  => $row['callback'],
+                'pay_status' => 3
+            ]
+        ];
+        $taskModel->addTask($data, "Cash");
+        // if (false === $result) {
+        //     $this->error(__('No rows were updated'));
+        // }
+        $this->success("回调请求成功", null, ['id' => $ids]);
+
     }
 }

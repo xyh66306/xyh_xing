@@ -1,4 +1,9 @@
 <?php
+/*
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+ */
 
 namespace app\api\controller;
 
@@ -31,6 +36,12 @@ class Index extends Api
     {
         $diqu = input('diqu',1);
         
+
+        $show = config('site.cds_show_recharge');
+        if(!$show){
+            $this->error('暂无充值通道');
+        }
+
         if($diqu===2){
             $arr = config('site.recharge_xj');
         } else {

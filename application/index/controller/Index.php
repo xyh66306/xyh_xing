@@ -25,30 +25,36 @@ class Index extends Frontend
         return $this->view->fetch();
     }
 
+    /**
+     * TELA 返回
+     */
     public function ceshi()
     {
 
+        echo "Success";
+        /**
+         * 后面不要动了
+         */
+        // $supplyModel = new Supply();
+        // $info = $supplyModel->where('access_key', "1250803358")->find();
 
-        $supplyModel = new Supply();
-        $info = $supplyModel->where('access_key', "1250803358")->find();
+        // $orderid = "56068";
+        // $url = "https://asiacnbo.com/pay/back/XinHuoPay";
+        // $taskModel = new Task();
+        // $data = [
+        //     'access_key'    => $info['access_key'],
+        //     'access_secret' => $info['access_secret'],
+        //     'name' => 'cash',
+        //     'message' => '',
+        //     'params' => [
+        //         'orderid' =>  $orderid,
+        //         'url'  => $url,
+        //         'pay_status' => 3
+        //     ]
+        // ];
 
-        $orderid = "56068";
-        $url = "https://asiacnbo.com/pay/back/XinHuoPay";
-        $taskModel = new Task();
-        $data = [
-            'access_key'    => $info['access_key'],
-            'access_secret' => $info['access_secret'],
-            'name' => 'cash',
-            'message' => '',
-            'params' => [
-                'orderid' =>  $orderid,
-                'url'  => $url,
-                'pay_status' => 3
-            ]
-        ];
-
-        dump($data);
-        $taskModel->addTask($data, "Sell");
+        // dump($data);
+        // $taskModel->addTask($data, "Sell");
         // return $this->view->fetch();
 
         // $data['orderid'] = "o202508011824004289";
@@ -273,10 +279,10 @@ class Index extends Frontend
         $supply_chongzhi = Db::name("supply_recharge")->where("pay_status",3)->sum("usdt");
 
         // 所有分润
-        // $diff = truncateDecimal($total_user_number+ $commission_all+$supply_chongzhi - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt );
+        $diff = truncateDecimal($total_user_number+ $commission_all+$supply_chongzhi - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt );
         // $diff = $company['usdt'] - $commission_all_2026;
         //承兑商充值累计数量 + 商户充值数量 + 商户充值手续费 + 商户提现手续费 - 承兑商账户余额 - 商户账户余额 - 公司资产
-        $diff = truncateDecimal($total_user_number + $supply_chongzhi + $total_supply_recharge_fee  + $total_supply_tx_fee - $userTotalUsdt - $total_supply_number  - $totol_supply_usdt -$company_usdt_all);
+        // $diff = truncateDecimal($total_user_number + $supply_chongzhi + $total_supply_recharge_fee  + $total_supply_tx_fee - $userTotalUsdt - $total_supply_number  - $totol_supply_usdt -$company_usdt_all);
 
 
         foreach ($rujinLst as $key => $value) {
@@ -333,11 +339,11 @@ class Index extends Frontend
         $userCzCount = Db::name("user_usdt")->field("id,user_id,num,createtime")->where('status','normal')->sum("num");
 
 
-        // if($diff>4){
-        //     $email = "870416982@qq.com";
-        //     $msg = $today."差值为".$diff;
-        //     $result = Emslib::notice($email, $msg,"resetpwd");
-        // }
+        if($diff>20){
+            $email = "870416982@qq.com";
+            $msg = $today."差值为".$diff;
+            $result = Emslib::notice($email, $msg,"resetpwd");
+        }
 
 
 

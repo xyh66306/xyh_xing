@@ -80,7 +80,7 @@ class Usdt extends Backend
                 ->paginate($limit);
 
             foreach ($list as $row) {
-
+                $row['act_usdt'] = $row['usdt']-$row['fee'];
                 $row->getRelation('supply')->visible(['title']);
             }
 
@@ -326,7 +326,7 @@ class Usdt extends Backend
         $show_czdd = config("site.show_czdd");
         $recharge = config("site.recharge");
         $this->view->assign("show_czdd", $show_czdd);
-        $this->view->assign("recharge",$recharge['TRC-20']);
+        $this->view->assign("recharge",$recharge);
         $this->view->assign("supply_info", $supply_info);
         return $this->view->fetch();
     }

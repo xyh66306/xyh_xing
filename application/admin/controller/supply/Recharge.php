@@ -86,7 +86,7 @@ class Recharge extends Backend
             $list = $this->model
                     ->with(['supply'])
                     ->where($where)
-                    ->where('supply_id', $this->supply_info['access_key'])
+                    // ->where('supply_id', $this->supply_info['access_key'])
                     ->order($sort, $order)
                     ->paginate($limit);
 

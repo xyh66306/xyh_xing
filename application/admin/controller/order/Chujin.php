@@ -38,7 +38,7 @@ class Chujin extends Backend
     protected $model = null;
     protected $supply_info = [];
 
-    protected $noNeedRight = ['editsply','import'];
+    protected $noNeedRight = ['editsply', 'import'];
     //editsply
 
     public function _initialize()
@@ -52,7 +52,7 @@ class Chujin extends Backend
 
         $supplyModel = new Supply();
         $admin_id = $this->auth->id;
-        if ($admin_id < 5 || $admin_id ==8 || $admin_id ==13) {
+        if ($admin_id < 5 || $admin_id == 8 || $admin_id == 13) {
             $admin_id = 0;
         }
 
@@ -69,7 +69,6 @@ class Chujin extends Backend
         $this->view->assign('supply_info', $supply_info);
         $this->view->assign('supply_fee', $fee_dalu_supply_duichu);
         $this->view->assign('biinfo', $biinfo);
-
     }
 
 
@@ -86,19 +85,6 @@ class Chujin extends Backend
      */
     public function index()
     {
-
-    //     $diqu = '';
-    //    $group_ids = $this->auth->getGroupIds($this->auth->id);
-
-
-    //    if($group_ids[0]==3 || $group_ids[0]==7){
-    //      $diqu =1;
-    //    } elseif($group_ids[0]==5 || $group_ids[0]==8){
-    //      $diqu =2;
-    //    } elseif($group_ids[0]==6 || $group_ids[0]==9){
-    //      $diqu =3;
-    //    }
-
 
         //当前是否为关联查询
         $this->relationSearch = false;
@@ -117,18 +103,27 @@ class Chujin extends Backend
                 ->paginate($limit);
 
 
-            foreach ($list as $k=>$row) {
-                $row->visible(['id','payername','user_id','orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image','withdrawAmount']);
 
+            foreach ($list as $k => $row) {
+
+                $row->ptname = Db::name("supply")->where("access_key",$row->access_key)->value("title");
+
+                $row->visible(['id', 'payername', 'user_id', 'orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt', 'withdrawCurrency', 'pinzheng_image', 'withdrawAmount','ptname']);
             }
-            $supply_price = $this->model->where($where)->sum("supply_usdt");
-            $user_price = $this->model->where($where)->sum("user_usdt");
-            $user_fee = $this->model->where($where)->sum("user_fee");
-            $supply_fee = $this->model->where($where)->sum("supply_fee");
+            // $supply_price = $this->model->where($where)->sum("supply_usdt");
+            // $user_price = $this->model->where($where)->sum("user_usdt");
+            // $user_fee = $this->model->where($where)->sum("user_fee");
+            // $supply_fee = $this->model->where($where)->sum("supply_fee");
+
+            $supply_price = $this->model->where(['pay_status' => 5])->sum("supply_usdt");
+            $user_price = $this->model->where(['pay_status' => 5])->sum("user_usdt");
+            $user_fee = $this->model->where(['pay_status' => 5])->sum("user_fee");
+            $supply_fee = $this->model->where(['pay_status' => 5])->sum("supply_fee");
+            // $amount = $this->model->where(['pay_status'=>4])->sum("amount");
 
             $company_price =  truncateDecimal($user_fee + $supply_fee);
 
-            $result = array("total" => $list->total(), "rows" => $list->items(),"extend" => compact('supply_price','user_price','company_price'));
+            $result = array("total" => $list->total(), "rows" => $list->items(), "extend" => compact('supply_price', 'user_price', 'company_price'));
 
             return json($result);
         }
@@ -164,58 +159,58 @@ class Chujin extends Backend
         //     }
         // }
         //不支持工商和农业 
-        if($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行'){
+        if ($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行') {
             $this->error('不支持工商和农业');
         }
-        $isset = Db::name("blacklist")->where("username",$params['realName'])->find();
-        if($isset){
+        $isset = Db::name("blacklist")->where("username", $params['realName'])->find();
+        if ($isset) {
             $this->error('用户名在黑名单中');
-        }        
+        }
 
         $params = $this->preExcludeFields($params);
         $result = false;
         Db::startTrans();
         try {
             //已支付 执行回调
-            if ($params['pay_status'] == 5 && $row['pay_status']<=4) {
+            if ($params['pay_status'] == 5 && $row['pay_status'] <= 4) {
 
                 $params['updatetime'] = time();
 
                 $Usdtlog = new Usdtlog();
                 //扣除商户冻结金额
-                 $res = $Usdtlog->authtxLog($row['access_key'],$row['supply_usdt'],$row['orderid']);
-                if(!$res){
+                $res = $Usdtlog->authtxLog($row['access_key'], $row['supply_usdt'], $row['orderid']);
+                if (!$res) {
                     Db::rollback();
-                    $this->error('扣除商户冻结金额失败');                    
+                    $this->error('扣除商户冻结金额失败');
                 }
 
                 //扣除承兑商冻结金额
                 $userModel = new UserModel();
-                $res2 = $userModel->usdt_dj($row['user_usdt'],$row['user_id'],7,2);
-                if(!$res2){
+                $res2 = $userModel->usdt_dj($row['user_usdt'], $row['user_id'], 7, 2);
+                if (!$res2) {
                     Db::rollback();
-                    $this->error('扣除承兑商冻结金额失败');                    
+                    $this->error('扣除承兑商冻结金额失败');
                 }
 
 
                 //添加公司金额
                 $companyProfit1 = new companyProfit();
-                $res3 =  $companyProfit1->addLog($row['usdt'],$row['supply_fee'],2,3,1,$row['orderid']);  
-                if(!$res3){
+                $res3 =  $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 2, 3, 1, $row['orderid']);
+                if (!$res3) {
                     Db::rollback();
-                    $this->error('添加公司金额商户手续费失败');                    
-                } 
+                    $this->error('添加公司金额商户手续费失败');
+                }
 
                 $companyProfit2 = new companyProfit();
-                $res4 = $companyProfit2->addLog($row['usdt'],$row['user_fee'],2,1,1,$row['orderid']); 
-                if(!$res4){
+                $res4 = $companyProfit2->addLog($row['usdt'], $row['user_fee'], 2, 1, 1, $row['orderid']);
+                if (!$res4) {
                     Db::rollback();
-                    $this->error('添加公司金额承兑商手续费失败');                    
-                } 
+                    $this->error('添加公司金额承兑商手续费失败');
+                }
 
                 //添加代理商佣金
                 $commissionModel = new Commission();
-                $commissionModel->update(['order_status'=>2],['fy_orderid'=>$row['orderid']]);
+                $commissionModel->update(['order_status' => 2], ['fy_orderid' => $row['orderid']]);
 
 
                 $supplyModel = new Supply();
@@ -235,39 +230,37 @@ class Chujin extends Backend
                     ];
                     $taskModel->addTask($data, "Sell");
                 }
- 
- 
             }
             //取消商户订单
-            if ($params['pay_status'] == 6 && $row['pay_status']<=2) {
-                 //添加商户冻结金额
+            if ($params['pay_status'] == 6 && $row['pay_status'] <= 2) {
+                //添加商户冻结金额
                 $Usdtlog = new Usdtlog();
-                $Usdtlog->quxiaotxLog($row['access_key'],$row['supply_usdt'],1,$row['orderid'],2);
+                $Usdtlog->quxiaotxLog($row['access_key'], $row['supply_usdt'], 1, $row['orderid'], 2);
 
                 $commissionModel = new Commission();
-                $commissionModel->update(['status'=>2,'order_status'=>3],['fy_orderid'=>$row['orderid']]);                
+                $commissionModel->update(['status' => 2, 'order_status' => 3], ['fy_orderid' => $row['orderid']]);
             }
 
             //取消商户订单
-            if ($params['pay_status'] == 6 && $row['pay_status']==3) {
-                 //添加商户冻结金额
+            if ($params['pay_status'] == 6 && $row['pay_status'] == 3) {
+                //添加商户冻结金额
                 $Usdtlog = new Usdtlog();
-                $Usdtlog->quxiaotxLog($row['access_key'],$row['supply_usdt'],1,$row['orderid'],2);
+                $Usdtlog->quxiaotxLog($row['access_key'], $row['supply_usdt'], 1, $row['orderid'], 2);
 
                 //添加承兑商冻结金额
                 $userModel = new UserModel();
-                $res2 = $userModel->usdt_dj($row['user_usdt'],$row['user_id'],7,1);
+                $res2 = $userModel->usdt_dj($row['user_usdt'], $row['user_id'], 7, 1);
 
                 //减少用户金额
-                $res3 =  $userModel->usdt($row['user_usdt'],$row['user_id'],7,2);                
-                if(!$res2 || !$res3){
+                $res3 =  $userModel->usdt($row['user_usdt'], $row['user_id'], 7, 2);
+                if (!$res2 || !$res3) {
                     Db::rollback();
-                    $this->error('扣除承兑商冻结金额失败');                    
-                }                
+                    $this->error('扣除承兑商冻结金额失败');
+                }
 
                 $commissionModel = new Commission();
-                $commissionModel->update(['status'=>2,'order_status'=>3],['fy_orderid'=>$row['orderid']]);                
-            }            
+                $commissionModel->update(['status' => 2, 'order_status' => 3], ['fy_orderid' => $row['orderid']]);
+            }
 
 
             //是否采用模型验证
@@ -367,13 +360,13 @@ class Chujin extends Backend
         // }
 
         //不支持工商和农业 
-        if($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行'){
+        if ($params['bankName'] == '工商银行' || $params['bankName'] == '中国工商银行' || $params['bankName'] == '农业银行' || $params['bankName'] == '中国农业银行') {
             $this->error('不支持工商和农业');
         }
-        $isset = Db::name("blacklist")->where("username",$params['realName'])->find();
-        if($isset){
+        $isset = Db::name("blacklist")->where("username", $params['realName'])->find();
+        if ($isset) {
             $this->error('用户名在黑名单中');
-        }               
+        }
 
         $result = false;
         Db::startTrans();
@@ -384,7 +377,7 @@ class Chujin extends Backend
                 $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
                 $this->model->validateFailException()->validate($validate);
             }
-            
+
             $supplyModel = new Supply();
             $info = $supplyModel->where('access_key', $this->supply_info['access_key'])->find();
 
@@ -392,10 +385,10 @@ class Chujin extends Backend
 
             //扣除商户冻结金额
             $Usdtlog = new Usdtlog();
-            $Usdtlog->addtxLog($info['access_key'],$params['supply_usdt'],2,$orderid,2);
+            $Usdtlog->addtxLog($info['access_key'], $params['supply_usdt'], 2, $orderid, 2);
 
             $params['orderid'] = $orderid;
-            $params['merchantOrderNo'] = empty($params['merchantOrderNo'])?date("Ymdhis",time()):$params['merchantOrderNo'];
+            $params['merchantOrderNo'] = empty($params['merchantOrderNo']) ? date("Ymdhis", time()) : $params['merchantOrderNo'];
             $params['pay_type'] = 'bank';
             $params['diqu'] = 1;
             $params['fiatCurrency'] = "USDT";
@@ -406,12 +399,12 @@ class Chujin extends Backend
 
             $BiModel = new BiModel();
             $biinfo = $BiModel->where("id", 1)->find();
-            $params['user_usdt'] = sprintf('%.4f',truncateDecimal($params['withdrawAmount']/$biinfo['duichu'],4));
+            $params['user_usdt'] = sprintf('%.4f', truncateDecimal($params['withdrawAmount'] / $biinfo['duichu'], 4));
             $params['user_fee'] = $params['usdt'] - $params['user_usdt'];
 
             $result = $this->model->allowField(true)->save($params);
             Db::commit();
-        } catch (ValidateException|PDOException|Exception $e) {
+        } catch (ValidateException | PDOException | Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
         }
@@ -431,7 +424,7 @@ class Chujin extends Backend
 
         $supplyModel = new Supply();
         $admin_id = $this->auth->id;
-        if ($admin_id < 5 || $admin_id ==8 || $admin_id ==13) {
+        if ($admin_id < 5 || $admin_id == 8 || $admin_id == 13) {
             $admin_id = 0;
         }
 
@@ -458,48 +451,47 @@ class Chujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt','withdrawCurrency','pinzheng_image','createtime']);
+                $row->visible(['id', 'orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt', 'withdrawCurrency', 'pinzheng_image', 'createtime']);
             }
 
-            $supply_price = $this->model->where("pay_status",5)->where('access_key', $supply_info['access_key'])->cache(3600)->sum("supply_usdt");
-            $supply_fee = $this->model->where("pay_status",5)->where('access_key', $supply_info['access_key'])->cache(3600)->sum("supply_fee");
-       
-            $result = array("total" => $list->total(), "rows" => $list->items(),'extend'=>compact('supply_price','supply_fee'));
+            $supply_price = $this->model->where("pay_status", 5)->where('access_key', $supply_info['access_key'])->cache(3600)->sum("supply_usdt");
+            $supply_fee = $this->model->where("pay_status", 5)->where('access_key', $supply_info['access_key'])->cache(3600)->sum("supply_fee");
+
+            $result = array("total" => $list->total(), "rows" => $list->items(), 'extend' => compact('supply_price', 'supply_fee'));
 
             return json($result);
         }
-        return $this->view->fetch();        
-        
+        return $this->view->fetch();
     }
 
 
     public function adds($ids = null)
-    { 
+    {
 
         $supplyModel = new Supply();
         $admin_id = $this->auth->id;
-        if ($admin_id < 5 || $admin_id ==8 || $admin_id ==13) {
+        if ($admin_id < 5 || $admin_id == 8 || $admin_id == 13) {
             $admin_id = 0;
         }
 
-        $admin_ids_str = "%A".$admin_id."A%";
-        $supply_info = $supplyModel->whereLike("admin_id",$admin_ids_str)->find();
+        $admin_ids_str = "%A" . $admin_id . "A%";
+        $supply_info = $supplyModel->whereLike("admin_id", $admin_ids_str)->find();
 
-        $this->view->assign("supply_info",$supply_info);
+        $this->view->assign("supply_info", $supply_info);
         return $this->view->fetch();
     }
 
 
     public function addru($ids = null)
-    { 
+    {
         $params = $this->request->post();
         $supplyModel = new Supply();
-        $supply_info = $supplyModel->whereLike("access_key",$params['access_key'])->find();
-        if(!$supply_info){
+        $supply_info = $supplyModel->whereLike("access_key", $params['access_key'])->find();
+        if (!$supply_info) {
             $this->error('商户不存在');
         }
 
-        if($supply_info['usdt']<$params['withdrawAmount']){
+        if ($supply_info['usdt'] < $params['withdrawAmount']) {
             $this->error('余额不足');
         }
 
@@ -513,40 +505,39 @@ class Chujin extends Backend
             'bankBranchName' => $params['bankBranchName'],
             'pay_type' => 'bank',
             'pintai_id' => $params['access_key'],
-            'withdrawAmount'=>$params['withdrawAmount'],
-            'withdrawCurrency'=>'CNY',
-            'fiatCurrency'=>'CNY',
+            'withdrawAmount' => $params['withdrawAmount'],
+            'withdrawCurrency' => 'CNY',
+            'fiatCurrency' => 'CNY',
             'createtime' => $createtime,
             'updatetime' => $updatetime,
         ];
 
         Db::startTrans();
-        try { 
-            $res = $this->model->allowField(true)->save($data); 
+        try {
+            $res = $this->model->allowField(true)->save($data);
 
             $Usdtlog = new Usdtlog();
-            $Usdtlog->addtxLog($params['access_key'],$params['withdrawAmount'],2,$orderid,2);    
+            $Usdtlog->addtxLog($params['access_key'], $params['withdrawAmount'], 2, $orderid, 2);
             $this->sendNotice();
             Db::commit();
         } catch (ValidateException | PDOException | Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
         }
-        
-        if($res){
+
+        if ($res) {
             $this->success('添加成功');
-        }else{
+        } else {
             $this->error('添加失败');
         }
-
     }
 
 
     public function import()
     {
 
-        $path = input("file","");
-        if(empty($path)){
+        $path = input("file", "");
+        if (empty($path)) {
             $this->error(__('Parameter %s can not be empty', ''));
         }
 
@@ -555,22 +546,22 @@ class Chujin extends Backend
         $duichu_rate = $this->supply_info['duichu'];
 
         $fee_dalu_supply_duichu = config('site.fee_dalu_supply_duichu');
-        $fee_dalu_supply_duichu = $fee_dalu_supply_duichu / 100;   
+        $fee_dalu_supply_duichu = $fee_dalu_supply_duichu / 100;
 
 
         // 获取上传文件的路径
-        $filePath = ROOT_PATH . 'public' .$path;
-        
+        $filePath = ROOT_PATH . 'public' . $path;
+
         // 根据文件扩展名选择合适的读取器
         $reader = IOFactory::createReader('Xlsx');
-        
+
         // 设置读取器不自动识别文件格式
         $reader->setReadDataOnly(true);
-        
+
         // 加载Excel文件
         $spreadsheet = $reader->load($filePath);
         $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
-        
+
         $data = [];
         $importCount = 0;
 
@@ -578,15 +569,15 @@ class Chujin extends Backend
         foreach ($sheetData as $key => $value) {
             // 跳过表头
             if ($key == 1) continue;
-            
+
             // 获取关键字段值
             $orderid = $value['A'] ?? '';
             $money = $value['B'] ?? 0;
-            
+
             // 跳过空行（通过检查关键字段）
             if (empty($orderid)) continue;
-            if ($money==0) continue;
-            
+            if ($money == 0) continue;
+
             // 处理数据
             $item = [
                 'orderid' => $orderid,
@@ -596,7 +587,7 @@ class Chujin extends Backend
                 'cardNumber' => $value['H'] ?? '',
                 'bankBranchName' => $value['I'] ?? '',
             ];
-            
+
             $data[] = $item;
             $importCount++;
         }
@@ -607,21 +598,21 @@ class Chujin extends Backend
             foreach ($data as $item) {
                 $supplyModel = new Supply();
                 $sinfo = $supplyModel->where('access_key', $this->supply_info['access_key'])->find();
-                if($sinfo['usdt']<=0){
+                if ($sinfo['usdt'] <= 0) {
                     continue;
                 }
 
                 $order = $this->model->where('orderid', $item['orderid'])->find();
                 if (!$order) {
-                    $usdt = truncateDecimal($item['money']/$duichu_rate,4);
-                    $user_usdt = sprintf('%.4f',truncateDecimal($item['money']/$biinfo['duichu'],4));
-                    $supply_fee = truncateDecimal($usdt*$fee_dalu_supply_duichu);
+                    $usdt = truncateDecimal($item['money'] / $duichu_rate, 4);
+                    $user_usdt = sprintf('%.4f', truncateDecimal($item['money'] / $biinfo['duichu'], 4));
+                    $supply_fee = truncateDecimal($usdt * $fee_dalu_supply_duichu);
                     $supply_usdt = truncateDecimal($usdt + $supply_fee);
 
                     $data = [
-                        'access_key' =>$this->supply_info['access_key'],
+                        'access_key' => $this->supply_info['access_key'],
                         'orderid'   => getOrderNo(),
-                        'merchantOrderNo'=>$item['orderid'],
+                        'merchantOrderNo' => $item['orderid'],
                         'realName' => $item['realName'],
                         'bankName' => $item['bankName'],
                         'cardNumber' => $item['cardNumber'],
@@ -629,10 +620,10 @@ class Chujin extends Backend
                         'pay_type' => 'bank',
                         'diqu'      => 1,
                         'fiatCurrency' => 'USDT',
-                        'withdrawCurrency'=>'USDT',
-                        'withdrawAmount'=>$item['money'],
+                        'withdrawCurrency' => 'USDT',
+                        'withdrawAmount' => $item['money'],
                         'huilv'         => $duichu_rate,
-                        'pay_status'    =>1,
+                        'pay_status'    => 1,
                         'usdt'          => $usdt,
                         'user_usdt'     => $user_usdt,
                         'user_fee'      => $usdt - $user_usdt,
@@ -643,9 +634,9 @@ class Chujin extends Backend
                     die;
 
                     $this->model->allowField(true)->save([
-                        'access_key' =>$this->supply_info['access_key'],
+                        'access_key' => $this->supply_info['access_key'],
                         'orderid'   => getOrderNo(),
-                        'merchantOrderNo'=>$item['orderid'],
+                        'merchantOrderNo' => $item['orderid'],
                         'realName' => $item['realName'],
                         'bankName' => $item['bankName'],
                         'cardNumber' => $item['cardNumber'],
@@ -653,10 +644,10 @@ class Chujin extends Backend
                         'pay_type' => 'bank',
                         'diqu'      => 1,
                         'fiatCurrency' => 'USDT',
-                        'withdrawCurrency'=>'USDT',
-                        'withdrawAmount'=>$item['money'],
+                        'withdrawCurrency' => 'USDT',
+                        'withdrawAmount' => $item['money'],
                         'huilv'         => $duichu_rate,
-                        'pay_status'    =>1,
+                        'pay_status'    => 1,
                         'usdt'          => $usdt,
                         'user_usdt'     => $user_usdt,
                         'user_fee'      => $usdt - $user_usdt,
@@ -666,18 +657,15 @@ class Chujin extends Backend
 
                     //扣除商户冻结金额
                     $Usdtlog = new Usdtlog();
-                    $Usdtlog->addtxLog($this->supply_info['access_key'],$supply_usdt,2,$orderid,2);
-
+                    $Usdtlog->addtxLog($this->supply_info['access_key'], $supply_usdt, 2, $orderid, 2);
                 }
             }
         }
-        
+
         // 删除临时文件
         @unlink($filePath);
-        
-        return $this->success('文件上传成功，共处理 '.$importCount.' 条数据');
 
-
+        return $this->success('文件上传成功，共处理 ' . $importCount . ' 条数据');
     }
 
 
@@ -686,40 +674,77 @@ class Chujin extends Backend
      * chaoshi2 超时
      * 佣金
      */
-    public function commission($fy_orderid,$chaoshi=1){
+    public function commission($fy_orderid, $chaoshi = 1)
+    {
 
         $commissionModel = new Commission();
 
-        if($chaoshi==2){
-            $commissionModel->update(['status'=>1,'chaoshi'=>2],['fy_orderid'=>$fy_orderid]);
+        if ($chaoshi == 2) {
+            $commissionModel->update(['status' => 1, 'chaoshi' => 2], ['fy_orderid' => $fy_orderid]);
             return;
         }
 
-        $list = $commissionModel->where("fy_orderid",$fy_orderid)->select();
+        $list = $commissionModel->where("fy_orderid", $fy_orderid)->select();
         foreach ($list as $row) {
             $userModel = new UserModel();
-            $userModel->usdt($row['money'],$row['p_userid'],5,1,$fy_orderid);
+            $userModel->usdt($row['money'], $row['p_userid'], 5, 1, $fy_orderid);
         }
 
-        $commissionModel->update(['status'=>1],['fy_orderid'=>$fy_orderid]);
+        $commissionModel->update(['status' => 1], ['fy_orderid' => $fy_orderid]);
         return true;
     }
 
-    public function sendNotice(){
+    public function sendNotice()
+    {
 
         $email = "870416982@qq.com";
-        $count = Db::name("order_chujin")->where("pay_status","<",2)->count();
-        $amounts = Db::name("order_chujin")->where("pay_status","<",2)->column("withdrawAmount");
+        $count = Db::name("order_chujin")->where("pay_status", "<", 2)->count();
+        $amounts = Db::name("order_chujin")->where("pay_status", "<", 2)->column("withdrawAmount");
 
         foreach ($amounts as &$amount) {
             $amount = floatval($amount);
         }
 
-        $amounts_str = implode(",",$amounts);
-        $msg = "您好，商户已分配".$count."笔订单兑出订单,金额：".$amounts_str."，麻烦请处理，谢谢。温馨提醒交易员需麻烦确认好金额才打款，不要多付/重复打款，避免不必要的损失";
+        $amounts_str = implode(",", $amounts);
+        $msg = "您好，商户已分配" . $count . "笔订单兑出订单,金额：" . $amounts_str . "，麻烦请处理，谢谢。温馨提醒交易员需麻烦确认好金额才打款，不要多付/重复打款，避免不必要的损失";
         Emslib::notice($email, $msg, "resetpwd");
+    }
 
-    }    
-
-
+    public function huidiao($ids = null)
+    {
+        $row = $this->model->get($ids);
+        if (!$row) {
+            $this->error(__('No Results were found'));
+        }
+        $supplyModel = new Supply();
+        $info = $supplyModel->where('access_key', $row['access_key'])->find();
+        $taskModel = new Task();
+        // $data = [
+        //     'access_key'    => $info['access_key'],
+        //     'access_secret' => $info['access_secret'],
+        //     'name' => 'cash',
+        //     'message' => '',
+        //     'params' => [
+        //         'orderid' => $row['orderid'],
+        //         'url'  => $row['callback'],
+        //         'pay_status' => 3
+        //     ]
+        // ];
+        $data = [
+            'access_key'    => $info['access_key'],
+            'access_secret' => $info['access_secret'],
+            'name' => 'sell',
+            'message' => '',
+            'params' => [
+                'orderid' => $row['merchantOrderNo'],
+                'url'  => $row['webhookUrl'],
+                'pay_status' => 3   //已支付   
+            ]
+        ];
+        $taskModel->addTask($data, "Sell");
+        // if (false === $result) {
+        //     $this->error(__('No rows were updated'));
+        // }
+        $this->success("回调请求成功", null, ['id' => $ids]);
+    }
 }

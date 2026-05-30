@@ -675,8 +675,8 @@ class User extends Api
                 "bank_zhdz"=>$bank_zhdz,
                 'status'=>$status,
                 'sys_status'=>'normal',
-                'min_cny'   =>$min_cny,
-                'max_cny'   =>$max_cny,
+                // 'min_cny'   =>$min_cny,
+                // 'max_cny'   =>$max_cny,
             ],["id"=>$id]);
         } else {
             $ret = $userBankcard::create([
@@ -688,8 +688,8 @@ class User extends Api
                 "bank_nums"=>$bank_nums,
                 "bank_zhmc"=>$bank_zhmc,
                 "bank_zhdz"=>$bank_zhdz,
-                'min_cny'   =>$min_cny,
-                'max_cny'   =>$max_cny,                
+                // 'min_cny'   =>$min_cny,
+                // 'max_cny'   =>$max_cny,                
                 'status'=>'normal',
                 'sys_status'=>'normal',
                 "ctime"=>time()
@@ -741,24 +741,24 @@ class User extends Api
         $userPayewm = new UserPayewm();
         $paycount = $userPayewm::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->count();
 
-        $min_cny = $userBankcard::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->min('min_cny');
-        $max_cny = $userBankcard::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->max('max_cny');
+        // $min_cny = $userBankcard::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->min('min_cny');
+        // $max_cny = $userBankcard::where("user_id",$user_id)->where(['status'=>'normal','sys_status'=>'normal'])->max('max_cny');
 
         $userModel = new UserModel();
 
         if($bankcount > 0 || $paycount > 0){
             $userModel->update([
                 "pay_status"=>'normal',
-                'min_cny'=>$min_cny,
-                'max_cny'=>$max_cny,
+                // 'min_cny'=>$min_cny,
+                // 'max_cny'=>$max_cny,
                 'username'=>$name,
             ],["id"=>$user_id]);
         } else {
             $userModel = new UserModel();
             $userModel->update([
                 "pay_status"=>'hidden',
-                'min_cny'=>$min_cny,
-                'max_cny'=>$max_cny,     
+                // 'min_cny'=>$min_cny,
+                // 'max_cny'=>$max_cny,     
                 'username'=>$name,           
             ],["id"=>$user_id]);
         }  

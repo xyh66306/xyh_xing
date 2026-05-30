@@ -44,7 +44,7 @@
             </div>
 
             <div class="item">
-                <label class="block" for="hash">哈希值</label>
+                <label class="block" for="hash">提币地址</label>
                 <div class="relative">
                     <input type="text" id="hash" class="form-control">
                 </div>
@@ -82,7 +82,7 @@
 
         const type = document.getElementById('type').value;
         const usdt = document.getElementById('usdt').value;
-        const hash = document.getElementById('hash').value;
+        // const hash = document.getElementById('hash').value;
         const fee = document.getElementById('fee').value;
 
         if (!type) {
@@ -94,7 +94,7 @@
             return;
         }
         if (!hash) {
-            alert('请输入哈希值');
+            alert('请输入提币地址');
             return;
         }
         transferData.type = type;

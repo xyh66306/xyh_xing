@@ -30,6 +30,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 						{field: 'id', title: "ID"},
                         {field: 'orderid', title: __('Orderid'), operate: 'LIKE'},
                         {field: 'merchantOrderNo', title: __('Merchantorderno'), operate: 'LIKE'},
+                        {field: 'ptname', title:"商户", operate: 'LIKE'},
                         {field: 'payername', title: "承兑商", 
                             operate: 'LIKE',
                             formatter: function (value, row, index) {
@@ -37,20 +38,46 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             }
                         },
                         {field: 'realName', title: "收款人",  operate: 'LIKE'},
-                        {field: 'cardNumber', title: __('Cardnumber'), operate: 'LIKE'},
-                        {field: 'bankName', title: __('Bankname'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
-                        {field: 'bankBranchName', title: __('Bankbranchname'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
+                        {field: 'cardNumber', title: __('Cardnumber'), operate: false},
+                        {field: 'bankName', title: __('Bankname'), operate: false, table: table, class: 'autocontent', formatter: Table.api.formatter.content},
+                        {field: 'bankBranchName', title: __('Bankbranchname'), operate: false, table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         // {field: 'pay_type', title: __('Pay_type'), searchList: {"qtpay":__('Pay_type qtpay'),"wxpay":__('Pay_type wxpay'),"alipay":__('Pay_type alipay')}, formatter: Table.api.formatter.normal},withdrawAmount
                         {field: 'pay_ewm_image', title: __('Pay_ewm_image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.images},
-                        {field: 'withdrawAmount', title: "提现金额(CNY)", operate: 'LIKE'},
+                        {field: 'withdrawAmount', title: "提现金额(CNY)", operate: false},
                         // {field: 'usdt', title: "结算数量(USDT)", operate: 'LIKE'},
                         // {field: 'supply_fee', title: "手续费(USDT)", operate: 'LIKE'},
-                        {field: 'user_usdt', title: "承兑商结算数量(USDT)", operate: 'LIKE'},
-                        {field: 'supply_usdt', title: "商户结算数量(USDT)", operate: 'LIKE'},
+                        {field: 'user_usdt', title: "承兑商结算数量(USDT)", operate:false},
+                        {field: 'supply_usdt', title: "商户结算数量(USDT)", operate: false},
                         {field: 'pay_status', title: __('Pay Status'),searchList: {"0":__('payStatus 0'),"1":__('payStatus 1'),"2":__('payStatus 2'),"3":__('payStatus 3'),"4":__('payStatus 4'),"5":__('payStatus 5'),"6":__('payStatus 6')},formatter: Table.api.formatter.status},
                         {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.status},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        {
+                            field: 'operate',
+                            width: "150px",
+                            title: __('Operate'),
+                            table: table,
+                            events: Table.api.events.operate,
+                            buttons: [
+                                {
+                                    name: 'ajax',
+                                    title: __('发送回调'),
+                                    classname: 'btn btn-xs btn-primary btn-dialog',
+                                    icon: 'fa fa-folder-o',
+                                    confirm: '确认发送回调请求？',
+                                    url: 'order/chujin/huidiao',
+                                    success: function (data, ret) {
+                                        Layer.alert(ret.msg + ",返回数据：" + JSON.stringify(data));
+                                    },
+                                    error: function (data, ret) {
+                                        console.log(data, ret);
+                                        Layer.alert(ret.msg);
+                                        return false;
+                                    }
+                                },                            
+                            ],                         
+                            formatter: Table.api.formatter.operate
+                        }, 
                     ]
                 ]
             });

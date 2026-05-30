@@ -27,7 +27,7 @@ class Rujin extends Frontend
         foreach ($list as $key => $value) {
             $RujinModel->where("id",$value['id'])->update(["status"=>2,'pay_status'=>5]);
         }
-        
+        echo "已取消订单";
     }
 
 

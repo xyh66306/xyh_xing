@@ -135,9 +135,10 @@ class Commission extends Backend
         $params = $this->preExcludeFields($params);
         $result = false;
 
-        // if($row['chaoshi'] ==2){
-        //   $this->error('订单已超时，请勿操作！');
-        // }
+        if($row['p_userid']!=168023 && $row['p_userid']!=168024 && $row['p_userid']!=168022 && $row['money'] >=20){
+            $this->error('返佣已大于20，请勿操作！');
+        }
+
         if($row['order_status'] !=2){
           $this->error('订单未完成，请勿操作！');
         }

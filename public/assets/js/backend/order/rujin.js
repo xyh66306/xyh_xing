@@ -60,7 +60,33 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'status', title: __('Status'), searchList: {"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
 						{field: 'callback_status', title: "回调状态", searchList: {"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
                         {field: 'supply.title', title: __('supply title'), operate: 'LIKE'},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        {
+                            field: 'operate',
+                            width: "150px",
+                            title: __('Operate'),
+                            table: table,
+                            events: Table.api.events.operate,
+                            buttons: [
+                                {
+                                    name: 'ajax',
+                                    title: __('发送回调'),
+                                    classname: 'btn btn-xs btn-primary btn-dialog',
+                                    icon: 'fa fa-folder-o',
+                                    confirm: '确认发送回调请求？',
+                                    url: 'order/rujin/huidiao',
+                                    success: function (data, ret) {
+                                        Layer.alert(ret.msg + ",返回数据：" + JSON.stringify(data));
+                                    },
+                                    error: function (data, ret) {
+                                        console.log(data, ret);
+                                        Layer.alert(ret.msg);
+                                        return false;
+                                    }
+                                },                            
+                            ],                         
+                            formatter: Table.api.formatter.operate
+                        },                        
                     ]
                 ]
             });

@@ -1,7 +1,7 @@
 <template>
 	<view>
-		<view class="list" @click="openTeam">
-			<view class="item u-border-bottom" v-for="(vo,index) in list" :key="index">
+		<view class="list"  @click="openTeam">
+			<view class="item u-border-bottom" v-for="(vo,index) in list" :key="index"  @click="openTeam">
 				<view class="icon">
 					<template v-if="vo.type==1">
 						<u-avatar fontSize="14"text="转账" shape="square" randomBgColor></u-avatar>
@@ -46,58 +46,6 @@
 					<view class="yue">余额: {{vo.after}}</view>
 				</view>
 			</view>
-<!-- 			<view class="item u-border-bottom">
-				<view class="icon">
-					<u-avatar text="卖" randomBgColor></u-avatar>
-				</view>
-				<view class="info">
-					<view class="time u-info">2024-01-01 00:00:00</view>
-					<view class="">C1234567890</view>
-				</view>
-				<view class="money">
-					<view class="change u-error">-123.0000</view>
-					<view class="yue">余额 1234.0000</view>
-				</view>
-			</view>
-			<view class="item u-border-bottom">
-				<view class="icon">
-					<u-avatar text="转" randomBgColor></u-avatar>
-				</view>
-				<view class="info">
-					<view class="time u-info">2024-01-01 00:00:00</view>
-					<view class="">转出：李四</view>
-				</view>
-				<view class="money">
-					<view class="change u-error">-123.0000</view>
-					<view class="yue">余额 1234.0000</view>
-				</view>
-			</view>
-			<view class="item u-border-bottom">
-				<view class="icon">
-					<u-avatar text="转" randomBgColor></u-avatar>
-				</view>
-				<view class="info">
-					<view class="time u-info">2024-01-01 00:00:00</view>
-					<view class="">转入：张三</view>
-				</view>
-				<view class="money">
-					<view class="change u-primary">+123.0000</view>
-					<view class="yue">余额 1234.0000</view>
-				</view>
-			</view>
-			<view class="item u-border-bottom">
-				<view class="icon">
-					<u-avatar text="充" randomBgColor></u-avatar>
-				</view>
-				<view class="info">
-					<view class="time u-info">2024-01-01 00:00:00</view>
-					<view class=""> </view>
-				</view>
-				<view class="money">
-					<view class="change u-primary">+123.0000</view>
-					<view class="yue">余额 1234.0000</view>
-				</view>
-			</view> -->
 		</view>
 	</view>
 </template>
@@ -114,6 +62,7 @@
 				randomBgColor:'',
 				open_team:false,//true不显示返佣
 				timer:0,
+				times: 0,
 			}
 		},
 		onLoad() {
@@ -129,25 +78,81 @@
 			this.randomBgColor = this.getRandomColor(); // 在组件挂载后设置随机颜色
 		},		
 		methods: {
+			// openTeam() {
+			// 	if (this.timer) {
+			// 		clearTimeout(this.timer);
+			// 	}
+				
+			// 	this.times++;
+			// 	console.log(this.times)
+			// 	if (this.times >= 5) {
+			// 		this.open_team = !this.open_team;
+			// 		uni.setStorageSync('open_team', this.open_team);
+			// 		uni.$u.toast(this.open_team ? '显示返佣数据' : '已关闭返佣数据');
+			// 		this.times = 0;
+			// 		this.list = [];
+			// 		this.getUsdtLog();
+			// 		return;
+			// 	}
+			// 	this.timer = setTimeout(() => {
+			// 		this.times = 0;
+			// 	}, 1000);
+			// },	
 			openTeam() {
+				// 定义常量，提高可维护性
+				const CLICK_THRESHOLD = 5;
+				const RESET_DELAY = 1000;
+
+				// 清除之前的定时器，防止多次触发导致状态混乱
 				if (this.timer) {
 					clearTimeout(this.timer);
+					this.timer = null; // 显式置空，避免引用残留
 				}
 				
+				// 增加连击计数
 				this.times++;
-				if (this.times >= 5) {
+				
+				// 移除生产环境下的 console.log，避免性能损耗和信息泄露
+				// console.log(this.times); 
+
+				// 检查是否达到连击阈值
+				if (this.times >= CLICK_THRESHOLD) {
+					// 切换状态
 					this.open_team = !this.open_team;
-					uni.setStorageSync('open_team', this.open_team);
+					
+					try {
+						// 持久化状态
+						uni.setStorageSync('open_team', this.open_team);
+					} catch (e) {
+						// 捕获存储异常，避免程序崩溃
+						console.error('Failed to save open_team status:', e);
+					}
+					
+					// 显示提示信息
 					uni.$u.toast(this.open_team ? '显示返佣数据' : '已关闭返佣数据');
+					
+					// 重置计数器
 					this.times = 0;
+					
+					// 清空列表并重新获取数据
 					this.list = [];
-					this.getUsdtLog();
+					
+					// 调用获取日志方法，建议在实际项目中确保 getUsdtLog 内部有错误处理
+					// 如果 getUsdtLog 是异步的，建议添加 .catch 或 try-await
+					if (typeof this.getUsdtLog === 'function') {
+						this.page = 1;
+						this.getUsdtLog();
+					}
+					
 					return;
 				}
+
+				// 设置定时器，在指定时间后重置连击计数
 				this.timer = setTimeout(() => {
 					this.times = 0;
-				}, 1000);
-			},			
+					this.timer = null; // 定时器执行后置空
+				}, RESET_DELAY);
+			},					
 			getRandomColor() {
 			  const letters = '0123456789ABCDEF';
 			  let color = '#';

@@ -191,8 +191,8 @@ class Rujin extends Api
         if (!$data) {
             $this->error('数据不存在');
         }
-        if($data['pay_status']==3){
-            $this->error('已支付，请勿重复支付');
+        if($data['pay_status']>=3){
+            $this->error('已操作请勿重复操作');
         }
 
         Db::startTrans();

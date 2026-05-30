@@ -2,8 +2,8 @@
     "name" : "KYC",
     "appid" : "__UNI__7620F0C",
     "description" : "",
-    "versionName" : "1.1.0",
-    "versionCode" : 110,
+    "versionName" : "1.1.1",
+    "versionCode" : 111,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -17,9 +17,7 @@
             "delay" : 0
         },
         /* 模块配置 */
-        "modules" : {
-            "Push" : {}
-        },
+        "modules" : {},
         /* 应用发布信息 */
         "distribute" : {
             /* android打包配置 */
@@ -47,16 +45,6 @@
             "ios" : {
                 "idfa" : false,
                 "dSYMs" : false
-            },
-            /* SDK配置 */
-            "sdkConfigs" : {
-                "ad" : {},
-                "push" : {
-                    "unipush" : {
-                        "version" : "2",
-                        "offline" : false
-                    }
-                }
             },
             "icons" : {
                 "android" : {
