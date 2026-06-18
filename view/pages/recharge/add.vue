@@ -77,6 +77,7 @@
 				address:'',
 				bianhao:'',
 				token:'',
+				mincz:0,
 			}
 		},
 		onLoad() {
@@ -105,6 +106,7 @@
 					if(res.code == 1) {
 						that.bianhao = res.data.bianhao
 						that.token = res.data.token
+						that.mincz = res.data.minchongzhi
 					}else{
 						uni.$u.toast(res.msg);
 					}
@@ -159,6 +161,9 @@
 			submit(){
 				if(!this.num){
 					return uni.$u.toast("请输入数量")
+				}
+				if(this.num<this.mincz){
+					return uni.$u.toast("最低充值数量为"+this.mincz)
 				}
 				if(!this.hash){
 					return uni.$u.toast("请输入哈希值")

@@ -89,9 +89,6 @@
 						this.sfz_bimage = res.data.sfz_bimage;
 						this.sfz_fimage = res.data.sfz_fimage;
 						this.sfz_pimage = res.data.sfz_pimage;
-						if(res.data.sfz_bimage && res.data.sfz_fimage && res.data.sfz_pimage){
-							this.isauth = true;
-						}
 					}				
 				}).catch(res => {
 					uni.$u.toast(res.msg);

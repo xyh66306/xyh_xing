@@ -67,5 +67,6 @@ return array (
   'tbpay_switch' => '1',
   'rj_user_id' => '0',
   'fanyong' => '1',
-  'show_czdd' => '1',
+  'show_czdd' => '0',
+  'cds_show_recharge' => '1',
 );

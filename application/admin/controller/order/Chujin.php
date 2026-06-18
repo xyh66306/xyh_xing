@@ -108,7 +108,7 @@ class Chujin extends Backend
 
                 $row->ptname = Db::name("supply")->where("access_key",$row->access_key)->value("title");
 
-                $row->visible(['id', 'payername', 'user_id', 'orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt', 'withdrawCurrency', 'pinzheng_image', 'withdrawAmount','ptname']);
+                $row->visible(['id', 'payername', 'user_id', 'orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt', 'withdrawCurrency', 'pinzheng_image', 'withdrawAmount','ptname','createtime']);
             }
             // $supply_price = $this->model->where($where)->sum("supply_usdt");
             // $user_price = $this->model->where($where)->sum("user_usdt");
@@ -451,7 +451,7 @@ class Chujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'orderid', 'merchantOrderNo', 'realName', 'cardNumber', 'bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt', 'withdrawCurrency', 'pinzheng_image', 'createtime']);
+                $row->visible(['id', 'orderid', 'merchantOrderNo', 'realName', 'cardNumber','withdrawAmount','bankName', 'bankBranchName', 'pay_type', 'pay_account', 'pay_ewm_image', 'user_usdt', 'user_fee', 'supply_fee', 'supply_usdt', 'updatetime', 'status', 'access_key', 'pay_status', 'usdt', 'withdrawCurrency', 'pinzheng_image', 'createtime']);
             }
 
             $supply_price = $this->model->where("pay_status", 5)->where('access_key', $supply_info['access_key'])->cache(3600)->sum("supply_usdt");
@@ -544,8 +544,12 @@ class Chujin extends Backend
         $BiModel = new BiModel();
         $biinfo = $BiModel->where("id", 1)->find();
         $duichu_rate = $this->supply_info['duichu'];
+        if($this->supply_info['usdt']<=0){
+            $this->error('余额不足');
+        }
 
-        $fee_dalu_supply_duichu = config('site.fee_dalu_supply_duichu');
+
+        $fee_dalu_supply_duichu = isset($this->supply_info['duichu_fanyong']) ? $this->supply_info['duichu_fanyong'] : 0;
         $fee_dalu_supply_duichu = $fee_dalu_supply_duichu / 100;
 
 
@@ -577,22 +581,29 @@ class Chujin extends Backend
             // 跳过空行（通过检查关键字段）
             if (empty($orderid)) continue;
             if ($money == 0) continue;
+            if ($money < 3500){
+                $this->error('不支持低于3500的兑出');
+            }
+
+            if ($value['D'] == '工商银行' || $value['D'] == '中国工商银行' || $value['D'] == '农业银行' || $value['D'] == '中国农业银行') {
+                $this->error('不支持工商和农业');
+            }
 
             // 处理数据
             $item = [
                 'orderid' => $orderid,
                 'money' => $money,
-                'realName' => $value['F'] ?? '',
-                'bankName' => $value['G'] ?? '',
-                'cardNumber' => $value['H'] ?? '',
-                'bankBranchName' => $value['I'] ?? '',
+                'realName' => $value['C'] ?? '',
+                'bankName' => $value['D'] ?? '',
+                'cardNumber' => $value['E'] ?? '',
+                'bankBranchName' => $value['F'] ?? '',
             ];
 
             $data[] = $item;
             $importCount++;
         }
 
-
+        $count = 0;
         // 如果有数据需要处理
         if (!empty($data)) {
             foreach ($data as $item) {
@@ -602,16 +613,18 @@ class Chujin extends Backend
                     continue;
                 }
 
-                $order = $this->model->where('orderid', $item['orderid'])->find();
+                $order = $this->model->where('merchantOrderNo', $item['orderid'])->find();
                 if (!$order) {
                     $usdt = truncateDecimal($item['money'] / $duichu_rate, 4);
                     $user_usdt = sprintf('%.4f', truncateDecimal($item['money'] / $biinfo['duichu'], 4));
                     $supply_fee = truncateDecimal($usdt * $fee_dalu_supply_duichu);
                     $supply_usdt = truncateDecimal($usdt + $supply_fee);
 
-                    $data = [
+                    $newOrderId = getOrderNo();
+
+                    $saveData = [
                         'access_key' => $this->supply_info['access_key'],
-                        'orderid'   => getOrderNo(),
+                        'orderid'   => $newOrderId,
                         'merchantOrderNo' => $item['orderid'],
                         'realName' => $item['realName'],
                         'bankName' => $item['bankName'],
@@ -629,43 +642,27 @@ class Chujin extends Backend
                         'user_fee'      => $usdt - $user_usdt,
                         'supply_fee'   => $supply_fee,
                         'supply_usdt'   => $supply_usdt,
+                        'createtime'    => time(),
+                        'updatetime'    => time(),
                     ];
-                    dump($data);
-                    die;
 
-                    $this->model->allowField(true)->save([
-                        'access_key' => $this->supply_info['access_key'],
-                        'orderid'   => getOrderNo(),
-                        'merchantOrderNo' => $item['orderid'],
-                        'realName' => $item['realName'],
-                        'bankName' => $item['bankName'],
-                        'cardNumber' => $item['cardNumber'],
-                        'bankBranchName' => $item['bankBranchName'],
-                        'pay_type' => 'bank',
-                        'diqu'      => 1,
-                        'fiatCurrency' => 'USDT',
-                        'withdrawCurrency' => 'USDT',
-                        'withdrawAmount' => $item['money'],
-                        'huilv'         => $duichu_rate,
-                        'pay_status'    => 1,
-                        'usdt'          => $usdt,
-                        'user_usdt'     => $user_usdt,
-                        'user_fee'      => $usdt - $user_usdt,
-                        'supply_fee'   => $supply_fee,
-                        'supply_usdt'   => $supply_usdt,
-                    ]);
-
+                    // 只调用一次 save
+                    // $res = $this->model->allowField(true)->save($saveData);
+                    $res = Db::name("order_chujin")->insert($saveData);
                     //扣除商户冻结金额
-                    $Usdtlog = new Usdtlog();
-                    $Usdtlog->addtxLog($this->supply_info['access_key'], $supply_usdt, 2, $orderid, 2);
+                    if($res){
+                        $Usdtlog = new Usdtlog();
+                        $Usdtlog->addtxLog($this->supply_info['access_key'], $supply_usdt, 2, $newOrderId, 2);
+                    }
+                    $count++;
                 }
             }
         }
 
         // 删除临时文件
-        @unlink($filePath);
+        // @unlink($filePath);
 
-        return $this->success('文件上传成功，共处理 ' . $importCount . ' 条数据');
+        return $this->success('文件上传成功，共处理 ' . $count . ' 条数据');
     }
 
 

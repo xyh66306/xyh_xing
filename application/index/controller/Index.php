@@ -182,6 +182,7 @@ class Index extends Frontend
         //承兑商充值
         $total_user_number = Db::name("user_usdt")->where("status", 'normal')->sum("num");
         $total_user_cz_number = Db::name("user_usdt")->where("status", 'normal')->count("id");
+        $total_user_number_fee = Db::name("user_usdt")->where("status", 'normal')->sum("fee");
 
         //服务商提现
         $total_supply_number = Db::name("supply_usdt")->where("pay_status", 3)->sum("usdt");
@@ -213,7 +214,8 @@ class Index extends Frontend
             'total_supply_freeze_usdt' => $total_supply_freeze_usdt,
             'rgRjCount' => $rgRjCount,
             'deRjCount' => $deRjCount,
-            'fanyong_daili_total'=>$fanyong_daili_total
+            'fanyong_daili_total'=>$fanyong_daili_total,
+            'total_user_number_fee' => $total_user_number_fee,
         ];
         $this->assign($data);
 
@@ -279,7 +281,7 @@ class Index extends Frontend
         $supply_chongzhi = Db::name("supply_recharge")->where("pay_status",3)->sum("usdt");
 
         // 所有分润
-        $diff = truncateDecimal($total_user_number+ $commission_all+$supply_chongzhi - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt );
+        $diff = truncateDecimal($total_user_number+ $commission_all+$supply_chongzhi - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt-$total_user_number_fee);
         // $diff = $company['usdt'] - $commission_all_2026;
         //承兑商充值累计数量 + 商户充值数量 + 商户充值手续费 + 商户提现手续费 - 承兑商账户余额 - 商户账户余额 - 公司资产
         // $diff = truncateDecimal($total_user_number + $supply_chongzhi + $total_supply_recharge_fee  + $total_supply_tx_fee - $userTotalUsdt - $total_supply_number  - $totol_supply_usdt -$company_usdt_all);

@@ -3,20 +3,9 @@
 		<view class="list">
 			<view class="item u-border-bottom" v-for="(vo,index) in list" :key="index">
 				<view class="icon">
-					<template v-if="vo.type==1">
-						<u-avatar text="转" randomBgColor></u-avatar>
-					</template>
-					<template v-else-if="vo.type==2">
-						<u-avatar text="充" randomBgColor></u-avatar>
-					</template>										
-					<template v-else-if="vo.type==3">
-						<u-avatar text="现" randomBgColor></u-avatar>
-					</template>		
-					<template v-else-if="vo.type==4">
-						<u-avatar text="赠" randomBgColor></u-avatar>
-					</template>															
+					<u-avatar text="充" randomBgColor></u-avatar>														
 				</view>
-				<view class="info">
+				<view class="info" @click="copyOrder(vo.bianhao)">
 					<view class="time u-info">{{vo.bianhao}}</view>
 					<view class="">{{vo.createtime }}</view>
 				</view>
@@ -60,6 +49,14 @@
 			this.randomBgColor = this.getRandomColor(); // 在组件挂载后设置随机颜色
 		},		
 		methods: {
+			copyOrder(text){
+				uni.setClipboardData({
+					data:text,
+					success:()=>{
+						uni.$u.toast('复制成功');
+					}
+				})
+			},
 			getRandomColor() {
 			  const letters = '0123456789ABCDEF';
 			  let color = '#';

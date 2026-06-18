@@ -1,3 +1,8 @@
+/*
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+ */
 define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
 
     var Controller = {
@@ -27,7 +32,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 columns: [
                     [
                         {checkbox: true},
-                        {field: 'bianhao', title: __('Bianhao')},
+                        {field: 'id', title: __('ID')},
                         {field: 'username', title: __('Username'), operate: 'LIKE'},
                         {field: 'pay_skpt', title: __('Pay_skpt'), searchList: {"wxpay":__('Wxpay'),"alipay":__('Alipay')}, formatter: Table.api.formatter.normal},
                         {field: 'pay_nums', title: __('Pay_nums'), operate: 'LIKE'},

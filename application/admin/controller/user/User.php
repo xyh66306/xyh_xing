@@ -270,6 +270,22 @@ class User extends Backend
                 $params['paypwd'] = $this->getEncryptPassword($paypwd, $row['salt']); 
             }
 
+            if($params['sfz_status']==1 && $row['sfz_status']==2){
+                $exportData['username'] = $row['nickname'];
+                $exportData['email'] = $row['email'];
+                $exportData['type'] = "sendIdcardNotice";
+                $jobClass = 'app\job\Notice@fire';
+                \think\Queue::push($jobClass, $exportData); //加入队列     
+            }
+
+            if($params['status']=='normal' && $row['status']!=='normal'){
+                $exportData['username'] = $row['nickname'];
+                $exportData['email'] = $row['email'];
+                $exportData['type'] = "sendAccountNotice";
+                $jobClass = 'app\job\Notice@fire';
+                \think\Queue::push($jobClass, $exportData); //加入队列     
+            }
+
             //是否采用模型验证
             if ($this->modelValidate) {
                 $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));

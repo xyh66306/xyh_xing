@@ -194,7 +194,7 @@ class Cash extends Api
             $name = $this->access_key."-".$params['amount']."-".$pinyinname;
             
             $cacheData = false;
-            // $cacheData = Cache::get($name);
+            $cacheData = Cache::get($name);
 
              
             $userInfo = [];
@@ -213,68 +213,79 @@ class Cash extends Api
 
                     if(!$userInfo){
                         $ulist =[];
-                        if($params['amount']>=30000){
-                            //所有信任用户
-                            $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->order($order)->column('id'); //信任用户
+                        if($params['amount']>=10000){
 
-                            $ptulist = []; //大额限制普通用户
-                            if($params['amount']>30000){
-                                $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",">=",30000)->order($order)->column('id'); //大额限制普通用户
-                                
+                            $ptulist1w = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",">=",10000)->order($order)->column('id'); //优先限制1w有U普通用户
+                            if(!empty($ptulist1w)){
+                                $ulist = $ptulist1w;
                             }
-                            $ptulist2 = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",0)->order($order)->column('id');
-
-                            $ulist = array_merge(
-                                // is_array($xrulist) ? $xrulist : [], 
-                                is_array($ptulist) ? $ptulist : [], 
-                                is_array($ptulist2) ? $ptulist2 : []
-                            );
-                            $ulist = array_unique($ulist);
+                            if(empty($ulist)){
+                                $ulist = $userModel->where($where)->where('usdt',">=",$usdt)->order($order)->column('id'); //有U普通用户
+                            }   
 
                             if(empty($ulist)){
-                                $ulist = $xrulist;
-                            }
+                                $ulist = $userModel->where($where)->where('usdt',"<>",0)->where("min_cny",">=",10000)->order($order)->column('id'); //再优先限制1w无U普通用户
+                            }  
+                            
+                            if(empty($ulist)){
+                                $ulist = $userModel->where($where)->where('usdt',"<>",0)->order($order)->column('id'); //再无U普通用户
+                            }                              
+
+                            if(empty($ulist)){
+                                $ulist = $userModel->where($where)->where("trust",1)->where("big",2)->where("min_cny",0)->order($order)->column('id'); //小额信任用户
+                            }   
+
 
                         }elseif($params['amount']>=7000){
 
-                            //所有信任用户
-                            // $xrulist = $userModel->where($where)->where('usdt',">",100)->where("trust",1)->order($order)->column('id'); //信任用户
-                            $xrulist = $userModel->where($where)->where("trust",1)->where("big",2)->order($order)->column('id'); //信任用户
+                            $ptulist7000 = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",">=",7000)->where("min_cny","<",10000)->order($order)->column('id'); //有U普通用户
 
-                            $ptulist = []; //大额限制普通用户
-                            if($params['amount']>10000){
-                                $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",">=",10000)->where("min_cny","<",30000)->order($order)->column('id'); //大额限制普通用户
-                                
+                            if(!empty($ptulist7000)){
+                                $ulist = $ptulist7000;
+                            }else{
+                               $ulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny","<",10000)->order($order)->column('id'); //有U普通用户
                             }
-                            // $ptulist2 = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",0)->order($order)->column('id');
-                            $ptulist2 = $userModel->where($where)->where('usdt',"<>",0)->where("min_cny",0)->where("big",2)->order($order)->column('id');
-
-                            $ulist = array_merge(
-                                // is_array($xrulist) ? $xrulist : [], 
-                                is_array($ptulist) ? $ptulist : [], 
-                                is_array($ptulist2) ? $ptulist2 : []
-                            );
-                            $ulist = array_unique($ulist);
 
                             if(empty($ulist)){
-                                $ulist = $xrulist;
-                            }                        
+                                $ulist = $userModel->where($where)->where('usdt',"<>",0)->where("min_cny","<",10000)->order($order)->column('id'); //无U普通用户
+                            }    
+
+                            if(empty($ulist)){
+                                $ulist = $userModel->where($where)->where("trust",1)->where("big",2)->where("min_cny",0)->order($order)->column('id'); //小额信任用户
+                            }                                                  
+
+                        }elseif($params['amount']>=5000){
+
+                            $ptulist5000 = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",">=",5000)->where("min_cny","<",10000)->order($order)->column('id'); //有U普通用户
+
+
+                            if(!empty($ptulist5000)){
+                                $ulist = $ptulist5000;
+                            }else{
+                               $ulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny","<",10000)->order($order)->column('id'); //有U普通用户
+                            }
+
+                            if(empty($ulist)){
+                                $ulist = $userModel->where($where)->where('usdt',"<>",0)->where("min_cny","<",10000)->order($order)->column('id'); //无U普通用户
+                            }    
+
+                            if(empty($ulist)){
+                                $ulist = $userModel->where($where)->where("trust",1)->where("big",2)->where("min_cny",0)->order($order)->column('id'); //小额信任用户
+                            }                                                  
 
                         }else{
                             //小额信任用户
-                            $xrulist = $userModel->where($where)->where("trust",1)->where("big",2)->where("min_cny",0)->order($order)->column('id'); //信任用户
-
-                            // $ptulist = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",0)->order($order)->column('id'); //普通用户
-                            $ptulist = $userModel->where($where)->where('usdt',"<>",0)->where("min_cny",0)->order($order)->column('id'); //普通用户
-
-                            // $ulist = array_merge($xrulist,$ptulist);
-                            // $ulist = $ptulist;   
-                            if(empty($ptulist)){
-                                $ulist = $xrulist;
+                            $ptulistMax = $userModel->where($where)->where('usdt',">=",$usdt)->where("min_cny",0)->order($order)->column('id'); //普通用户有U用户
+                            $ulist = [];
+                            if(!empty($ptulistMax)){
+                                $ulist = $ptulistMax;
                             }else{
-                                $ulist = $ptulist;
+                                $ulist = $userModel->where($where)->where('usdt',"<>",0)->where("min_cny",0)->order($order)->column('id'); //普通用户无限制U用户
                             }
-
+                            
+                            if(empty($ulist)){
+                                $ulist = $userModel->where($where)->where("trust",1)->where("big",2)->where("min_cny",0)->order($order)->column('id'); //信任用户
+                            }
                         }
 
 
@@ -287,7 +298,7 @@ class Cash extends Api
                             // $diffTime = time()-$xztime;
                             $limit = $count-1;
                             $rjLst1 = $rujinModel->where("pay_status",">=","2")->where("pay_status","<","5")->where("status","1")->order("id desc")->limit($limit)->column('user_id');
-                            $rjLst2 = $rujinModel->where("pay_status",">=","1")->where("pay_status","<","5")->whereTime('ctime',"today")->order("id desc")->limit($limit)->column('user_id');
+                            $rjLst2 = $rujinModel->where("pay_status","1")->where("pay_status","<","5")->whereTime('ctime',"today")->order("id desc")->limit(2)->column('user_id');
 
                             $rjLst = array_unique(array_merge($rjLst1, $rjLst2));
 
@@ -296,6 +307,10 @@ class Cash extends Api
                             if (!empty($diff)) {
                                 $randomIndex = array_rand($diff);
                                 $rj_user_id = $diff[$randomIndex];
+                                $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
+                            }elseif(count($rjLst1)>=1){
+                                $randomIndex = array_rand($rjLst1);
+                                $rj_user_id = $rjLst1[$randomIndex];
                                 $userInfo = $userModel->where($where)->where('id',$rj_user_id)->order($order)->find();
                             } else {
                                 $rj_user_id = config('site.rj_user_id');
@@ -311,7 +326,7 @@ class Cash extends Api
                         }
  
                     }
-                    Cache::set($name,$userInfo,60*20);
+                    Cache::set($name,$userInfo,60*10);
                 }
             }else{
                 $where['diqu'] = $params['diqu'];

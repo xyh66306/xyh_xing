@@ -1,3 +1,8 @@
+/*
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+ */
 define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
 
     var Controller = {
@@ -26,7 +31,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('ID')},
-                        {field: 'user.nickname', title: __('User.nickname'), operate: 'LIKE'},
+                        {field: 'bianhao', title: "编号"},
+                        {field: 'user.username', title: __('User.nickname'), operate: 'LIKE'},
                         {field: 'act_num', title: __('ActNum')},
                         {field: 'num', title: __('Num')},
                         {field: 'fee', title: __('Fee')},

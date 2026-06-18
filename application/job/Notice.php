@@ -3,7 +3,7 @@
  * @Author: 提莫队长 =
  * @Date: 2025-11-10 17:01:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-03-24 20:07:00
+ * @LastEditTime: 2026-06-15 15:20:23
  * @FilePath: \xyh_xing\application\job\Notice.php
  */
 
@@ -56,6 +56,27 @@ public function fire(Job $job, $params)
                     throw new \InvalidArgumentException('Missing required parameters for sendNotice: user_id, orderid');
                 }
                 break;
+            case "sendIdcardNotice":
+                // 验证 sendIdcardNotice 所需参数
+                if (!isset($params['email'])) {
+                    $job->delete();
+                    recordLogs('Missing required parameter for sendIdcardNotice: email');
+                    return; 
+                }
+                
+                $username = isset($params['username']) ? $params['username'] : '';
+                $this->sendIdcardNotice($params['email'], $username);
+                break;  
+            case "sendAccountNotice":
+                if (!isset($params['email'])) {
+                    $job->delete();
+                    recordLogs('Missing required parameter for sendIdcardNotice: email');
+                    return; 
+                }
+                
+                $username = isset($params['username']) ? $params['username'] : '';
+                $this->sendAccountNotice($params['email'], $username);
+                break;                                 
             // case "sendEmsNotice":
             //     // 验证 sendEmsNotice 所需参数
             //     if (!isset($params['email'], $params['orderid'])) {
@@ -146,4 +167,45 @@ public function fire(Job $job, $params)
         return (bool)$emailResult;
     }    
 
+    /**
+     * 身份证实名认证通过通知
+     * @param string $email 用户邮箱
+     * @param string $username 用户名 (可选，用于个性化消息)
+     * @return bool
+     */
+    public function sendIdcardNotice($email, $username = ''){
+        if (empty($email)) {
+            return false;
+        }
+
+        // 构建消息内容
+        $userNameStr = $username ? $username : '用户';
+        $msg = "尊敬的{$userNameStr}，您的身份证实名认证已审核通过。现在您可以享受平台更多服务。";
+        
+        // 发送邮件
+        Emslib::notice($email, $msg, self::NOTICE_TEMPLATE);
+        
+        return true;
+    }
+
+    /**
+     * 账户审核通过通知
+     * @param string $email 用户邮箱
+     * @param string $username 用户名 (可选，用于个性化消息)
+     * @return bool
+     */
+    public function sendAccountNotice($email, $username = ''){
+        if (empty($email)) {
+            return false;
+        }
+
+        // 构建消息内容
+        $userNameStr = $username ? $username : '用户';
+        $msg = "尊敬的{$userNameStr}，您的账户认证已审核通过,请登录平台完善账户信息。";
+        
+        // 发送邮件
+        Emslib::notice($email, $msg, self::NOTICE_TEMPLATE);
+        
+        return true;
+    }    
 }

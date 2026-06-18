@@ -49,7 +49,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user_usdt', title: "承兑商结算数量(USDT)", operate:false},
                         {field: 'supply_usdt', title: "商户结算数量(USDT)", operate: false},
                         {field: 'pay_status', title: __('Pay Status'),searchList: {"0":__('payStatus 0'),"1":__('payStatus 1'),"2":__('payStatus 2'),"3":__('payStatus 3'),"4":__('payStatus 4'),"5":__('payStatus 5'),"6":__('payStatus 6')},formatter: Table.api.formatter.status},
-                        {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
+                        {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.status},
                         // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                         {
@@ -126,7 +126,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'bankName', title: __('Bankname'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'bankBranchName', title: __('Bankbranchname'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'pay_ewm_image', title: __('Pay_ewm_image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.images},
-                        {field: 'withdrawCurrency', title: "提现金额(CNY)", operate: 'LIKE'},
+                        {field: 'withdrawAmount', title: "提现金额(CNY)", operate: 'LIKE'},
                         {field: 'usdt', title: "提现数量(USDT)", operate: 'LIKE'},
                         {field: 'supply_fee', title: "手续费(USDT)", operate: 'LIKE'},
                         {field: 'supply_usdt', title: "结算数量(USDT)", operate: 'LIKE'},

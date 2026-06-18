@@ -47,6 +47,47 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 为表格绑定事件
             Table.api.bindevent(table);
         },
+        manage: function () {
+            // 初始化表格参数配置
+            Table.api.init({
+                extend: {
+                    index_url: 'supply/usdtlog/manage' + location.search,
+                    add_url: 'supply/usdtlog/add',
+                    edit_url: 'supply/usdtlog/edit',
+                    del_url: 'supply/usdtlog/del',
+                    multi_url: 'supply/usdtlog/multi',
+                    import_url: 'supply/usdtlog/import',
+                    table: 'supply_usdt_log',
+                }
+            });
+
+            var table = $("#table");
+
+            // 初始化表格
+            table.bootstrapTable({
+                url: $.fn.bootstrapTable.defaults.extend.index_url,
+                pk: 'id',
+                sortName: 'id',
+                columns: [
+                    [
+                        {checkbox: true},
+                        {field: 'id', title: "ID"},
+                        {field: 'supply_id', title: "商户ID"},
+                        {field: 'type', title:"类型", searchList: {"1":"入金订单", "2":"兑出订单", "3":"提现", "4":"获赠", "5":"返佣", "6":"冻结"}, formatter: Table.api.formatter.normal},
+                        {field: 'flow_type', title:"流水方向", searchList: {"1":"收入", "2":"支出"}, formatter: Table.api.formatter.normal},
+                        {field: 'usdt', title: __('Usdt'), operate:'BETWEEN'},
+                        {field: 'before', title: __('Before'), operate:'BETWEEN'},
+                        {field: 'after', title: __('After'), operate:'BETWEEN'},
+                        {field: 'memo', title: __('Memo'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
+                        {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
+                        // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                    ]
+                ]
+            });
+
+            // 为表格绑定事件
+            Table.api.bindevent(table);
+        },        
         add: function () {
             Controller.api.bindevent();
         },

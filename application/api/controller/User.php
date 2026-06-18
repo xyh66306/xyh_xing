@@ -774,9 +774,11 @@ class User extends Api
 
         $bianhao = getOrderNo('withdraw');
         $token = $this->getOrderToken($bianhao);
+        $minchongzhi = config('site.minchongzhi');
         $this->success("success",[
             'bianhao'=>$bianhao,
-            'token'=>$token
+            'token'=>$token,
+            'minchongzhi'=>$minchongzhi
         ]);
     }
 
@@ -790,7 +792,12 @@ class User extends Api
         $UsdtModel = new UsdtModel();
 
         $post = $this->request->post();
-
+        if(!$post['num'] || !$post['bianhao']){
+            $this->error("参数错误");
+        }
+        if($post['num'] < config('site.minchongzhi')){
+            $this->error("充值金额不能小于".config('site.minchongzhi'));
+        }
         if(isset($post['auth_token'])){
            $auth =  $this->checkOrderToken($post['bianhao'],$post['auth_token']);
            if(!$auth){
@@ -913,6 +920,8 @@ class User extends Api
      */
     public function withdraw(){
 
+        $this->error("提币关闭");
+        return;
         $pay_type = input('pay_type','');
         $usdt = $this->request->post("usdt",'');
         $remarks = $this->request->post("remarks",'');
@@ -920,6 +929,9 @@ class User extends Api
         $fee = config('site.fee_ti');
         $act_usdt = $usdt-$fee;
 
+        if($usdt<=0){
+            $this->error("提币金额不能小于0");
+        }
         $userModel = new UserModel();
         $info = $userModel->where("id",$this->auth->id)->find();
         if(($info['usdt'] - $info['usdt_dj']) < $usdt){
