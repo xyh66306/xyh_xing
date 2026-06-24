@@ -183,6 +183,7 @@
 					}else{
 						uni.$u.toast(res.msg);
 					}
+					this.getToken();
 				})
 			},
 			// 新增图片

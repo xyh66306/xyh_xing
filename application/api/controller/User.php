@@ -805,6 +805,9 @@ class User extends Api
            }
         }
 
+        if($this->auth->cz_switch==0){
+            $this->error("充值功能已关闭");
+        }
 
         $info = $UsdtModel->where("user_id",$this->auth->id)->where("status","hidden")->find();
         if($info){

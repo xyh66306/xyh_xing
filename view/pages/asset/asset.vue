@@ -16,7 +16,7 @@
 				</view>
 			</view>
 			<view class="flex" style="margin-top: 30rpx;">
-				<view class="flex-1">
+				<view class="flex-1"  v-if="user.cz_switch==1">
 					<u-button type="primary" plain shape="circle" @click="$u.route('/pages/recharge/add')">充币</u-button>
 				</view>
 				<view class="flex-1">

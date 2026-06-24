@@ -26,7 +26,7 @@ class Auth
     //默认配置
     protected $config = [];
     protected $options = [];
-    protected $allowFields = ['id', 'username','paypwd', 'nickname', 'mobile', 'avatar', 'usdt','usdt_dj', 'email', 'invite', 'status','group_id','sfz_status','diqu','letstalk'];
+    protected $allowFields = ['id', 'username','paypwd', 'nickname', 'mobile', 'avatar', 'usdt','usdt_dj', 'email', 'invite', 'status','group_id','sfz_status','diqu','letstalk','cz_switch'];
 
     public function __construct($options = [])
     {

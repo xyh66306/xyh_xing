@@ -47,13 +47,16 @@ class Rujin extends Frontend
 
             $userModel = new UserModel();
             $userInfo = $userModel->where(['id'=>$value['user_id']])->find();
+            $exportData =[];
             $exportData['type']     = "sendEmsCdsNotice";
             $exportData['email']    = $userInfo['email'];
             $exportData['orderid']  = $value['orderid'];
             $exportData['user_id']    = $value['user_id'];
+            $exportData['amount']    = $value['amount'];
             $jobClass = 'app\job\Notice@fire';
             \think\Queue::push($jobClass, $exportData);//加入队列
         }
+        echo "已发送邮件通知";
 
     }
 

@@ -3,7 +3,7 @@
  * @Author: 提莫队长 =
  * @Date: 2025-11-10 17:01:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-06-15 15:20:23
+ * @LastEditTime: 2026-06-23 17:36:55
  * @FilePath: \xyh_xing\application\job\Notice.php
  */
 
@@ -48,8 +48,8 @@ public function fire(Job $job, $params)
                     throw new \InvalidArgumentException('Missing required parameters for sendEmsCdsNotice: email, orderid');
                 }
                 if (isset($params['user_id']) && isset($params['orderid'])) {
-                    $this->sendEmsCdsNotice($params['email'], $params['orderid']);
-                    $this->sendNotice($params['user_id'], $params['orderid']);
+                    $this->sendEmsCdsNotice($params['email'], $params['orderid'], $params['amount']);
+                    $this->sendNotice($params['user_id'], $params['orderid'], $params['amount']);
                 } else {
                      $job->delete();
                     recordLogs('Missing required parameters for sendNotice: user_id, orderid');
@@ -136,9 +136,9 @@ public function fire(Job $job, $params)
     
     
     //兑入承兑商
-    public function sendEmsCdsNotice($email,$orderid){
+    public function sendEmsCdsNotice($email,$orderid,$amount=''){
 
-        $msg = "您好，订单号".$orderid.",请查看是否收到款，麻烦尽快确认。温馨提醒一定务必核实姓名，金额，订单号是否吻合，避免不必要的损失";
+        $msg = "您好，订单号".$orderid.",请查看是否收到款".$amount."，麻烦尽快确认。温馨提醒一定务必核实姓名，金额，订单号是否吻合，避免不必要的损失";
         $result = Emslib::notice($email, $msg, self::NOTICE_TEMPLATE);
         
         if (!$result) {
@@ -148,16 +148,10 @@ public function fire(Job $job, $params)
         return (bool)$result;
     }   
     
-    public function sendNotice($userid,$orderid){
-
-        $mobile = "18919660526";
-        $event = "resetpwd";
-        $code = random_int(3333,9999);
-        // $ret = Smslib::notice($mobile, $code, $event);
+    public function sendNotice($userid,$orderid,$amount=''){
 
         $email = "870416982@qq.com";
-        // $msg = "用户ID".$userInfo['id']."当前有一笔新的兑出订单".$info['orderid']."，金额：".$info['amount']."您可以登录抢单查看。<a href='https://bingocn.wobeis.com/otc/#/pages/buy/buy'>点击查看</a>";
-        $msg = $userid."您好，订单号".$orderid.",请查看是否收到款，麻烦尽快确认。温馨提醒一定务必核实姓名，金额，订单号是否吻合，避免不必要的损失";
+        $msg = $userid."您好，订单号".$orderid.",请查看是否收到款".$amount."，麻烦尽快确认。温馨提醒一定务必核实姓名，金额，订单号是否吻合，避免不必要的损失";
         $emailResult = Emslib::notice($email, $msg, self::NOTICE_TEMPLATE);
         
         if (!$emailResult) {
