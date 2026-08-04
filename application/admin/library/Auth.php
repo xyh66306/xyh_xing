@@ -38,7 +38,11 @@ class Auth extends \fast\Auth
      */
     public function login($username, $password, $keeptime = 0)
     {
-        $admin = Admin::get(['username' => $username]);
+        // $admin = Admin::get(['username' => $username]);
+        $admin = Admin::where(function ($query) use ($username) {
+            $query->where('username', $username)
+                ->whereOr('email', $username);
+        })->find();
         if (!$admin) {
             $this->setError('Username is incorrect');
             return false;

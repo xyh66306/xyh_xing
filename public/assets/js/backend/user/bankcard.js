@@ -1,3 +1,8 @@
+/*
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+ */
 define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
 
     var Controller = {

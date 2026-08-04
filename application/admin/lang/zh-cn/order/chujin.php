@@ -39,4 +39,5 @@ return [
     'payStatus 4'    => '商户审核',
     'payStatus 5'    => '已完成',
     'payStatus 6'    => '已取消',
+    'Content'       => '备注',
 ];

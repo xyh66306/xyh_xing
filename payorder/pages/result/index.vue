@@ -32,7 +32,6 @@
 </template>
 
 <script>
-const base_url = "https://bingocn.wobeis.com/"
 export default {
 	data() {
 		return {
@@ -52,20 +51,14 @@ export default {
 	methods: {
 		getDetails() {
 			let that = this
-			uni.request({
-				url: base_url + '/openapi/details/index',
-				method: "POST",
-				data: {
-					orderid:that.orderid,
-					access_key:that.access_key
-				},
-				success: (res) => {
-					if (res.data.code == 1) {
-						that.paymentInfo = res.data.data
-					}
+			uni.$u.http.post('/openapi/details/index',{
+				orderid:that.orderid,
+				access_key:that.access_key
+			}).then(res => {
+				if(res.code == 1) {
+					that.paymentInfo = res.data
 				}
-
-			})
+			})			
 		}
 	}
 };

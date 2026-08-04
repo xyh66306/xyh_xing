@@ -1,3 +1,8 @@
+<!--
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+-->
 <form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
 
     <div class="form-group">
@@ -25,11 +30,38 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Ip')}:</label>
+        <label class="control-label col-xs-12 col-sm-2">{:__('兑出')}:</label>
         <div class="col-xs-12 col-sm-8">
-            <input id="c-ip" class="form-control" name="row[ip]" type="text" value="{$row.ip|htmlentities}">
+            <input id="c-duichu" class="form-control" name="row[duichu]" type="text" value="{$row.duichu|htmlentities}">
         </div>
     </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('兑入')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-duiru" class="form-control" name="row[duiru]" type="text" value="{$row.duiru|htmlentities}">
+        </div>
+    </div>    
+
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('兑出手续费')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-duichu_fanyong" class="form-control" name="row[duichu_fanyong]" type="text" value="{$row.duichu_fanyong|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('兑入手续费')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-duiru_rate" class="form-control" name="row[duiru_rate]" type="text" value="{$row.duiru_rate|htmlentities}">
+        </div>
+    </div>  
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('充值手续费')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-cz_rate" class="form-control" name="row[cz_rate]" type="text" value="{$row.cz_rate|htmlentities}">
+        </div>
+    </div>        
+
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
         <div class="col-xs-12 col-sm-8">

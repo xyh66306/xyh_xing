@@ -8,6 +8,13 @@
 			}
 		},
 		{
+			"path": "pages/recharge/index",
+			"style": {
+				"navigationBarTitleText": "支付结果",
+				"navigationStyle": "custom"
+			}
+		},	
+		{
 			"path": "pages/result/index",
 			"style": {
 				"navigationBarTitleText": "支付结果",

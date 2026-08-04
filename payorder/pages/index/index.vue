@@ -114,10 +114,10 @@
 </template>
 
 <script>
-	const base_url = "https://bingocn.wobeis.com/"
 	export default {
 		data() {
 			return {
+				base_url:uni.$u.http.config.baseURL,
 				diqu:1,
 				orderid: '',
 				access_key: '',
@@ -193,52 +193,89 @@
 		methods: {
 			getDetails() {
 				let that = this
-				uni.request({
-					url: base_url + '/openapi/details/index',
-					method: "POST",
-					data: {
-						orderid:that.orderid,
-						access_key: that.access_key,
-						diqu:that.diqu,
-					},
-					success: (res) => {
-						if (res.data.code == 1) {
-							let data = res.data.data
-							// that.selectedMethod = data.pay_type
-							that.yx_time_min = data.yx_time_min
-							that.yx_time_sec = data.yx_time_sec
-							that.amount = data.amount
-							that.actNum = data.act_num
-							that.ctime = data.ctime
-							that.payButtonText = '立即支付 ¥' + data.amount;
-							that.token = data.token
-							if (data.bankInfo) {
-								that.bankCard.bankname = data.bankInfo.bank_name
-								that.bankCard.holder = data.bankInfo.username
-								that.bankCard.number = data.bankInfo.bank_nums
-								that.bankCard.address = data.bankInfo.bank_zhmc
-								that.paymentMethods[2]['isShow'] = true
-							}
-							if (data.wxpay && data.amount<10000) {
-								that.username = data.wxpay.username
-								that.wechatQRCode = data.wxpay.pay_ewm_image
-								that.paymentMethods[0]['isShow'] = true
-							}
-							if (data.alipay && data.amount<10000) {
-								that.username = data.alipay.username
-								that.alipayQRCode = data.alipay.pay_ewm_image
-								that.paymentMethods[1]['isShow'] = true
-							}
-							that.paymentMethods.forEach(res=>{
-								if(res.isShow){
-									that.selectedMethod = res.value
-								}
-							})
-
+				uni.$u.http.post('/openapi/details/index',{
+					orderid:that.orderid,
+					access_key:that.access_key
+				}).then(res => {
+					if(res.code == 1) {
+						let data = res.data
+						that.yx_time_min = data.yx_time_min
+						that.yx_time_sec = data.yx_time_sec
+						that.amount = data.amount
+						that.actNum = data.act_num
+						that.ctime = data.ctime
+						that.payButtonText = '立即支付 ¥' + data.amount;
+						that.token = data.token
+						if (data.bankInfo) {
+							that.bankCard.bankname = data.bankInfo.bank_name
+							that.bankCard.holder = data.bankInfo.username
+							that.bankCard.number = data.bankInfo.bank_nums
+							that.bankCard.address = data.bankInfo.bank_zhmc
+							that.paymentMethods[2]['isShow'] = true
 						}
+						if (data.wxpay && data.amount<10000) {
+							that.username = data.wxpay.username
+							that.wechatQRCode = data.wxpay.pay_ewm_image
+							that.paymentMethods[0]['isShow'] = true
+						}
+						if (data.alipay && data.amount<10000) {
+							that.username = data.alipay.username
+							that.alipayQRCode = data.alipay.pay_ewm_image
+							that.paymentMethods[1]['isShow'] = true
+						}
+						that.paymentMethods.forEach(res=>{
+							if(res.isShow){
+								that.selectedMethod = res.value
+							}
+						})						
 					}
+				})				
+				// uni.request({
+				// 	url: base_url + '/openapi/details/index',
+				// 	method: "POST",
+				// 	data: {
+				// 		orderid:that.orderid,
+				// 		access_key: that.access_key,
+				// 		diqu:that.diqu,
+				// 	},
+				// 	success: (res) => {
+				// 		if (res.data.code == 1) {
+				// 			let data = res.data.data
+				// 			// that.selectedMethod = data.pay_type
+				// 			that.yx_time_min = data.yx_time_min
+				// 			that.yx_time_sec = data.yx_time_sec
+				// 			that.amount = data.amount
+				// 			that.actNum = data.act_num
+				// 			that.ctime = data.ctime
+				// 			that.payButtonText = '立即支付 ¥' + data.amount;
+				// 			that.token = data.token
+				// 			if (data.bankInfo) {
+				// 				that.bankCard.bankname = data.bankInfo.bank_name
+				// 				that.bankCard.holder = data.bankInfo.username
+				// 				that.bankCard.number = data.bankInfo.bank_nums
+				// 				that.bankCard.address = data.bankInfo.bank_zhmc
+				// 				that.paymentMethods[2]['isShow'] = true
+				// 			}
+				// 			if (data.wxpay && data.amount<10000) {
+				// 				that.username = data.wxpay.username
+				// 				that.wechatQRCode = data.wxpay.pay_ewm_image
+				// 				that.paymentMethods[0]['isShow'] = true
+				// 			}
+				// 			if (data.alipay && data.amount<10000) {
+				// 				that.username = data.alipay.username
+				// 				that.alipayQRCode = data.alipay.pay_ewm_image
+				// 				that.paymentMethods[1]['isShow'] = true
+				// 			}
+				// 			that.paymentMethods.forEach(res=>{
+				// 				if(res.isShow){
+				// 					that.selectedMethod = res.value
+				// 				}
+				// 			})
 
-				})
+				// 		}
+				// 	}
+
+				// })
 			},
 			selectMethod(method) {
 				this.selectedMethod = method;
@@ -335,11 +372,11 @@
 					sizeType: ['original', 'compressed'],
 					sourceType: ['album', 'camera'],
 					success: (chooseImageRes) => {
-						this.previewImages = this.previewImages.concat(chooseImageRes.tempFilePaths);
+						that.previewImages = that.previewImages.concat(chooseImageRes.tempFilePaths);
 
 						const tempFilePaths = chooseImageRes.tempFilePaths;
 						const uploadTask = uni.uploadFile({
-							url: base_url + '/api/common/upload',
+							url: that.base_url + 'api/common/upload',
 							filePath: tempFilePaths[0],
 							fileType: 'image',
 							name: 'file',

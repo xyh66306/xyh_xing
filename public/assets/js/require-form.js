@@ -10,7 +10,7 @@ define(['jquery', 'bootstrap', 'upload', 'validator', 'validator-lang'], functio
                 //绑定表单事件
                 form.validator($.extend({
                     rules: {
-                        username: [/^\w{3,30}$/, __('Username must be 3 to 30 characters')],
+                        username: [/^[a-zA-Z0-9_@.-]{3,60}$/, __('Username must be 3 to 30 characters')],
                         password: [/^[\S]{6,30}$/, __('Password must be 6 to 30 characters')]
                     },
                     validClass: 'has-success',

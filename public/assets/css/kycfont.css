@@ -1,0 +1,87 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 5214614 */
+  src: url('../fonts/otc/iconfont.woff2?t=1784711400318') format('woff2'),
+       url('../fonts/otc/iconfont.woff?t=1784711400318') format('woff'),
+       url('../fonts/otc/iconfont.ttf?t=1784711400318') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-tixian:before {
+  content: "\e624";
+}
+
+.icon-tixian1:before {
+  content: "\e603";
+}
+
+.icon-tixian2:before {
+  content: "\e61f";
+}
+
+.icon-shouxufei:before {
+  content: "\e61c";
+}
+
+.icon-yaoqingfanyong:before {
+  content: "\e6a1";
+}
+
+.icon-rujin:before {
+  content: "\e623";
+}
+
+.icon-chujin:before {
+  content: "\e60f";
+}
+
+.icon-shouxufei1:before {
+  content: "\e684";
+}
+
+.icon-rujin1:before {
+  content: "\e630";
+}
+
+.icon-fanyong:before {
+  content: "\e639";
+}
+
+.icon-ziyuan:before {
+  content: "\e688";
+}
+
+.icon-chujin1:before {
+  content: "\e64d";
+}
+
+.icon-rujin2:before {
+  content: "\e64f";
+}
+
+.icon-shouxufei2:before {
+  content: "\e604";
+}
+
+.icon-yidongfanyong:before {
+  content: "\eb68";
+}
+
+.icon-shouxufei3:before {
+  content: "\e659";
+}
+
+.icon-tixian3:before {
+  content: "\e690";
+}
+
+.icon-CRMEB-402-zhichujine-xianxing:before {
+  content: "\e9a3";
+}
+

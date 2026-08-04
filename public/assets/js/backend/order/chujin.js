@@ -24,6 +24,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 sortName: 'id',
                 fixedColumns: true,
                 fixedRightNumber: 1,
+                clickToSelect: false,
+                dblClickToSelect: false,   
+                dblClickToEdit: false,                               
                 columns: [
                     [
                         {checkbox: true},
@@ -133,6 +136,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'pay_status', title: __('Pay Status'),searchList: {"0":__('payStatus 0'),"1":__('payStatus 1'),"2":__('payStatus 2'),"3":__('payStatus 3'),"4":__('payStatus 4'),"5":__('payStatus 5'),"6":__('payStatus 6')},formatter: Table.api.formatter.status},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.status},
+                        {field: 'content', title: __('Content')},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]

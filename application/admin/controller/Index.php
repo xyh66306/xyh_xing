@@ -78,7 +78,7 @@ class Index extends Backend
             $keeplogin = $this->request->post('keeplogin');
             $token = $this->request->post('__token__');
             $rule = [
-                'username'  => 'require|length:3,30',
+                'username'  => 'require|length:3,100',
                 'password'  => 'require|length:3,30',
                 '__token__' => 'require|token',
             ];

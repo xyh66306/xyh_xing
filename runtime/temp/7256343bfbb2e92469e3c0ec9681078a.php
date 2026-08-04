@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:4:{s:82:"E:\wwwroot\2025\git\xyh_xing\public/../application/admin\view\dashboard\index.html";i:1689043530;s:71:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\layout\default.html";i:1689043530;s:68:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\meta.html";i:1689043530;s:70:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\script.html";i:1689043530;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:4:{s:82:"E:\wwwroot\2025\git\xyh_xing\public/../application/admin\view\dashboard\index.html";i:1784712257;s:71:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\layout\default.html";i:1769759345;s:68:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\meta.html";i:1769759345;s:70:"E:\wwwroot\2025\git\xyh_xing\application\admin\view\common\script.html";i:1769759345;}*/ ?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -59,410 +59,360 @@
                             <!-- END RIBBON -->
                             <?php endif; ?>
                             <div class="content">
-                                <style type="text/css">
-    .sm-st {
-        background: #fff;
-        padding: 20px;
-        -webkit-border-radius: 3px;
-        -moz-border-radius: 3px;
-        border-radius: 3px;
-        margin-bottom: 20px;
+                                <!--
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+ -->
+<style>
+    body.darktheme .panel-statistics h4 {
+        color: #ccc;
     }
 
-    .sm-st-icon {
-        width: 60px;
-        height: 60px;
-        display: inline-block;
-        line-height: 60px;
-        text-align: center;
-        font-size: 30px;
-        background: #eee;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
-        border-radius: 5px;
-        float: left;
-        margin-right: 10px;
-        color: #fff;
-    }
-
-    .sm-st-info {
-        padding-top: 2px;
-    }
-
-    .sm-st-info span {
-        display: block;
-        font-size: 24px;
-        font-weight: 600;
-    }
-
-    .orange {
-        background: #fa8564 !important;
-    }
-
-    .tar {
-        background: #45cf95 !important;
-    }
-
-    .sm-st .green {
-        background: #86ba41 !important;
-    }
-
-    .pink {
-        background: #AC75F0 !important;
-    }
-
-    .yellow-b {
-        background: #fdd752 !important;
-    }
-
-    .stat-elem {
-
-        background-color: #fff;
-        padding: 18px;
-        border-radius: 40px;
-
-    }
-
-    .stat-info {
-        text-align: center;
-        background-color: #fff;
-        border-radius: 5px;
-        margin-top: -5px;
-        padding: 8px;
-        -webkit-box-shadow: 0 1px 0px rgba(0, 0, 0, 0.05);
-        box-shadow: 0 1px 0px rgba(0, 0, 0, 0.05);
-        font-style: italic;
-    }
-
-    .stat-icon {
-        text-align: center;
-        margin-bottom: 5px;
-    }
-
-    .st-red {
-        background-color: #F05050;
-    }
-
-    .st-green {
-        background-color: #27C24C;
-    }
-
-    .st-violet {
-        background-color: #7266ba;
-    }
-
-    .st-blue {
-        background-color: #23b7e5;
-    }
-
-    .stats .stat-icon {
-        color: #28bb9c;
-        display: inline-block;
-        font-size: 26px;
-        text-align: center;
-        vertical-align: middle;
-        width: 50px;
-        float: left;
-    }
-
-    .stat {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: inline-block;
-    }
-
-    .stat .value {
-        font-size: 20px;
-        line-height: 24px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-weight: 500;
-    }
-
-    .stat .name {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin: 5px 0;
-    }
-
-    .stat.lg .value {
-        font-size: 26px;
-        line-height: 28px;
-    }
-
-    .stat-col {
-        margin:0 0 10px 0;
-    }
-    .stat.lg .name {
-        font-size: 16px;
-    }
-
-    .stat-col .progress {
-        height: 2px;
-    }
-
-    .stat-col .progress-bar {
-        line-height: 2px;
-        height: 2px;
-    }
-
-    .item {
-        padding: 30px 0;
-    }
-
-
-    #statistics .panel {
-        min-height: 150px;
-    }
-
-    #statistics .panel h5 {
+    .panel-statistics h4 {
+        color: #444;
+        font-weight: bold;
         font-size: 14px;
     }
+
+    .panel-statistics h3 {
+        font-weight: 500;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .panel-statistics .statistics-value {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .panel-statistics em {
+        font-style: normal;
+    }
+
+    .panel-statistics .pull-right {
+        padding-right: 10px;
+    }
+
+    .panel-statistics .table thead tr th {
+        font-weight: normal;
+    }
+
+    .panel-statistics .table tbody tr td {
+        font-weight: normal;
+        vertical-align: middle;
+    }
+
+    .panel-statistics .table tbody tr td p {
+        margin: 0;
+    }
+
+    #echarts1 textarea {
+        display: block;
+    }
+
+    select.model_id {
+        min-width: 60px;
+    }
 </style>
-<div class="panel panel-default panel-intro">
-    <div class="panel-heading">
-        <?php echo build_heading(null, false); ?>
-        <ul class="nav nav-tabs">
-            <li class="active"><a href="#one" data-toggle="tab"><?php echo __('Dashboard'); ?></a></li>
-            <li><a href="#two" data-toggle="tab"><?php echo __('Custom'); ?></a></li>
-        </ul>
-    </div>
-    <div class="panel-body">
-        <div id="myTabContent" class="tab-content">
-            <div class="tab-pane fade active in" id="one">
 
-                <div class="row">
-                    <div class="col-sm-3 col-xs-6">
-                        <div class="sm-st clearfix">
-                            <span class="sm-st-icon st-red"><i class="fa fa-users"></i></span>
-                            <div class="sm-st-info">
-                                <span><?php echo $totaluser; ?></span>
-                                <?php echo __('Total user'); ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-3 col-xs-6">
-                        <div class="sm-st clearfix">
-                            <span class="sm-st-icon st-violet"><i class="fa fa-magic"></i></span>
-                            <div class="sm-st-info">
-                                <span><?php echo $totaladdon; ?></span>
-                                <?php echo __('Total addon'); ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-3 col-xs-6">
-                        <div class="sm-st clearfix">
-                            <span class="sm-st-icon st-blue"><i class="fa fa-leaf"></i></span>
-                            <div class="sm-st-info">
-                                <span><?php echo $attachmentnums; ?></span>
-                                <?php echo __('Total attachment'); ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-3 col-xs-6">
-                        <div class="sm-st clearfix">
-                            <span class="sm-st-icon st-green"><i class="fa fa-user"></i></span>
-                            <div class="sm-st-info">
-                                <span><?php echo $totaladmin; ?></span>
-                                <?php echo __('Total admin'); ?>
-                            </div>
-                        </div>
-                    </div>
+<div class="row">
+    <div class="col-xs-6 col-sm-3">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>今日入金订单</h4>
+                    <h3><?php echo $today_rujin_total; ?></h3>
                 </div>
 
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div id="echart" class="btn-refresh" style="height:300px;width:100%;"></div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="card sameheight-item stats">
-                            <div class="card-block">
-                                <div class="row row-sm stats-container">
-                                    <div class="col-xs-6 stat-col">
-                                        <div class="stat-icon"><i class="fa fa-rocket"></i></div>
-                                        <div class="stat">
-                                            <div class="value"> <?php echo $todayusersignup; ?></div>
-                                            <div class="name"> <?php echo __('Today user signup'); ?></div>
-                                        </div>
-                                        <div class="progress">
-                                            <div class="progress-bar progress-bar-success" style="width: 20%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-6 stat-col">
-                                        <div class="stat-icon"><i class="fa fa-vcard"></i></div>
-                                        <div class="stat">
-                                            <div class="value"> <?php echo $todayuserlogin; ?></div>
-                                            <div class="name"> <?php echo __('Today user login'); ?></div>
-                                        </div>
-                                        <div class="progress">
-                                            <div class="progress-bar progress-bar-success" style="width: 20%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-6  stat-col">
-                                        <div class="stat-icon"><i class="fa fa-calendar"></i></div>
-                                        <div class="stat">
-                                            <div class="value"> <?php echo $threednu; ?></div>
-                                            <div class="name"> <?php echo __('Three dnu'); ?></div>
-                                        </div>
-                                        <div class="progress">
-                                            <div class="progress-bar progress-bar-success" style="width: 20%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-6 stat-col">
-                                        <div class="stat-icon"><i class="fa fa-calendar-plus-o"></i></div>
-                                        <div class="stat">
-                                            <div class="value"> <?php echo $sevendnu; ?></div>
-                                            <div class="name"> <?php echo __('Seven dnu'); ?></div>
-                                        </div>
-                                        <div class="progress">
-                                            <div class="progress-bar progress-bar-success" style="width: 20%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-6  stat-col">
-                                        <div class="stat-icon"><i class="fa fa-user-circle"></i></div>
-                                        <div class="stat">
-                                            <div class="value"> <?php echo $sevendau; ?></div>
-                                            <div class="name"> <?php echo __('Seven dau'); ?></div>
-                                        </div>
-                                        <div class="progress">
-                                            <div class="progress-bar progress-bar-success" style="width: 20%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-6  stat-col">
-                                        <div class="stat-icon"><i class="fa fa-user-circle-o"></i></div>
-                                        <div class="stat">
-                                            <div class="value"> <?php echo $thirtydau; ?></div>
-                                            <div class="name"> <?php echo __('Thirty dau'); ?></div>
-                                        </div>
-                                        <div class="progress">
-                                            <div class="progress-bar progress-bar-success" style="width: 20%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row" style="margin-top:15px;" id="statistics">
-
-                    <div class="col-lg-12">
-                    </div>
-                    <div class="col-xs-6 col-md-3">
-                        <div class="panel bg-blue-gradient no-border">
-                            <div class="panel-body">
-                                <div class="panel-title">
-                                    <span class="label label-primary pull-right"><?php echo __('Real time'); ?></span>
-                                    <h5><?php echo __('Working addon count'); ?></h5>
-                                </div>
-                                <div class="panel-content">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <h1 class="no-margins"><?php echo $totalworkingaddon; ?></h1>
-                                            <div class="font-bold"><i class="fa fa-magic"></i>
-                                                <small><?php echo __('Working addon count tips'); ?></small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-md-3">
-                        <div class="panel bg-teal-gradient no-border">
-                            <div class="panel-body">
-                                <div class="ibox-title">
-                                    <span class="label label-primary pull-right"><?php echo __('Real time'); ?></span>
-                                    <h5><?php echo __('Database count'); ?></h5>
-                                </div>
-                                <div class="ibox-content">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <h1 class="no-margins"><?php echo $dbtablenums; ?></h1>
-                                            <div class="font-bold"><i class="fa fa-database"></i>
-                                                <small><?php echo __('Database table nums'); ?></small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h1 class="no-margins"><?php echo format_bytes($dbsize,'',0); ?></h1>
-                                            <div class="font-bold"><i class="fa fa-filter"></i>
-                                                <small><?php echo __('Database size'); ?></small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-6 col-md-3">
-                        <div class="panel bg-purple-gradient no-border">
-                            <div class="panel-body">
-                                <div class="ibox-title">
-                                    <span class="label label-primary pull-right"><?php echo __('Real time'); ?></span>
-                                    <h5><?php echo __('Attachment count'); ?></h5>
-                                </div>
-                                <div class="ibox-content">
-
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <h1 class="no-margins"><?php echo $attachmentnums; ?></h1>
-                                            <div class="font-bold"><i class="fa fa-files-o"></i>
-                                                <small><?php echo __('Attachment nums'); ?></small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h1 class="no-margins"><?php echo format_bytes($attachmentsize,'',0); ?></h1>
-                                            <div class="font-bold"><i class="fa fa-filter"></i>
-                                                <small><?php echo __('Attachment size'); ?></small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-md-3">
-                        <div class="panel bg-green-gradient no-border">
-                            <div class="panel-body">
-                                <div class="ibox-title">
-                                    <span class="label label-primary pull-right"><?php echo __('Real time'); ?></span>
-                                    <h5><?php echo __('Picture count'); ?></h5>
-                                </div>
-                                <div class="ibox-content">
-
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <h1 class="no-margins"><?php echo $picturenums; ?></h1>
-                                            <div class="font-bold"><i class="fa fa-picture-o"></i>
-                                                <small><?php echo __('Picture nums'); ?></small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h1 class="no-margins"><?php echo format_bytes($picturesize,'',0); ?></h1>
-                                            <div class="font-bold"><i class="fa fa-filter"></i>
-                                                <small><?php echo __('Picture size'); ?></small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-pane fade" id="two">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <?php echo __('Custom zone'); ?>
-                    </div>
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="iconfont icon-rujin fa-4x"></i>
                 </div>
             </div>
         </div>
     </div>
+    <div class="col-xs-6 col-sm-3">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>今日入金总额(USDT)</h4>
+                    <h3><?php echo $today_rujin_user_usdt; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#ffc8c8;">
+                    <i class="iconfont icon-rujin2 fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>今日入金总额(CNY)</h4>
+                    <h3><?php echo $today_rujin_total_money; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8e3ff;">
+                    <i class="iconfont icon-tixian2 fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>今日入金返佣(USDT)</h4>
+                    <h3>0.00</h3>
+                </div>
+
+                <div class="pull-right" style="color:#ffe9c8;">
+                     <i class="iconfont icon-tixian2 fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>今日入金汇率差+手续费</h4>
+                    <h3><?php echo $today_rujin_profit; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#ffe9c8;">
+                    <i class="iconfont icon-shouxufei3 fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>    
 </div>
 
+<div class="row" style="margin-top: 10px;">
+    <div class="col-xs-6 col-sm-3">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>今日出金订单数量</h4>
+                    <h3><?php echo $today_chujin_total; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="iconfont icon-chujin fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-3">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>今日出金总额(USDT)</h4>
+                    <h3><?php echo $today_chujin_user_usdt; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#ffc8c8;">
+                     <i class="iconfont icon-fanyong fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>今日出金总额(CNY)</h4>
+                    <h3><?php echo $today_chujin_total_money; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8e3ff;">
+                     <i class="iconfont icon-ziyuan fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>今日出金返佣(USDT)</h4>
+                    <h3>0.00</h3>
+                </div>
+
+                <div class="pull-right" style="color:#ffe9c8;">
+                     <i class="iconfont icon-rujin1 fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>今日出金汇率差+手续费</h4>
+                    <h3><?php echo $today_chujin_profit; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#ffe9c8;">
+                     <i class="iconfont icon-shouxufei1 fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>
+
+<div class="row" style="margin:15px 0;">
+
+    <div class="col-xs-6 col-sm-3">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>商户余额</h4>
+                    <h3><?php echo $supplyUsdt; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="fa fa-cny fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-3">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>商户已提现余额(USDT)</h4>
+                    <h3><?php echo $total_supply_number; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="fa fa-cny fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>商户充值总额(USDT)</h4>
+                    <h3><?php echo $supply_chongzhi; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="fa fa-cny fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>    
+      <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>商户入金余额(USDT)</h4>
+                    <h3><?php echo $rujin_supply_usdt; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="fa fa-cny fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>商户出金余额(USDT)</h4>
+                    <h3><?php echo $cj_supply_usdt; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="fa fa-cny fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>
+
+
+
+<div class="row" style="margin:15px 0;">
+
+    <div class="col-xs-6 col-sm-3">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>承兑商总额</h4>
+                    <h3><?php echo $userUsdt; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="fa fa-cny fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-3">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>承兑商已提现总额(USDT)</h4>
+                    <h3>0</h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="fa fa-cny fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>承兑商充值总额(USDT)</h4>
+                    <h3><?php echo $user_chongzhi_number; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="fa fa-cny fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>    
+      <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>承兑商入金总额(USDT)</h4>
+                    <h3><?php echo $rj_user_usdt; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="fa fa-cny fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-6 col-sm-2">
+        <div class="panel panel-default panel-intro panel-statistics">
+            <div class="panel-body">
+                <div class="pull-left">
+                    <h4>承兑商出金总额(USDT)</h4>
+                    <h3><?php echo $cj_user_usdt; ?></h3>
+                </div>
+
+                <div class="pull-right" style="color:#c8cfff;">
+                    <i class="fa fa-cny fa-4x"></i>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>
                             </div>
                         </div>
                     </div>

@@ -32,7 +32,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 columns: [
                     [
                         {checkbox: true},
-                        {field: 'id', title: "ID"},
                         {field: 'bianhao', title: __('Bianhao')},
                         {field: 'title', title: __('Title'), operate: 'LIKE'},
                         // {field: 'money', title: __('Money')},
@@ -45,6 +44,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'duiru', title: __('Duiru')},
                         {field: 'duichu_fanyong', title: "兑出手续费"},
                         {field: 'duiru_rate', title: "兑入手续费"},
+                        {field: 'cz_rate', title: "充值手续费比例"},
                         // {field: 'ip', title: __('Ip'), operate: 'LIKE'},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.status},

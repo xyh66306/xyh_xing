@@ -7,6 +7,7 @@ use app\admin\model\supply\Supply;
 use app\admin\model\supply\Usdtlog;
 use app\admin\model\supply\Recharge;
 use app\common\model\company\Profit as companyProfit;
+use app\common\model\User as UserModel;
 use app\admin\model\company\Account;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
@@ -204,11 +205,15 @@ class Usdt extends Backend
                 $usdt = $params['usdt'];
                 $Usdtlog->authtxLog($row['supply_id'], $usdt,'提现审核');
 
-               $companyProfit1 = new companyProfit();
-               $companyProfit1->addLog($row['usdt'],$row['fee'],4,3,1,$row['id']);
 
-               $AccountModel = new Account();
-               $AccountModel->addLog($row['usdt'],4,3,2,$row['id']);
+                $spark_id = 168022;
+                $userModel = new UserModel();
+                $userModel->usdt($row['fee'],$spark_id, 3, 1,$row['id'],"商户提现手续费");                     
+            //    $companyProfit1 = new companyProfit();
+            //    $companyProfit1->addLog($row['usdt'],$row['fee'],4,3,1,$row['id']);
+
+            //    $AccountModel = new Account();
+            //    $AccountModel->addLog($row['usdt'],4,3,2,$row['id']);
 
             }
             $result = $row->allowField(true)->save($params);

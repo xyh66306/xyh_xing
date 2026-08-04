@@ -99,11 +99,15 @@ class Index extends Frontend
         $fanyong_total_2d = $fanyong_total_2d+24.3899;
         $fanyong_total_spark = $fanyong_total_spark+562.7950;
         // echo $Commission->getLastsql();
+
+        $tuandui = $fanyong_total_1d + $fanyong_total_2d + $fanyong_total_spark;
+
         $fydata = [
             "fanyong_total_1d"             => $fanyong_total_1d,
             'fanyong_total_2d'     => $fanyong_total_2d,
             'fanyong_total_spark'  => $fanyong_total_spark,
-            'fanyong_duizhang_total'=>$fanyong_duizhang_total
+            'fanyong_duizhang_total'=>$fanyong_duizhang_total,
+            "tuandui" => $tuandui,
         ];
         $this->assign($fydata);
 
@@ -168,6 +172,9 @@ class Index extends Frontend
         $oneteam = Db::name("user")->where("id", 168024)->value('usdt');
         $twoteam = Db::name("user")->where("id", 168023)->value('usdt');
         $spark = Db::name("user")->where("id", 168022)->value('usdt');
+        $chegnduishang = Db::name("user")->whereNotIN("id", [168022,168023,168024])->sum('usdt');    
+        
+
         $userTotalUsdt = Db::name("user")->where("usdt", "<>", 0)->sum('usdt');
         $userTotalUsdtdJ = Db::name("user")->where("usdt", "<>", 0)->sum('usdt_dj');
 
@@ -216,6 +223,7 @@ class Index extends Frontend
             'deRjCount' => $deRjCount,
             'fanyong_daili_total'=>$fanyong_daili_total,
             'total_user_number_fee' => $total_user_number_fee,
+            'chegnduishang'=>$chegnduishang,
         ];
         $this->assign($data);
 
@@ -280,11 +288,18 @@ class Index extends Frontend
         
         $supply_chongzhi = Db::name("supply_recharge")->where("pay_status",3)->sum("usdt");
 
-        // 所有分润
-        $diff = truncateDecimal($total_user_number+ $commission_all+$supply_chongzhi - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt-$total_user_number_fee);
+        // $a1 = $total_user_number+ $commission_all+$supply_chongzhi;
+        // $a2 = - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt-$total_user_number_fee;
+        // dump($a1);
+        // dump($a2);
+
+        // 所有分润 chegnduishang
+        // $diff = truncateDecimal($total_user_number+ $commission_all+$supply_chongzhi - $userTotalUsdt - $total_supply_number - $totol_supply_usdt - $all_company_price - $total_supply_freeze_usdt-$total_user_number_fee);
         // $diff = $company['usdt'] - $commission_all_2026;
         //承兑商充值累计数量 + 商户充值数量 + 商户充值手续费 + 商户提现手续费 - 承兑商账户余额 - 商户账户余额 - 公司资产
-        // $diff = truncateDecimal($total_user_number + $supply_chongzhi + $total_supply_recharge_fee  + $total_supply_tx_fee - $userTotalUsdt - $total_supply_number  - $totol_supply_usdt -$company_usdt_all);
+        $diff = truncateDecimal($total_user_number + $supply_chongzhi + $total_supply_recharge_fee  + $total_supply_tx_fee - $userTotalUsdt - $total_supply_number  - $totol_supply_usdt -$company_usdt_all);
+
+        // $diff = truncateDecimal($chegnduishang+);
 
 
         foreach ($rujinLst as $key => $value) {
@@ -341,11 +356,11 @@ class Index extends Frontend
         $userCzCount = Db::name("user_usdt")->field("id,user_id,num,createtime")->where('status','normal')->sum("num");
 
 
-        if($diff>20){
-            $email = "870416982@qq.com";
-            $msg = $today."差值为".$diff;
-            $result = Emslib::notice($email, $msg,"resetpwd");
-        }
+        // if($diff>20){
+        //     $email = "870416982@qq.com";
+        //     $msg = $today."差值为".$diff;
+        //     $result = Emslib::notice($email, $msg,"resetpwd");
+        // }
 
 
 
@@ -533,4 +548,19 @@ class Index extends Frontend
         return $this->fetch();        
     }
     
+
+
+    public function user_diff(){
+
+        $user1 =  Db::name("user")->field("id,username,usdt")->where("usdt",">",500)->select();
+
+        $user2 =  Db::name("user")->field("id,username,usdt")->where("usdt","<=",500)->select();
+
+
+        $this->assign('user1', $user1);
+        $this->assign('user2', $user2);
+        return $this->fetch();
+
+    }
+
 }

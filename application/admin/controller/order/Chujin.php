@@ -194,19 +194,26 @@ class Chujin extends Backend
 
 
                 //添加公司金额
-                $companyProfit1 = new companyProfit();
-                $res3 =  $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 2, 3, 1, $row['orderid']);
-                if (!$res3) {
-                    Db::rollback();
-                    $this->error('添加公司金额商户手续费失败');
-                }
+                $spark_id = 168022;
+                $userModel = new UserModel();
+                $userModel->usdt($row['supply_fee'],$spark_id, 7, 1,$row['merchantOrderNo']);                
 
-                $companyProfit2 = new companyProfit();
-                $res4 = $companyProfit2->addLog($row['usdt'], $row['user_fee'], 2, 1, 1, $row['orderid']);
-                if (!$res4) {
-                    Db::rollback();
-                    $this->error('添加公司金额承兑商手续费失败');
-                }
+                $userModel = new UserModel();
+                $userModel->usdt($row['user_fee'],$spark_id, 7, 1,$row['merchantOrderNo']);                  
+
+                // $companyProfit1 = new companyProfit();
+                // $res3 =  $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 2, 3, 1, $row['orderid']);
+                // if (!$res3) {
+                //     Db::rollback();
+                //     $this->error('添加公司金额商户手续费失败');
+                // }
+
+                // $companyProfit2 = new companyProfit();
+                // $res4 = $companyProfit2->addLog($row['usdt'], $row['user_fee'], 2, 1, 1, $row['orderid']);
+                // if (!$res4) {
+                //     Db::rollback();
+                //     $this->error('添加公司金额承兑商手续费失败');
+                // }
 
                 //添加代理商佣金
                 $commissionModel = new Commission();
@@ -707,6 +714,10 @@ class Chujin extends Backend
         Emslib::notice($email, $msg, "resetpwd");
     }
 
+
+    /**
+     * 回调
+     */
     public function huidiao($ids = null)
     {
         $row = $this->model->get($ids);

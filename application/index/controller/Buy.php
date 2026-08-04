@@ -19,84 +19,31 @@ class Buy extends Frontend
         return $this->view->fetch();
     }
 
-    /**
-     * 出售订单
-     */
-    public function addorder()
-    { 
-        $url = "https://bingocn.wobeis.com/openapi/buy/addOrder";
-        $params = [
-            'access_key' => '1250730111',            
-            'randomStr' => 'cc17c30cd111c7215fc8f51f8790e0e1',
-            'gmtRequest'=> time(),
-        ];
-        $access_secret = '5a12f50988688f1d1b5951e7e2493c74';
-        $sign = $this->makeSign($params,$access_secret);
-        $data = $params;
-        $data['access_secret'] = $access_secret;
-        $data['signature'] = $sign;
-        $data['randomStr'] = 
-
-        $data['business_id'] = '2000520';
-        $data['bi_type'] = 'TWD';
-        $data['pay_type'] = 'alipay';
-        $data['act_num'] = '10000';
-        $data['huilv'] = '7.3';
-        $data['backurl'] = 'http://www.baidu.com';
-
-        $data['seller_name'] = '李四';
-        $data['bank_name'] = '中国工商银行';
-        $data['bank_account'] = '123456789';
-        $data['bank_zhdz'] = '中国工商银行合肥支行';
-
-        $data['pay_account'] = '96651111';
-        $data['pay_ewm_image'] = '/image.png';
-
-        $data['diqu'] =1;
-
-        // var_dump($data);
-        $res = $this->postCurl($url,$data);
-
-        var_dump($res);
-
-    }
 
     public function cash()
     { 
-        $url = "https://bingocn.wobeis.com/openapi/cash/index";
+        $url = "http://www.localhost.com/openapi/cash/index";
+        // $url = "https://bingocn.wobeis.com/openapi/cash/index";
 
         $randomStr = $this->getRandomStr(32);
         
-        // $randomStr = "87986fe0c0de401da57f1f5987a66f05";
 
         $header = [
-            'accesskey' => '1525364505',
+            'accesskey' => '1250730111',
             'randomstr' => $randomStr,
             'gmtrequest' => time(),
         ];
-        $access_secret = 'c87047c344517d5b26d5de992b93ce5b';
+        $access_secret = '5a12f50988688f1d1b5951e7e2493c74';
         $sign = $this->makeSign($header, $access_secret);
         $header['signature'] = $sign;
 
-
-
-        $params = [
-            'access_key' => '1525364505',   
-            'randomStr' => $randomStr,         
-            'gmtRequest'=> time(),
-        ];
-        $access_secret = 'c87047c344517d5b26d5de992b93ce5b';
-        $sign = $this->makeSign($params,$access_secret);
-
-
-        $data = $params;
         $data['access_secret'] = $access_secret;
         $data['signature'] = $sign;
         $data['backurl'] = 'https://bingocn.wobeis.com/index/index/ceshi';
         $data['orderid'] = "casher".date("YmdHis",time());
-        $data['amount'] = '3600';
+        $data['amount'] = '5000';
         $data['diqu'] = 1;
-        $data['payername'] = '测试';
+        $data['payername'] = '丁测试';
 
         // var_dump($data);
         $res = $this->postCurl($url,$data,$header);

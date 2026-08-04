@@ -18,8 +18,9 @@ use app\common\model\Bank;
 use app\common\model\order\Chujin;
 use app\common\model\Bi as BiModel;
 use app\common\model\company\Profit as companyProfit;
+use app\admin\model\supply\Usdtlog as SpullyUsdtLog;
 use app\common\model\Commission;
-use app\admin\model\supply\Usdtlog;
+// use app\admin\model\supply\Usdtlog;
 use app\admin\model\user\usdt\Log as UsdtLogModel;
 use app\admin\model\user\Usdt as UsdtModel;
 use app\common\model\Supply;
@@ -44,14 +45,15 @@ class Demo extends Frontend
 
     public function index()
     {
-        $order_id = "f503525704";
-        // $row = Db::name("order_chujin")->where("orderid",$order_id)->find();
 
-        // dump($row);
+        // $orderid="DP652283798614913024";        
+        // $email = "515256802@qq.com";
+        // $msg = "您好，订单号".$orderid.",请查看是否收到款，麻烦尽快确认";
 
-        //添加商户冻结金额
-        $Usdtlog = new Usdtlog();
-        $Usdtlog->quxiaotxLog(1241209564,1978.1946, 1, $order_id, 2); 
+        // $result = Emslib::notice($email, $msg, "resetpwd");
+
+        // dump($result);
+
     }
 
 
@@ -84,10 +86,10 @@ class Demo extends Frontend
         //添加用户金额
         // $userModel->usdt("986.6064", 168041, 8, 2,91592);
 
-        // $order_id = "20260515122036646";
+        // $order_id = "DP656332896951005184";
         // $order_info = Db::name("order_rujin")->where("orderid",$order_id)->find();
 
-        // $pintai_id = "1341568728";
+        // $pintai_id = "1320622959";
         // $supplyModel = new Supply();
         // $info = $supplyModel->where('access_key', $pintai_id)->find();
 
@@ -135,14 +137,15 @@ class Demo extends Frontend
         // $companyProfit1 = new companyProfit();
         // $res3 =  $companyProfit1->addLog(70921.9858,70.9219,9,1,1,"DP634087051180093440");  
 
-        $order_id = "DP644325440944730112";
+        $order_id = "126947";
         $rujinModel = new Rujin();
         $info = $rujinModel->where('orderid', $order_id)->find();
         if (empty($info)) {
             $this->error("订单不存在");
         }
-        $fenyong = truncateDecimal($info['user_fee'] + $info['supply_fee']);
-        $this->commission($info['user_id'], $info['merchantOrderNo'], $order_id, $info['user_usdt'], $fenyong);
+        $profit = truncateDecimal($info['user_fee'] + $info['supply_fee']);
+        $fenyong = $info['supply_fee'];
+        $this->commission($info['user_id'], $info['merchantOrderNo'], $order_id, $info['user_usdt'], $fenyong,$profit);
     }
 
 
@@ -151,17 +154,14 @@ class Demo extends Frontend
     /***
      * 分佣
      */
-    public function commission($user_id, $fy_orderid, $p4b_orderid, $number, $total)
+    public function commission($user_id,$fy_orderid,$p4b_orderid,$number,$fenyong,$profit)
     {
-        $fanyong = config("site.fanyong");
+		$fanyong = config("site.fanyong");
+		
+		if($fanyong==0){
+			return;
+		}
 
-        if ($fanyong == 0) {
-            return;
-        }
-
-        // if ($this->supplyInfo['duiru_fanyong'] == 0) {
-        //     return;
-        // }
 
         $Commission = new Commission();
         $userModel  = new User();
@@ -170,17 +170,21 @@ class Demo extends Frontend
 
         $rateLst =  $this->getrate($uinfo);
 
+        // dump($rateLst);
+
         $result = [];
+        $rebateData =[];
         $team_total = 0;
-        foreach ($rateLst as $key => $value) {
+        foreach ($rateLst as $key => $value) { 
 
             $money = truncateDecimal($number * $value['rate'] / 100);
-            if ($money <= 0) {
+            // $money = truncateDecimal($fenyong * $value['rate']/100);
+            if($money<=0){
                 continue;
             }
             $team_total += $money;
             $rebateData = [
-                'user_id' => $user_id,
+                'user_id' =>$user_id,
                 'p_userid' => $value['user_id'],
                 'fy_orderid' => $fy_orderid,
                 'p4b_orderid' => $p4b_orderid,
@@ -189,40 +193,26 @@ class Demo extends Frontend
                 'money' => $money,
                 'type' => 1,
                 'source' => 1,
-                'level' => $key + 1,
+                'level' => $key+1,
                 'status' => 2,
                 'chaoshi' => 1,
-                'order_status' => 1,
-                'remarks' => $number . "*" . $value['rate'],
+                'order_status'=>2,
+                'remarks'=> $number."*".$value['rate'],
+                'order_profit'=>$profit,
                 'ctime' => time(),
                 'utime' => time(),
             ];
 
             $result[] = $rebateData;
         }
-        $diff = $total - $team_total;
-        $rebateData = [
-            'user_id' => $user_id,
-            'p_userid' => 168022,
-            'fy_orderid' => $fy_orderid,
-            'p4b_orderid' => $p4b_orderid,
-            'number' => $number,
-            'rate'  => 0,
-            'money' => $diff,
-            'type' => 1,
-            'source' => 1,
-            'level' => 0,
-            'status' => 2,
-            'chaoshi' => 1,
-            'order_status' => 1,
-            'remarks' => $total . "-" . $team_total,
-            'ctime' => time(),
-            'utime' => time(),
-        ];
-        $result[] = $rebateData;
 
-        if (count($result) == 0) {
-            return true;
+
+
+
+
+
+        if(count($result)==0){
+            return true;    
         }
 
         Db::startTrans();
@@ -239,6 +229,10 @@ class Demo extends Frontend
     }
 
 
+
+    /**
+     * 包含自身
+     */
     public function getrate($uinfo){
 
         $sparent_str = str_replace("A", "", $uinfo['sparent']);

@@ -849,10 +849,10 @@ class User extends Api
             $this->error(__('Invalid parameters'));
         }
 
-        // $ret = $this->auth->checkpaypwd($paypwd);
-        // if (!$ret) {
-        //     $this->error($this->auth->getError());
-        // }
+        $ret = $this->auth->checkpaypwd($paypwd);
+        if (!$ret) {
+            $this->error("密码错误");
+        }
         $userModel = new UserModel();
         $fuserInfo = $userModel->where("email",$email)->find();
         if(!$fuserInfo){

@@ -206,8 +206,9 @@ class Details extends Api
 
 
             $res = $rujinModel->update($data,['id'=>$info['id']]);
-            $fenyong = truncateDecimal($info['user_fee'] + $info['supply_fee']);
-            $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt'],$fenyong);
+            $profit = truncateDecimal($info['user_fee'] + $info['supply_fee']);
+            $fenyong = $info['supply_fee'];
+            $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt'],$fenyong,$profit);
             if($res){
 
                 //通知买方待审核
@@ -259,7 +260,7 @@ class Details extends Api
     /***
      * 分佣
      */
-    public function commission($user_id,$fy_orderid,$p4b_orderid,$number,$total)
+    public function commission($user_id,$fy_orderid,$p4b_orderid,$number,$fenyong,$profit)
     {
 		$fanyong = config("site.fanyong");
 		
@@ -279,10 +280,12 @@ class Details extends Api
         $rateLst =  $this->getrate($uinfo);
 
         $result = [];
+        $rebateData =[];
         $team_total = 0;
         foreach ($rateLst as $key => $value) { 
 
             $money = truncateDecimal($number * $value['rate'] / 100);
+            // $money = truncateDecimal($fenyong * $value['rate']/100);
             if($money<=0){
                 continue;
             }
@@ -302,32 +305,38 @@ class Details extends Api
                 'chaoshi' => 1,
                 'order_status'=>1,
                 'remarks'=> $number."*".$value['rate'],
+                'order_profit'=>$profit,
                 'ctime' => time(),
                 'utime' => time(),
             ];
 
             $result[] = $rebateData;
         }
-        $diff = $total - $team_total;
-        $rebateData = [
-            'user_id' =>$user_id,
-            'p_userid' => 168022,
-            'fy_orderid' => $fy_orderid,
-            'p4b_orderid' => $p4b_orderid,
-            'number' => $number,
-            'rate'  => 0,
-            'money' => $diff,
-            'type' => 1,
-            'source' => 1,
-            'level' => 0,
-            'status' => 2,
-            'chaoshi' => 1,
-            'order_status'=>1,
-            'remarks'=>$total."-".$team_total,
-            'ctime' => time(),
-            'utime' => time(),
-        ];
-        $result[] = $rebateData;
+        // if($profit>0){
+        //     $diff = $profit - $team_total;
+        //     $rebateData = [
+        //         'user_id' =>$user_id,
+        //         'p_userid' => 168022,
+        //         'fy_orderid' => $fy_orderid,
+        //         'p4b_orderid' => $p4b_orderid,
+        //         'number' => $number,
+        //         'rate'  => 0,
+        //         'money' => $diff,
+        //         'type' => 1,
+        //         'source' => 1,
+        //         'level' => 0,
+        //         'status' => 2,
+        //         'chaoshi' => 1,
+        //         'order_status'=>1,
+        //         'remarks'=>$fenyong."-".$team_total,
+        //         'order_profit'=>$profit,                
+        //         'ctime' => time(),
+        //         'utime' => time(),
+        //     ];
+        //     $result[] = $rebateData;
+        // }
+
+
 
         if(count($result)==0){
             return true;    

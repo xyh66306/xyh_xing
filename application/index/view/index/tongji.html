@@ -57,12 +57,14 @@
                     <td>2026公司资产</td>
                     <td>公司资产</td>
                     <td>实际利润= 公司资产 + spark返佣</td>
+                    <td>实际利润2= 公司资产 + spark账户资产</td>
                 </tr>
                 <tr>
                     <td>3039.1797</td>
                     <td>{$company_usdt}</td>
                     <td>{$company_usdt_all}</td>
                     <td>{$company_usdt_all + $fanyong_total_spark}</td>
+                    <td>{$company_usdt_all + $spark}</td>
                 </tr>
             </table>
         </div>     
@@ -307,12 +309,28 @@
                 {/volist}
                 <tr>
                     <td >
-                        统计
+                        所有统计
                     </td>
                     <td colspan="2">
                        {$userTotalUsdt} usdt
                     </td>
-                </tr>                
+                </tr>  
+                <tr>
+                    <td >
+                        承兑商资产统计
+                    </td>
+                    <td colspan="2">
+                       {$chegnduishang} usdt
+                    </td>
+                </tr>                  
+                <tr>
+                    <td >
+                        2队+1队+spark返佣统计
+                    </td>
+                    <td colspan="2">
+                       {$tuandui} usdt
+                    </td>
+                </tr>                                
             </table>
         </div>    
         

@@ -30,6 +30,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 sortName: 'id',
                 fixedColumns: true,
                 fixedRightNumber: 1,
+                clickToSelect: false,
+                dblClickToSelect: false,   
+                dblClickToEdit: false,                  
                 columns: [
                     [
                         {checkbox: true},
@@ -38,10 +41,20 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'amount', title: __('Amount'), operate:'BETWEEN'},
                         {field: 'username', title: __('Username'), operate: 'LIKE',
                                 formatter: function (value, row, index) {
-                                    return row.user_id + ' - ' + value;
+                                    return row.user_id + ' - ' + row.user.username;
                                 }
                         },
-                        {field: 'bank_name', title: __('Bank_name'), operate: 'LIKE'},
+                        {field: 'bank_name', title: __('Bank_name'), operate: 'LIKE',
+                            formatter: function (value, row, index) {
+                                if(row.pay_type=='alipay'){
+                                    return "支付宝";
+                                }else if(row.pay_type=='wxpay'){
+                                    return "微信";
+                                }else{
+                                    return value;
+                                }
+                            }
+                        },
                         // {field: 'bank_account', title: __('Bank_account'), operate: 'LIKE'},
                         // {field: 'bank_zhihang', title: __('Bank_zhihang'), operate: 'LIKE'},
                         // {field: 'huilv', title: __('Huilv')},
@@ -49,7 +62,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user_usdt',  title: __('User Usdt')},
                         {field: 'user_fee',  title:"汇率差"},
                         {field: 'supply_usdt',  title: __('Supply Usdt')},
-                        {field: 'supply_fee',  title: "商户手续费"},                        
+                        {field: 'supply_fee',  title: "商户手续费"},  
+                        {field: 'profit',  title: "实际利润",
+                            formatter: function (value, row, index) {
+                                return (parseFloat(row.user_fee)+parseFloat(row.supply_fee)).toFixed(4);
+                            }
+                        },                        
                         // {field: 'bi_type', title: __('Bi_Type')},
                         {field: 'order_status',  title: "超时", searchList: {"1":"否","2":"是"}},
                         {field: 'payername', title: __('Payername')},
@@ -60,6 +78,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'status', title: __('Status'), searchList: {"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
 						{field: 'callback_status', title: "回调状态", searchList: {"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
                         {field: 'supply.title', title: __('supply title'), operate: 'LIKE'},
+                        {field: 'pintai_id', title: __('access_key'), operate: 'LIKE'},
                         // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                         {
                             field: 'operate',

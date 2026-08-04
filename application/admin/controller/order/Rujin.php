@@ -10,6 +10,7 @@ use app\admin\model\user\usdt\Log as UsdtLog;
 use app\common\model\User as UserModel;
 use app\common\model\company\Profit as companyProfit;
 use app\common\model\Commission;
+use app\common\model\UserRebate;
 use think\Db;
 use Exception;
 use think\db\exception\BindParamException;
@@ -102,14 +103,14 @@ class Rujin extends Backend
 
             if ($diqu) {
                 $list = $this->model
-                    ->with(['supply'])
+                    ->with(['supply','user'])
                     ->where($where)
                     ->where('diqu', $diqu)
                     ->order($sort, $order)
                     ->paginate($limit);
             } else {
                 $list = $this->model
-                    ->with(['supply'])
+                    ->with(['supply','user'])
                     ->where($where)
                     ->order($sort, $order)
                     ->paginate($limit);
@@ -117,9 +118,11 @@ class Rujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'orderid', 'user_id', 'merchantOrderNo', 'amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt', 'utime', 'status', 'order_status', 'callback_status']);
+                $row->visible(['id', 'orderid', 'user_id', 'merchantOrderNo', 'amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt', 'utime', 'status', 'order_status', 'callback_status','pay_type','pintai_id']);
                 $row->visible(['supply']);
                 $row->getRelation('supply')->visible(['title']);
+                $row->visible(['user']);
+                $row->getRelation('user')->visible(['username']);                
                 $row->fee = $row->supply_fee;
             }
             // $supply_price = $this->model->where($where)->sum("supply_usdt");
@@ -277,14 +280,49 @@ class Rujin extends Backend
             $this->error("请上传凭证");
             return;
         }
+   
+        if ($params['pay_status'] == 2 && $row['pay_status'] != 1) {
+            $this->error("必须进行中之后才能待审核，禁止当前操作");
+            return;
+        }         
+
+        if ($params['pay_status'] == 2) {
+            $rjCount = Db::name("commission")->where("p4b_orderid", $row['orderid'])->count("id");
+            if ($rjCount == 0) {
+                // $fenyong = truncateDecimal($row['user_fee'] + $row['supply_fee']);
+                $profit = truncateDecimal($row['user_fee'] + $row['supply_fee']);
+                $fenyong = $row['supply_fee'];
+                // $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt'],$fenyong,$profit);
+                $this->commission($row['user_id'],$row['merchantOrderNo'],$row['orderid'],$row['user_usdt'],$fenyong,$profit);
+            }
+        }        
 
         if ($params['pay_status'] == $row['pay_status']) {
             $this->error("订单状态一致，禁止操作");
             return;
         }
 
+        if ($row['pay_status'] == 4) {
+            $this->error("订单已完成，禁止操作");
+            return;
+        }  
+
+        if ($params['pay_status'] == 3 && $row['pay_status'] != 2) {
+            $this->error("必须待审核之后才能用户已审核，禁止当前操作");
+            return;
+        }          
+        
+        if ($params['pay_status'] == 4 && $row['pay_status'] != 3) {
+            $this->error("必须用户已审核之后才能完成，禁止当前操作");
+            return;
+        }          
+
         Db::startTrans();
         try {
+
+
+
+
 
             if ($params['pay_status'] == 3) {
                 $userModel = new UserModel();
@@ -349,11 +387,17 @@ class Rujin extends Backend
                 // 增加代理商分润
 
                 //添加公司金额
-                $companyProfit1 = new companyProfit();
-                $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 1, 1, 1, $row['orderid']);
+                $spark_id = 168022;
+                $userModel = new UserModel();
+                $userModel->usdt($row['supply_fee'],$spark_id, 8, 1,$row['orderid']);
 
-                $companyProfit2 = new companyProfit();
-                $companyProfit2->addLog($row['usdt'], $row['user_fee'], 1, 3, 1, $row['orderid']);
+                $userModel = new UserModel();
+                $userModel->usdt($row['user_fee'],$spark_id, 8, 1,$row['orderid']);                
+                // $companyProfit1 = new companyProfit();
+                // $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 1, 1, 1, $row['orderid']);
+
+                // $companyProfit2 = new companyProfit();
+                // $companyProfit2->addLog($row['usdt'], $row['user_fee'], 1, 3, 1, $row['orderid']);
 
                 //添加代理商佣金
                 $commissionModel = new Commission();
@@ -391,17 +435,25 @@ class Rujin extends Backend
                 $userModel->usdt($row['user_usdt'], $row['user_id'], 6, 1);
 
                 //减少公司金额
-                $companyProfit1 = new companyProfit();
-                $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 1, 1, 2, 'ping-' . $row['orderid']);
 
-                $companyProfit2 = new companyProfit();
-                $companyProfit2->addLog($row['usdt'], $row['user_fee'], 1, 3, 2, 'ping-' . $row['orderid']);
+                $spark_id = 168022;
+                $userModel = new UserModel();
+                $userModel->usdt($row['supply_fee'],$spark_id, 8, 2,$row['orderid']);
+
+                $userModel = new UserModel();
+                $userModel->usdt($row['user_fee'],$spark_id, 8,2,$row['orderid']);                   
+
+                // $companyProfit1 = new companyProfit();
+                // $companyProfit1->addLog($row['usdt'], $row['supply_fee'], 1, 1, 2, 'ping-' . $row['orderid']);
+
+                // $companyProfit2 = new companyProfit();
+                // $companyProfit2->addLog($row['usdt'], $row['user_fee'], 1, 3, 2, 'ping-' . $row['orderid']);
 
                 //减少代理商佣金
                 if ($row['order_status'] == 1) {
                     $commissionModel = new Commission();
-                    $comlist = $commissionModel->where("fy_orderid", $row['merchantOrderNo'])->select();
-                    $comSum  = $commissionModel->where("fy_orderid", $row['merchantOrderNo'])->sum('money');
+                    $comlist = $commissionModel->where("fy_orderid", $row['merchantOrderNo'])->where("status",1)->select();
+                    $comSum  = $commissionModel->where("fy_orderid", $row['merchantOrderNo'])->where("status",1)->sum('money');
                     if ($comSum > 0) {
 
                         foreach ($comlist as $vo) {
@@ -409,14 +461,19 @@ class Rujin extends Backend
                             $userModel->usdt($vo['money'], $vo['p_userid'], 5, 2, $row['orderid']);
                         }
 
-                        $companyProfit3 = new companyProfit();
-                        $res5 = $companyProfit3->addLog($row['usdt'], $comSum, 10, 2, 1, $row['orderid']);
+                        // $companyProfit3 = new companyProfit();
+                        // $res5 = $companyProfit3->addLog($row['usdt'], $comSum, 10, 2, 1, $row['orderid']);
+
+                        $spark_id = 168022;
+                        $userModel = new UserModel();
+                        $userModel->usdt($comSum,$spark_id, 8, 1,$row['orderid']);
+
                         $commissionModel->update(['status' => 2, 'chaoshi' => 1], ['fy_orderid' => $row['merchantOrderNo']]);
                     }
                 }
             }
             //订单取消，佣金状态取消
-            if ($params['pay_status'] == 5) {
+            if ($params['pay_status'] == 5 && $row['pay_status'] < 4) {
                 $commissionModel = new Commission();
                 $commissionModel->update(['status' => 2, 'order_status' => 3], ['fy_orderid' => $row['merchantOrderNo']]);
             }
@@ -466,4 +523,126 @@ class Rujin extends Backend
         $this->success("回调请求成功", null, ['id' => $ids]);
 
     }
+
+
+
+    /***
+     * 分佣
+     */
+    public function commission($user_id,$fy_orderid,$p4b_orderid,$number,$fenyong,$profit)
+    {
+
+
+        $Commission = new Commission();
+        $userModel  = new UserModel();
+
+        $uinfo = $userModel->where("id", $user_id)->find();
+
+        $rateLst =  $this->getrate($uinfo);
+
+        $result = [];
+        $team_total = 0;
+        foreach ($rateLst as $key => $value) { 
+
+            $money = truncateDecimal($number * $value['rate'] / 100);
+            // $money = truncateDecimal($fenyong * $value['rate']/100);
+            if($money<=0){
+                continue;
+            }
+            $team_total += $money;
+            $rebateData = [
+                'user_id' =>$user_id,
+                'p_userid' => $value['user_id'],
+                'fy_orderid' => $fy_orderid,
+                'p4b_orderid' => $p4b_orderid,
+                'number' => $number,
+                'rate'  => $value['rate'],
+                'money' => $money,
+                'type' => 1,
+                'source' => 1,
+                'level' => $key+1,
+                'status' => 2,
+                'chaoshi' => 1,
+                'order_status'=>1,
+                'remarks'=> $number."*".$value['rate'],
+                'order_profit'=>$profit,
+                'ctime' => time(),
+                'utime' => time(),
+            ];
+
+            $result[] = $rebateData;
+        }
+        // if($profit>0){
+        //     $diff = $profit - $team_total;
+        //     $rebateData = [
+        //         'user_id' =>$user_id,
+        //         'p_userid' => 168022,
+        //         'fy_orderid' => $fy_orderid,
+        //         'p4b_orderid' => $p4b_orderid,
+        //         'number' => $number,
+        //         'rate'  => 0,
+        //         'money' => $diff,
+        //         'type' => 1,
+        //         'source' => 1,
+        //         'level' => 0,
+        //         'status' => 2,
+        //         'chaoshi' => 1,
+        //         'order_status'=>1,
+        //         'remarks'=>$fenyong."-".$team_total,
+        //         'order_profit'=>$profit,
+        //         'ctime' => time(),
+        //         'utime' => time(),
+        //     ];
+        //     $result[] = $rebateData;
+        // }
+
+
+        if(count($result)==0){
+            return true;    
+        }
+
+        Db::startTrans();
+        try {
+            $Commission->saveAll($result);
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            $this->error('操作失败' . $e->getMessage());
+        }
+        return true;
+    }
+
+
+
+    /**
+     * 包含自身
+     */
+    public function getrate($uinfo){
+
+        $sparent_str = str_replace("A", "", $uinfo['sparent']);
+        $sparent_arr = explode(",", $sparent_str);
+
+        $result = [];
+        $max = 0;
+        foreach ($sparent_arr as $key => $value) { 
+            $res = [];
+            $userRebate = new UserRebate();
+            $rateInfo = $userRebate->where(['user_id' => $value,'churu'=>'duiru','type'=>'bank'])->find();
+
+            if(!$rateInfo || $rateInfo['rate']<=0){
+                continue;
+            }
+            $res['user_id'] = $value;
+            $res['rate'] = $rateInfo['rate'] -$max;
+            if($rateInfo['rate']>0){
+                $max = $rateInfo['rate'];
+            }
+            $result[] = $res;
+            
+        }
+        return $result;
+    }    
+
 }

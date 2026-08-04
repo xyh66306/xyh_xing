@@ -36,6 +36,9 @@ class Chujin extends Api
         $orderid = input("orderid",'');
         $pay_type = input("pay_type",'');
 
+        if($this->auth->cj_switch==0){
+            $this->error("暂无数据");
+        }        
 
         $ChujinModel = new ChujinModel();
 
@@ -130,6 +133,7 @@ class Chujin extends Api
 
 
 
+
         if(!$orderid){
             $this->error('参数错误');
         }
@@ -139,6 +143,11 @@ class Chujin extends Api
         if (!$this->checkOrderToken($orderid, $authtoken)) {
             $this->error('参数错误');
         }
+
+        // if($this->auth->group_id==1 && $this->auth->sfz_status !==1){
+        //     $this->error("身份证未认证");
+        // } 
+
  
         $chujinModel = new ChujinModel();
 
@@ -398,26 +407,26 @@ class Chujin extends Api
         }
 
 
-        $diff = $total - $team_total;
-        $rebateData = [
-            'user_id' =>$user_id,
-            'p_userid' => 168022,
-            'fy_orderid' => $fy_orderid,
-            'p4b_orderid' => $p4b_orderid,
-            'number' => $number,
-            'rate'  => 0,
-            'money' => $diff,
-            'type' => 1,
-            'source' => 2,
-            'level' => 0,
-            'status' => 2,
-            'chaoshi' => 1,
-            'remarks'=>$total."-".$team_total,
-            'order_status'=>1,
-            'ctime' => time(),
-            'utime' => time(),
-        ];
-        $result[] = $rebateData;     
+        // $diff = $total - $team_total;
+        // $rebateData = [
+        //     'user_id' =>$user_id,
+        //     'p_userid' => 168022,
+        //     'fy_orderid' => $fy_orderid,
+        //     'p4b_orderid' => $p4b_orderid,
+        //     'number' => $number,
+        //     'rate'  => 0,
+        //     'money' => $diff,
+        //     'type' => 1,
+        //     'source' => 2,
+        //     'level' => 0,
+        //     'status' => 2,
+        //     'chaoshi' => 1,
+        //     'remarks'=>$total."-".$team_total,
+        //     'order_status'=>1,
+        //     'ctime' => time(),
+        //     'utime' => time(),
+        // ];
+        // $result[] = $rebateData;     
 
         if(count($result)==0){
             return true;    

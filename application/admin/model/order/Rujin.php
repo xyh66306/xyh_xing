@@ -142,4 +142,9 @@ class Rujin extends Model
     {
         return $this->belongsTo('app\admin\model\Supply', 'pintai_id', 'access_key', [], 'LEFT')->setEagerlyType(0);
     }
+
+    public function user()
+    {
+        return $this->belongsTo('app\admin\model\User', 'user_id', 'id', [], 'LEFT')->setEagerlyType(0);
+    } 
 }

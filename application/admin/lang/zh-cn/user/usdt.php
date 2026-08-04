@@ -1,8 +1,13 @@
 <?php
+/*
+ * @Author: Xyhao
+ * @Date: 2025-10-10 09:14:35
+ * @Description: 安徽爱喜网络科技有限公司
+ */
 
 return [
     'ActNum'        => '实际到账数量(USDT)',
-    'Num'           => '申请提币数量(USDT)',
+    'Num'           => '申请充币数量(USDT)',
     'Hash'          => '哈希值',
     'Createtime'    => '创建时间',
     'Updatetime'    => '更新时间',

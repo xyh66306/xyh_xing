@@ -5,6 +5,7 @@ namespace app\admin\controller\supply;
 use app\common\controller\Backend;
 use app\admin\model\supply\Supply;
 use app\admin\model\supply\Usdtlog;
+use app\common\model\User as UserModel;
 use app\admin\model\company\Account;
 use app\common\model\company\Profit as companyProfit;
 use Exception;
@@ -213,8 +214,12 @@ class Recharge extends Backend
                 // $AccountModel = new Account();
                 // $AccountModel->addLog($row['usdt'],7,3,1,$row['id']);
 
-               $companyProfit1 = new companyProfit();
-               $companyProfit1->addLog($row['usdt'],$row['fee'],7,3,1,$row['id']);
+            //    $companyProfit1 = new companyProfit();
+            //    $companyProfit1->addLog($row['usdt'],$row['fee'],7,3,1,$row['id']);
+                $spark_id = 168022;
+                $userModel = new UserModel();
+                $userModel->usdt($row['fee'],$spark_id, 3, 1,$row['id'],"商户充值手续费");         
+
 
             }
 

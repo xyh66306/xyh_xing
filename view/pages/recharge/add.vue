@@ -161,8 +161,8 @@
 			submit(){
 				if(!this.num){
 					return uni.$u.toast("请输入数量")
-				}
-				if(this.num<this.mincz){
+				}				
+				if(Number(this.num)<Number(this.mincz)){
 					return uni.$u.toast("最低充值数量为"+this.mincz)
 				}
 				if(!this.hash){

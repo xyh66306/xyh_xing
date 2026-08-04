@@ -34,15 +34,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {checkbox: true},
                         {field: 'id', title: "ID"},
                         {field: 'username', title: __('Username')},
-                        {field: 'mobile', title: __('Mobile'), operate: 'LIKE'},
-                        {field: 'email', title: __('Email'), operate: 'LIKE'},
-                        // {field: 'usdt', title: __('Usdt'), operate:'BETWEEN'},
-                        {field: 'usdt', title: __('Usdt'), operate:'BETWEEN', 
+                        {field: 'mobile', title: __('Mobile'), operate: false},
+                        {field: 'email', title: __('Email'), operate:'LIKE'},
+                        {field: 'usdt', title: __('Usdt'), operate:false, 
                         formatter: function (value, row, index) {
                             var url = Backend.api.fixurl('user/userlog?user_id=' + row.id + '&ref=addtabs');
                             return '<a href="' + url + '" target="_blank">' + value + '</a>';
                         }},                        
-                        {field: 'usdt_dj', title: __('Usdt_dj'), operate:'BETWEEN'},
+                        {field: 'usdt_dj', title: __('Usdt_dj'), operate:false},
                         {field: 'sfz_fimage', title: __('Sfz_fimage'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image,
 
                         },
@@ -52,7 +51,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         // {field: 'sfz_pimage', title: __('Sfz_pimage'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image,
 
                         // },
-                        {field: 'cz_switch', title: __('充值'), operate: false, table: table, formatter: Table.api.formatter.toggle},
+                        {field: 'cz_switch', title: __('充值'), searchList: {"1":__('Status normal'),"0":__('Status hidden')}, table: table, formatter: Table.api.formatter.toggle},
+                        {field: 'rj_switch', title: __('入金'), searchList: {"1":__('Status normal'),"0":__('Status hidden')}, table: table, formatter: Table.api.formatter.toggle},
+                        {field: 'cj_switch', title: __('出金'), searchList: {"1":__('Status normal'),"0":__('Status hidden')}, table: table, formatter: Table.api.formatter.toggle},
+                        {field: 'yx_switch', title: __('优先'), searchList: {"1":__('Status normal'),"0":__('Status hidden')}, table: table, formatter: Table.api.formatter.toggle},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Status normal'),"hidden":__('Status hidden'),"check":__('Status check')}, formatter: Table.api.formatter.status},
                         {field: 'sfz_status', title: __('Sfz_status'), searchList: {"0":__('Sfz_status 0'),"1":__('Sfz_status 1'),"2":__('Sfz_status 2')}, formatter: Table.api.formatter.status},

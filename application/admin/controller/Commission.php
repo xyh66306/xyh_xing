@@ -164,14 +164,37 @@ class Commission extends Backend
               $userModel = new UserModel();
               $res = $userModel->usdt($row['money'],$row['p_userid'],5,1,$row['p4b_orderid']);
 
-              $profitModel = new Profit();
-              $res = $profitModel->addLog($row['number'],$row['money'],$type,1,2,$row['p4b_orderid']);    
-                if(!$res){
-                  $this->error('分润失败！');
-                }
+              
+              $spark_id = 168022;
+              $userModel = new UserModel();
+              $res = $userModel->usdt($row['money'],$spark_id,5,2,$row['p4b_orderid']);
+
+              // $profitModel = new Profit();
+              // $res = $profitModel->addLog($row['number'],$row['money'],$type,1,2,$row['p4b_orderid']);    
+              // if(!$res){
+              //   $this->error('分润失败！');
+              // }
             } else {
             //   $profitModel = new Profit();
             //   $res = $profitModel->addLog($row['number'],$row['money'],$type,1,1,$row['p4b_orderid']);    
+
+              // if($row['order_profit']>0){
+              //     $act_p_userid = 168022;
+              //     $params['act_p_userid'] = $act_p_userid;
+                
+              //     $userModel = new UserModel();
+              //     $res = $userModel->usdt($row['money'],$act_p_userid,5,1,$row['p4b_orderid']);
+
+              //     $profitModel = new Profit();
+              //     $res = $profitModel->addLog($row['number'],$row['money'],$type,1,2,$row['p4b_orderid']);    
+              //     if(!$res){
+              //       $this->error('分润失败！');
+              //     }
+
+              // }
+
+
+
             }        
 
             $result = $row->allowField(true)->save($params);
@@ -184,6 +207,61 @@ class Commission extends Backend
             $this->error(__('No rows were updated'));
         }
         $this->success();
+    }   
+    
+    
+
+    public function del($ids = null)
+    {
+        if (false === $this->request->isPost()) {
+            $this->error(__("Invalid parameters"));
+        }
+        $ids = $ids ?: $this->request->post("ids");
+        if (empty($ids)) {
+            $this->error(__('Parameter %s can not be empty', 'ids'));
+        }
+        $pk = $this->model->getPk();
+        $adminIds = $this->getDataLimitAdminIds();
+        if (is_array($adminIds)) {
+            $this->model->where($this->dataLimitField, 'in', $adminIds);
+        }
+        $list = $this->model->where($pk, 'in', $ids)->select();
+
+        $count = 0;
+        Db::startTrans();
+        try {
+            foreach ($list as $item) {
+              if($item['order_status']==2 && $item['status']==1){
+                $userModel = new UserModel();
+                $res = $userModel->usdt($item['money'],$item['p_userid'],5,2,$item['p4b_orderid']);
+
+                
+                // $spark_id = 168022;
+                // $userModel = new UserModel();
+                // $res = $userModel->usdt($item['money'],$spark_id,5,1,$item['p4b_orderid']);
+
+
+                $type =0;
+                if($item['source']==1){
+                  $type =9;
+                } elseif($item['source']==2){
+                  $type =10;
+                }   
+                $profitModel = new Profit();
+                $res = $profitModel->addLog($item['number'],$item['money'],$type,1,1,$item['p4b_orderid']);                    
+
+              }
+              $count += $item->delete();
+            }
+            Db::commit();
+        } catch (PDOException|Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+        if ($count) {
+            $this->success();
+        }
+        $this->error(__('No rows were deleted'));
     }    
 
 }
