@@ -689,7 +689,7 @@ if (!function_exists('getOrderNo')) {
             //二维码编号
             return 'ewm'.rand(1, 9).date('is') . rand(10, 99);
         }   else {
-            return 'f'.rand(10, 99).date('is') . rand(100, 999);
+            return 'f'.date('ymdhi') . rand(10000, 99999);
         }
 
     }

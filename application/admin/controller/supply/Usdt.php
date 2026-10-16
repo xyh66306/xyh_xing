@@ -282,7 +282,8 @@ class Usdt extends Backend
         $admin_ids_str = "%A" . $admin_id . "A%";
         $supply_info = $supplyModel->whereLike("admin_id", $admin_ids_str)->find();
 
-        $fee = $post['usdt'] * 0.005;
+        // $fee = $post['usdt'] * $supply_info['tx_rate'];
+        $fee =  bcmul($post['usdt'], $supply_info['tx_rate'], 2);
 
         if (!$supply_info) {
             $this->error("供应商不存在");

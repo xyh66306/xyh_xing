@@ -118,7 +118,7 @@ class Rujin extends Backend
 
 
             foreach ($list as $row) {
-                $row->visible(['id', 'orderid', 'user_id', 'merchantOrderNo', 'amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt', 'utime', 'status', 'order_status', 'callback_status','pay_type','pintai_id']);
+                $row->visible(['id', 'orderid', 'user_id', 'merchantOrderNo', 'amount', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt', 'utime', 'status', 'order_status', 'callback_status','pay_type','pintai_id',"is_msg"]);
                 $row->visible(['supply']);
                 $row->getRelation('supply')->visible(['title']);
                 $row->visible(['user']);
@@ -186,6 +186,7 @@ class Rujin extends Backend
                 ->order($sort, $order)
                 ->paginate($limit);
 
+            // echo $this->model->getlastsql();
 
             foreach ($list as $row) {
                 $row->visible(['id', 'orderid', 'merchantOrderNo', 'amount', 'pay_type', 'username', 'bank_name', 'bank_account', 'bank_zhihang', 'pay_account', 'pay_ewm_image', 'pinzheng_image', 'pay_status', 'ctime', 'diqu', 'usdt', 'bi_type', 'payername', 'huilv', 'user_fee', 'supply_fee', 'supply_usdt', 'user_usdt', 'supply_huilv']);
@@ -280,42 +281,47 @@ class Rujin extends Backend
             $this->error("请上传凭证");
             return;
         }
-   
-        if ($params['pay_status'] == 2 && $row['pay_status'] != 1) {
-            $this->error("必须进行中之后才能待审核，禁止当前操作");
-            return;
-        }         
-
-        if ($params['pay_status'] == 2) {
-            $rjCount = Db::name("commission")->where("p4b_orderid", $row['orderid'])->count("id");
-            if ($rjCount == 0) {
-                // $fenyong = truncateDecimal($row['user_fee'] + $row['supply_fee']);
-                $profit = truncateDecimal($row['user_fee'] + $row['supply_fee']);
-                $fenyong = $row['supply_fee'];
-                // $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt'],$fenyong,$profit);
-                $this->commission($row['user_id'],$row['merchantOrderNo'],$row['orderid'],$row['user_usdt'],$fenyong,$profit);
-            }
-        }        
-
-        if ($params['pay_status'] == $row['pay_status']) {
-            $this->error("订单状态一致，禁止操作");
-            return;
-        }
-
-        if ($row['pay_status'] == 4) {
-            $this->error("订单已完成，禁止操作");
-            return;
-        }  
-
-        if ($params['pay_status'] == 3 && $row['pay_status'] != 2) {
-            $this->error("必须待审核之后才能用户已审核，禁止当前操作");
-            return;
-        }          
         
-        if ($params['pay_status'] == 4 && $row['pay_status'] != 3) {
-            $this->error("必须用户已审核之后才能完成，禁止当前操作");
-            return;
-        }          
+        if($params['pay_status'] == 2 && $row['pay_status'] == 2 && $params['is_msg']==2){
+
+        }else{
+            if ($params['pay_status'] == 2 && $row['pay_status'] != 1) {
+                $this->error("必须进行中之后才能待审核，禁止当前操作");
+                return;
+            }         
+
+            if ($params['pay_status'] == 2) {
+                $rjCount = Db::name("commission")->where("p4b_orderid", $row['orderid'])->count("id");
+                if ($rjCount == 0) {
+                    // $fenyong = truncateDecimal($row['user_fee'] + $row['supply_fee']);
+                    $profit = truncateDecimal($row['user_fee'] + $row['supply_fee']);
+                    $fenyong = $row['supply_fee'];
+                    // $this->commission($info['user_id'],$info['merchantOrderNo'],$orderid,$info['user_usdt'],$fenyong,$profit);
+                    $this->commission($row['user_id'],$row['merchantOrderNo'],$row['orderid'],$row['user_usdt'],$fenyong,$profit);
+                }
+            }        
+
+            if ($params['pay_status'] == $row['pay_status']) {
+                $this->error("订单状态一致，禁止操作");
+                return;
+            }
+
+            if ($row['pay_status'] == 4) {
+                $this->error("订单已完成，禁止操作");
+                return;
+            }  
+
+            if ($params['pay_status'] == 3 && $row['pay_status'] != 2) {
+                $this->error("必须待审核之后才能用户已审核，禁止当前操作");
+                return;
+            }          
+            
+            if ($params['pay_status'] == 4 && $row['pay_status'] != 3) {
+                $this->error("必须用户已审核之后才能完成，禁止当前操作");
+                return;
+            }   
+        }
+       
 
         Db::startTrans();
         try {
@@ -344,7 +350,7 @@ class Rujin extends Backend
                     $this->error("订单状态必须是用户已审核");
                 }
                 $row['act_amount'] = $params['amount'];
-                $params['pay_time'] = time();
+                // $params['pay_time'] = time();
                 //通知买方已确认
 
                 $supplyModel = new Supply();

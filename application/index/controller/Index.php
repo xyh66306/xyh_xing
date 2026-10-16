@@ -10,6 +10,7 @@ use app\common\model\Supply;
 use app\common\model\order\Rujin;
 use app\common\model\order\Chujin;
 use app\common\model\Commission;
+use app\common\model\User;
 use app\common\library\Ems as Emslib;
 
 class Index extends Frontend
@@ -95,6 +96,7 @@ class Index extends Frontend
         $fanyong_total_1d = $Commission->where(['chaoshi' => 1, 'status' => 1, 'p_userid' => 168024])->sum("money"); //1队
         $fanyong_total_2d = $Commission->where(['chaoshi' => 1, 'status' => 1, 'p_userid' => 168023])->sum("money"); //2队
         $fanyong_total_spark = $Commission->where(['chaoshi' => 1, 'status' => 1, 'p_userid' => 168022])->sum("money"); //spark
+
         $fanyong_total_1d = $fanyong_total_1d+83.8091;
         $fanyong_total_2d = $fanyong_total_2d+24.3899;
         $fanyong_total_spark = $fanyong_total_spark+562.7950;
@@ -167,6 +169,8 @@ class Index extends Frontend
 
 
         $supply = Db::name("supply")->where("id", '>', 2)->column('usdt');
+
+
         $supply_freeze_usdt = Db::name("supply")->where("id", '>', 2)->column('freeze_usdt');
         $company = Db::name("company")->where("id", 1)->find();
         $oneteam = Db::name("user")->where("id", 168024)->value('usdt');
@@ -196,12 +200,12 @@ class Index extends Frontend
         $total_supply_cz_number = Db::name("supply_usdt")->where("pay_status", 3)->count("id");
         $total_supply_tx_fee = Db::name("supply_usdt")->where("pay_status", 3)->sum("fee");
         $total_supply_recharge_fee = Db::name("supply_recharge")->where("pay_status", 3)->sum("fee");
-
+        $total_supply_recharge_fee2 = Db::name("supply_recharge")->where("pay_status", 3)->where("id","<",3)->sum("fee");
         
-        $totol_supply_usdt = $supply[0] + $supply[1] + $supply[2];
+        $totol_supply_usdt = Db::name("supply")->where("id", '>', 2)->sum('usdt');
         $total_supply_freeze_usdt = $supply_freeze_usdt[0] + $supply_freeze_usdt[1];
 
-        $company_usdt_all = truncateDecimal($company['usdt'] + 3039.1797 + $total_supply_recharge_fee);
+        $company_usdt_all = truncateDecimal($company['usdt'] + 3039.1797 + $total_supply_recharge_fee2);
 
         $data = [
             "today"             => $today,
@@ -361,7 +365,34 @@ class Index extends Frontend
         //     $msg = $today."差值为".$diff;
         //     $result = Emslib::notice($email, $msg,"resetpwd");
         // }
+        $userModel = new User();
 
+        $count = $userModel->where(["status"=>"normal","sfz_status"=>1,"min_cny"=>0])->where("usdt","<=",500)->count();
+        if($count>2){
+            $upwhere = [
+                'status'=>"normal",
+                "sfz_status"=>1,
+                "trust"=>2,
+                'usdt'=>['<', 500]
+                // 'pay_status'=>"hidden"
+            ];
+            $userModel->update(['rj_switch' => 0],$upwhere);
+        }
+
+        $userModel = new User();
+        $upwhere2 = [
+            'status'=>"normal",
+            "sfz_status"=>1,
+            'rj_switch'=>0,
+            'usdt'=>['>=', 500]
+        ];
+        $userModel->update(['rj_switch' => 1],$upwhere2);
+        // echo $userModel->getLastsql();
+
+
+        // $list = Db::name("user")->field("id,username,usdt")->where("trust",2)->where(['status'=>"normal","sfz_status"=>1,'pay_status'=>"normal"])->where('usdt','<',500)->select();
+
+        // dump($list);
 
 
         $this->addUserTongji($userLst);

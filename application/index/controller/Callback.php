@@ -46,7 +46,7 @@ class Callback extends Frontend
     public function index()
     {
 
-        $order_id = "PD20260715122604000008";
+        $order_id = "PD20260806133643000002";
         $order_info = Db::name("order_rujin")->where("orderid",$order_id)->find();
 
         $pintai_id = "1320622959";

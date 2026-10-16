@@ -22,28 +22,38 @@ class Buy extends Frontend
 
     public function cash()
     { 
-        $url = "http://www.localhost.com/openapi/cash/index";
-        // $url = "https://bingocn.wobeis.com/openapi/cash/index";
+        // $url = "http://www.localhost.com/openapi/cash/index";
+        $url = "https://bingocn.wobeis.com/openapi/cash/index";
 
         $randomStr = $this->getRandomStr(32);
         
 
         $header = [
-            'accesskey' => '1250730111',
+            'accesskey' => '1250803358',
             'randomstr' => $randomStr,
             'gmtrequest' => time(),
         ];
-        $access_secret = '5a12f50988688f1d1b5951e7e2493c74';
+        $access_secret = '4dc96ddbcc1190b66b478e2b98887bad';
         $sign = $this->makeSign($header, $access_secret);
         $header['signature'] = $sign;
 
+
+        // $params = [
+        //     'access_key' => '1250730111',   
+        //     'randomStr' => $randomStr,         
+        //     'gmtRequest'=> time(),
+        // ];
+        $sign = $this->makeSign($header,$access_secret);
+
+
+        $data = $header;
         $data['access_secret'] = $access_secret;
         $data['signature'] = $sign;
         $data['backurl'] = 'https://bingocn.wobeis.com/index/index/ceshi';
         $data['orderid'] = "casher".date("YmdHis",time());
         $data['amount'] = '5000';
         $data['diqu'] = 1;
-        $data['payername'] = '丁测试';
+        $data['payername'] = '夏测试';
 
         // var_dump($data);
         $res = $this->postCurl($url,$data,$header);
@@ -52,6 +62,32 @@ class Buy extends Frontend
 
     }    
 
+
+    public function details()
+    { 
+        $url = "https://bingocn.wobeis.com/openapi/details/details";
+        $randomStr = $this->getRandomStr(32);
+        
+        $access_key = "1241209564";
+        $access_secret = '8fb911cb2eed0671cf150ea0e62ebb20';
+
+        $header = [
+            'accesskey' => $access_key,
+            'randomstr' => $randomStr,
+            'gmtrequest' => time(),
+        ];
+        $sign = $this->makeSign($header, $access_secret);
+        $header['signature'] = $sign;
+
+
+        $sign = $this->makeSign($header,$access_secret);
+        $data['orderid'] = "DP668953349903790080";
+        $data['access_key'] = $access_key;
+        $res = $this->postCurl($url,$data,$header);
+
+        var_dump($res);
+
+    }       
 
 
     public function makeSign($params = [], $secret = '')

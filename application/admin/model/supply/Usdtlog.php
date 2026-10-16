@@ -183,7 +183,7 @@ class Usdtlog extends Model
             ];
             $this->save($data);
 
-            //减少金额，添加冻结金额
+            //添加金额，减少冻结金额
             $freeze_usdt = $info['freeze_usdt'] - $usdt;
             $supply->update(['usdt' => $after, 'freeze_usdt' => $freeze_usdt], ['access_key' => $supply_id]);
 

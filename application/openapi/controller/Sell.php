@@ -20,8 +20,8 @@ class Sell extends Api
 
     use Send;
     
-    protected $noNeedRight = ['index','payOutCallback'];
-    protected $noNeedLogin = ['index','payOutCallback'];
+    protected $noNeedRight = ['index','payOutCallback',"details"];
+    protected $noNeedLogin = ['index','payOutCallback',"details"];
     protected $access_key = "";
 
     public function __construct(Request $request)
@@ -239,6 +239,25 @@ class Sell extends Api
         return $this->success('success',$orderid);
 
     }
+
+    /**
+     * 订单详情
+     */
+    public function details(){
+
+        $orderid = $this->request->param('orderid','');
+        if(!$orderid){
+            return $this->error('订单号错误');
+        }
+        
+        $chujinModel = new Chujin();
+        $chujinInfo = $chujinModel->field("id,payername,orderid,realName,cardNumber,bankName,withdrawAmount,pay_status,usdt,supply_fee,supply_usdt,user_fee,user_usdt")->where('orderid',$orderid)->find();
+        if(!$chujinInfo) {
+            return $this->error('订单不存在');
+        }
+        return $this->success('success',$chujinInfo);
+    }
+
 
     /**
      * 

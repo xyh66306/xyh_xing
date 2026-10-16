@@ -135,8 +135,8 @@ class Commission extends Backend
         $params = $this->preExcludeFields($params);
         $result = false;
 
-        if($row['p_userid']!=168023 && $row['p_userid']!=168024 && $row['p_userid']!=168022 && $row['money'] >=20){
-            $this->error('返佣已大于20，请勿操作！');
+        if($row['p_userid']!=168023 && $row['p_userid']!=168024 && $row['p_userid']!=168022 && $row['money'] >=30){
+            $this->error('返佣已大于30，请勿操作！');
         }
 
         if($row['order_status'] !=2){

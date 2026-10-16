@@ -137,15 +137,24 @@ class Demo extends Frontend
         // $companyProfit1 = new companyProfit();
         // $res3 =  $companyProfit1->addLog(70921.9858,70.9219,9,1,1,"DP634087051180093440");  
 
-        $order_id = "126947";
-        $rujinModel = new Rujin();
-        $info = $rujinModel->where('orderid', $order_id)->find();
-        if (empty($info)) {
-            $this->error("订单不存在");
-        }
-        $profit = truncateDecimal($info['user_fee'] + $info['supply_fee']);
-        $fenyong = $info['supply_fee'];
-        $this->commission($info['user_id'], $info['merchantOrderNo'], $order_id, $info['user_usdt'], $fenyong,$profit);
+        // $order_id = "126947";
+        // $rujinModel = new Rujin();
+        // $info = $rujinModel->where('orderid', $order_id)->find();
+        // if (empty($info)) {
+        //     $this->error("订单不存在");
+        // }
+        // $profit = truncateDecimal($info['user_fee'] + $info['supply_fee']);
+        // $fenyong = $info['supply_fee'];
+        // $this->commission($info['user_id'], $info['merchantOrderNo'], $order_id, $info['user_usdt'], $fenyong,$profit);
+
+        // $profitModel = new companyProfit();
+        // $profitModel->addLog(3352,97.2080,6,1,2,"T795257331");
+
+        // $spark_id = 168022;
+        // $userModel = new User();
+        // $userModel->usdt(97.2080,$spark_id,2, 1,"T795257331","承兑商充值");        
+
+
     }
 
 

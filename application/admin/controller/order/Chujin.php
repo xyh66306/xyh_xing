@@ -627,7 +627,10 @@ class Chujin extends Backend
                     $supply_fee = truncateDecimal($usdt * $fee_dalu_supply_duichu);
                     $supply_usdt = truncateDecimal($usdt + $supply_fee);
 
-                    $newOrderId = getOrderNo();
+                    // 生成唯一订单号（同秒并发下 getOrderNo 可能碰撞，循环检查直到唯一）
+                    do {
+                        $newOrderId = getOrderNo();
+                    } while (Db::name("order_chujin")->where('orderid', $newOrderId)->count() > 0);
 
                     $saveData = [
                         'access_key' => $this->supply_info['access_key'],

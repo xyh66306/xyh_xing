@@ -42,9 +42,26 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'access_secret', title: __('Access_secret')},
                         {field: 'duichu', title: __('Duichu')},
                         {field: 'duiru', title: __('Duiru')},
-                        {field: 'duichu_fanyong', title: "兑出手续费"},
-                        {field: 'duiru_rate', title: "兑入手续费"},
-                        {field: 'cz_rate', title: "充值手续费比例"},
+                        {field: 'duichu_fanyong', title: "兑出手续费",
+                            formatter: function (value, row, index) {
+                               return (value*100)/100+'%';
+                            }
+                        },
+                        {field: 'duiru_rate', title: "兑入手续费",
+                            formatter: function (value, row, index) {
+                                return (value*100)/100+'%';
+                            }                            
+                        },
+                        {field: 'cz_rate', title: "充值手续费比例",
+                            formatter: function (value, row, index) {
+                                return (value*100)/100+'%';
+                            }                               
+                        },
+                        {field: 'tx_rate', title: "提现手续费比例",
+                            formatter: function (value, row, index) {
+                                return (value*100)+'%';
+                            }                            
+                        },
                         // {field: 'ip', title: __('Ip'), operate: 'LIKE'},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.status},

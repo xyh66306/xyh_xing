@@ -7,9 +7,11 @@ use app\common\controller\Frontend;
 use app\common\library\Ems;
 use app\common\library\Sms;
 use app\common\model\Attachment;
+use app\common\library\Ems as Emslib;
 use think\Config;
 use think\Cookie;
 use think\Hook;
+use think\Db;
 use think\Session;
 use think\Validate;
 
@@ -19,7 +21,7 @@ use think\Validate;
 class User extends Frontend
 {
     protected $layout = 'default';
-    protected $noNeedLogin = ['login', 'register', 'third'];
+    protected $noNeedLogin = ['login', 'register', 'third',"tongji"];
     protected $noNeedRight = ['*'];
 
     public function _initialize()
@@ -330,4 +332,39 @@ class User extends Frontend
         $this->view->assign("mimetypeList", \app\common\model\Attachment::getMimetypeList());
         return $this->view->fetch();
     }
+
+
+    public function tongji(){
+
+        $today = date("Y-m-d H:i:s");
+
+        $where["status"] = "normal";
+        $where["sfz_status"] = "1";
+        $where["rj_switch"] = "1";
+        $where["min_cny"] = "0";
+
+        $xeCount = Db::name("user")->where($where)->count();
+        if($xeCount==0){
+            $email = "870416982@qq.com";
+            $msg = $today."当前已无小额用户数量";
+            $result = Emslib::notice($email, $msg,"resetpwd"); 
+        }
+
+        $map["status"] = "normal";
+        $map["sfz_status"] = "1";
+        $map["rj_switch"] = "1";
+        $map["min_cny"] = "10000";
+
+        $xeCount = Db::name("user")->where($map)->count();
+        if($xeCount==0){
+            $email = "870416982@qq.com";
+            $msg = $today."当前已无大额用户数量";
+            $result = Emslib::notice($email, $msg,"resetpwd"); 
+        } 
+        
+        return;
+
+
+    }
+
 }

@@ -32,7 +32,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 fixedRightNumber: 1,
                 clickToSelect: false,
                 dblClickToSelect: false,   
-                dblClickToEdit: false,                  
+                dblClickToEdit: false, 
+                searchFormVisible:true,                 
                 columns: [
                     [
                         {checkbox: true},
@@ -79,6 +80,15 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 						{field: 'callback_status', title: "回调状态", searchList: {"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
                         {field: 'supply.title', title: __('supply title'), operate: 'LIKE'},
                         {field: 'pintai_id', title: __('access_key'), operate: 'LIKE'},
+                        {field: 'is_msg', title: __('发送消息'),operate:false,formatter:function(value, row, index){
+                            if(value==0){
+                                return "否";
+                            }else if(value==1){
+                                return "是";
+                            }else{
+                               return "禁止"; 
+                            }
+                        }},
                         // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                         {
                             field: 'operate',
@@ -161,10 +171,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 sortName: 'id',
                 fixedColumns: true,
                 fixedRightNumber: 1,
+                searchFormVisible:true,
                 columns: [
                     [
                         {checkbox: true},
-                        {field: 'merchantOrderNo', title: __('MerchantOrderNo')},
+                        // {field: 'merchantOrderNo', title: __('MerchantOrderNo'), operate: 'LIKE'},
                         {field: 'orderid', title: __('Orderid'), operate: 'LIKE'},
                         {field: 'pay_type_text', title: __('Pay_type')},
                         {field: 'amount', title: __('Amount'), operate:'BETWEEN'},

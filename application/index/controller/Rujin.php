@@ -10,6 +10,7 @@ namespace app\index\controller;
 use app\common\controller\Frontend;
 use app\common\model\order\Rujin as RujinModel;
 use app\common\model\User as UserModel;
+use think\Db;
 
 class Rujin extends Frontend
 {
@@ -21,7 +22,7 @@ class Rujin extends Frontend
     public function index()
     {
         $RujinModel = new RujinModel();
-        $time = time()-3600*1;
+        $time = time()-60*40;
         $list = $RujinModel->where("pay_status","<=",1)->where('ctime','<',$time)->select();
 
         foreach ($list as $key => $value) {
@@ -37,7 +38,7 @@ class Rujin extends Frontend
 
         $RujinModel = new RujinModel();
         $time = time() - 60*5;
-        $list = $RujinModel->where("pay_status",2)->where("pay_time","<=",$time)->select();
+        $list = $RujinModel->where("pay_status",2)->where("pay_time","<=",$time)->where("is_msg","<=",1)->select();
 
         if(!$list){
             return;
@@ -55,6 +56,7 @@ class Rujin extends Frontend
             $exportData['amount']    = $value['amount'];
             $jobClass = 'app\job\Notice@fire';
             \think\Queue::push($jobClass, $exportData);//加入队列
+            Db::name("order_rujin")->where("id",$value['id'])->update(["is_msg"=>1]);
         }
         echo "已发送邮件通知";
 

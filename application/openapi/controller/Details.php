@@ -24,7 +24,7 @@ class Details extends Api
 {
     use Send;
     protected $noNeedRight = ['index'];
-    protected $noNeedLogin = ['index','payOrder','ceshi'];
+    protected $noNeedLogin = ['index','payOrder','ceshi',"details"];
 
     protected $access_key = "";
     protected $secret = "";
@@ -87,10 +87,13 @@ class Details extends Api
           return  $this->error('收银员不存在');
         }
 
-
+        $wxpayinfo = $alipayinfo =  [];
         $bankInfo = $UserBankcard->field("username,bank_name,bank_nums,bank_zhmc")->where(['user_id'=>$userInfo['id'],'status'=>'normal','sys_status'=>'normal'])->find();
-        $wxpayinfo = $userPayewm->field("username,pay_skpt,pay_ewm_image")->where(['user_id'=>$userInfo['id'],'pay_skpt'=>'wxpay','status'=>'normal','sys_status'=>'normal'])->find();
-        $alipayinfo = $userPayewm->field("username,pay_skpt,pay_ewm_image")->where(['user_id'=>$userInfo['id'],'pay_skpt'=>'alipay','status'=>'normal','sys_status'=>'normal'])->find();
+        if($detailsInfo['amount']<50000){
+            $wxpayinfo = $userPayewm->field("username,pay_skpt,pay_ewm_image")->where(['user_id'=>$userInfo['id'],'pay_skpt'=>'wxpay','status'=>'normal','sys_status'=>'normal'])->find();
+            $alipayinfo = $userPayewm->field("username,pay_skpt,pay_ewm_image")->where(['user_id'=>$userInfo['id'],'pay_skpt'=>'alipay','status'=>'normal','sys_status'=>'normal'])->find();
+        }
+
         if(!$bankInfo && !$wxpayinfo && !$alipayinfo){
             return $this->error('收款账户不存在');
         }
@@ -255,6 +258,23 @@ class Details extends Api
         $this->success('下单成功，等待确认');
     }    
 
+
+
+
+    public function details(){
+       
+        $orderid = $this->request->param('orderid');        // 订单id
+        if(!$orderid){ 
+            return $this->error('订单id不能为空');
+        }  
+        $rujinModel = new Rujin();
+        $info = $rujinModel->field("id,orderid,merchantOrderNo,username,bank_name,pinzheng_image,usdt,order_status,pay_status,ctime")->where(['orderid'=>$orderid])->find();
+        if(!$info){
+            return $this->error('订单不存在');
+        }
+        return $this->success('success',$info);
+
+    }
 
 
     /***

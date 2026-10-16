@@ -14,7 +14,7 @@
     </div>
 
     <div class="panel-body">
-
+        <input id="tx_rate" type="hidden" value="{$supply_info.tx_rate}"   />
         <!-- 第一步：转账信息 -->
         <div id="step1" class="active-step step-content">
             <div class="item">
@@ -71,7 +71,12 @@
     }
 
     var usdt = document.getElementById('usdt');
-    var fee_rate = 0.005;
+    var fee_rate = document.getElementById("tx_rate").value;
+
+
+    // console.log(tx_rate);
+
+    // var fee_rate = 0.002;
     usdt.addEventListener('blur', function () {
         var fee = (parseFloat(usdt.value) * parseFloat(fee_rate)).toFixed(4)
         document.getElementById('fee').value = fee;

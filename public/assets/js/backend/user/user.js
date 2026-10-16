@@ -28,7 +28,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 pk: 'id',
                 sortName: 'id',
                 fixedColumns: true,
-                fixedRightNumber: 1,              
+                fixedRightNumber: 1,   
+                searchFormVisible:true,           
                 columns: [
                     [
                         {checkbox: true},
@@ -55,10 +56,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'rj_switch', title: __('入金'), searchList: {"1":__('Status normal'),"0":__('Status hidden')}, table: table, formatter: Table.api.formatter.toggle},
                         {field: 'cj_switch', title: __('出金'), searchList: {"1":__('Status normal'),"0":__('Status hidden')}, table: table, formatter: Table.api.formatter.toggle},
                         {field: 'yx_switch', title: __('优先'), searchList: {"1":__('Status normal'),"0":__('Status hidden')}, table: table, formatter: Table.api.formatter.toggle},
+                        {field: 'trust', title: __('信任'), searchList: {"1":__('Status normal'),"2":__('Status hidden')}, table: table, formatter: Table.api.formatter.toggle},
+                        {field: 'min_cny', title: __('最低入金'), operate:false},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('Status'), searchList: {"normal":__('Status normal'),"hidden":__('Status hidden'),"check":__('Status check')}, formatter: Table.api.formatter.status},
                         {field: 'sfz_status', title: __('Sfz_status'), searchList: {"0":__('Sfz_status 0'),"1":__('Sfz_status 1'),"2":__('Sfz_status 2')}, formatter: Table.api.formatter.status},
-                        {field: 'pay_status', title: __('Pay_status'), searchList: {"0":__('Pay_status 0'),"1":__('Pay_status 1'),"2":__('Pay_status 2')}, formatter: Table.api.formatter.status},
+                        {field: 'pay_status', title: __('Pay_status'), searchList: {"normal":__('Status normal'),"hidden":__('Status hidden')}, formatter: Table.api.formatter.status},
                         {field: 'agent.username', title: __('admingroup')},
                         {field: 'invite.username',title: __('Invite') },
                         // {field: 'dq_status_text', title: __('Region')},
